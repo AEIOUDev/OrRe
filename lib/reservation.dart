@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'storeservice.dart';
+
+final storeService = StoreService();
+
 class ReservationPage extends StatefulWidget {
   final String storeCode;
 
@@ -13,7 +17,10 @@ class _ReservationPageState extends State<ReservationPage> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _peopleController = TextEditingController();
-  int waitingTeams = 10;
+
+  late String storeName;
+
+  int waitingTeams = 0;
   int peopleCount = 1;
   String? peopleCountError; // 인원 수 입력 에러 메시지
   bool isWaiting = false; // 웨이팅 상태
@@ -23,6 +30,16 @@ class _ReservationPageState extends State<ReservationPage> {
   @override
   void initState() {
     super.initState();
+
+    final storeInfo = storeService.getStoreInfo(widget.storeCode);
+    if (storeInfo != null) {
+      storeName = storeInfo['storeName'] ?? '알 수 없는 상점';
+      waitingTeams = storeInfo['storeWaitingInfo'] ?? 0;
+    } else {
+      storeName = '알 수 없는 상점';
+      waitingTeams = 0;
+    }
+
     _peopleController.text = peopleCount.toString();
   }
 
@@ -144,8 +161,6 @@ class _ReservationPageState extends State<ReservationPage> {
 
   @override
   Widget build(BuildContext context) {
-    String storeName = "마이노 하우스";
-
     return Scaffold(
       appBar: AppBar(
         title: Text(storeName),

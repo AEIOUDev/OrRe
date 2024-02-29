@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:url_strategy/url_strategy.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'reservation.dart';
 
 void main() {
   setPathUrlStrategy(); // 해시(#) 없이 URL 사용
-  runApp(MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
