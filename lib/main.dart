@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'reservation.dart';
+import 'presenter/reservation.dart';
+import 'presenter/store_waiting_widget.dart';
 
 void main() {
   setPathUrlStrategy(); // 해시(#) 없이 URL 사용
@@ -26,7 +27,8 @@ class MyApp extends StatelessWidget {
             uri.pathSegments.first == 'reservation') {
           String storeCode = uri.pathSegments[1];
           return MaterialPageRoute(
-              builder: (context) => ReservationPage(storeCode: storeCode));
+              // builder: (context) => ReservationPage(storeCode: storeCode));
+              builder: (context) => WaitingInfoWidget(storeCode: storeCode));
         }
 
         // 다른 경로는 여기에서 처리

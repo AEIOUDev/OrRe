@@ -19,15 +19,16 @@ class MyWaitingInfo {
 }
 
 // List 형식으로 관리하려고 함. 따라서 List<MyWaitingInfo> 형식으로 선언
-class WaitingStateNotifier extends StateNotifier<List<MyWaitingInfo>> {
+class MyWaitingStateNotifier extends StateNotifier<List<MyWaitingInfo>> {
   // StateNotifier를 빈 배열로 초기화
-  WaitingStateNotifier() : super([]);
+  MyWaitingStateNotifier() : super([]);
 
+  // 사용자가 웨이팅을 추가함
   void addWaiting(MyWaitingInfo newWaiting) {
     state = [...state, newWaiting];
   }
 
-  // 기존 state에서 removeBook에 해당하는 book을 제거한 리스트를 새로 생성하여 반환
+  // 사용자가 웨이팅을 제거함
   void removeWaiting(MyWaitingInfo removeWaiting) {
     state = state.where((waiting) => waiting != removeWaiting).toList();
   }
@@ -53,8 +54,8 @@ class WaitingStateNotifier extends StateNotifier<List<MyWaitingInfo>> {
   }
 }
 
-// 이제 waitingsProvider를 통해 MyWaitingInfo모델의 리스트를 관리할 수 있음
-final waitingsProvider =
-    StateNotifierProvider<WaitingStateNotifier, List<MyWaitingInfo>>((ref) {
-  return WaitingStateNotifier();
+// 이제 myWaitingsProvider 통해 MyWaitingInfo모델의 리스트를 관리할 수 있음
+final myWaitingsProvider =
+    StateNotifierProvider<MyWaitingStateNotifier, List<MyWaitingInfo>>((ref) {
+  return MyWaitingStateNotifier();
 });
