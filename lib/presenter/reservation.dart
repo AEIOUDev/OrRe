@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/provider/store_waiting_state_notifier.dart';
 
-import 'storeservice.dart';
+import '../model/storeservice.dart';
 
 final storeService = StoreService();
 
-class ReservationPage extends StatefulWidget {
+class ReservationPage extends ConsumerStatefulWidget {
   final String storeCode;
 
   ReservationPage({required this.storeCode});
@@ -13,7 +15,7 @@ class ReservationPage extends StatefulWidget {
   _ReservationPageState createState() => _ReservationPageState();
 }
 
-class _ReservationPageState extends State<ReservationPage> {
+class _ReservationPageState extends ConsumerState<ReservationPage> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _peopleController = TextEditingController();
@@ -161,6 +163,10 @@ class _ReservationPageState extends State<ReservationPage> {
 
   @override
   Widget build(BuildContext context) {
+    // StreamProvider를 사용하여 StoreWaitingInfo 정보를 실시간으로 받아옵니다.
+    final storeWaitingInfoAsyncValue =
+        ref.watch(storeWaitingInfoStreamProvider(widget.storeCode));
+
     return Scaffold(
       appBar: AppBar(
         title: Text(storeName),
