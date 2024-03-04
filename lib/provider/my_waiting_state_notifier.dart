@@ -1,20 +1,31 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// 요청자의 정보를 담는 모델
+class MyInfo {
+  final String myName;
+  final String phoneNumber;
+  final int numberOfUs;
+
+  MyInfo({
+    required this.myName,
+    required this.phoneNumber,
+    required this.numberOfUs,
+  });
+}
 
 // App State로 사용할 "나의 대기정보"의 구성 멤버를 정의해준다
 class MyWaitingInfo {
   final String storeCode;
   final int waitingNumber;
 
-  final String myName;
-  final String phoneNumber;
-  final int numberOfUs;
+  final MyInfo myInfo;
 
   MyWaitingInfo({
     required this.storeCode,
     required this.waitingNumber,
-    required this.myName,
-    required this.phoneNumber,
-    required this.numberOfUs,
+    required this.myInfo,
   });
 }
 
@@ -43,14 +54,38 @@ class MyWaitingStateNotifier extends StateNotifier<List<MyWaitingInfo>> {
           MyWaitingInfo(
             storeCode: info.storeCode,
             waitingNumber: info.waitingNumber,
-            myName: info.myName,
-            phoneNumber: info.phoneNumber,
-            numberOfUs: newNumberOfUs,
+            myInfo: MyInfo(
+                myName: info.myInfo.myName,
+                phoneNumber: info.myInfo.phoneNumber,
+                numberOfUs: newNumberOfUs),
           )
         else
           // 해당 가게가 아닐 시 원래 state 정보를 사용
           info,
     ];
+  }
+
+  void requestWaiting(String storeCode, MyInfo myInfo) {
+    // 서버와의 웹소켓 통신을 모의하는 로직
+    // 실제 애플리케이션에서는 여기서 웹소켓 통신 코드를 작성하여 서버에 웨이팅 합류 요청을 보내야 함
+
+    // 예제를 위한 가상의 응답 처리
+    Timer(Duration(seconds: 1), () {
+      // 웨이팅에 성공적으로 합류했다고 가정
+      final bool success = true; // 실제 서버 응답을 기반으로 설정
+      if (success) {
+        final int newWaitingNumber = state.length + 1; // 서버에서 받은 웨이팅 번호를 사용해야 함
+        addWaiting(MyWaitingInfo(
+          storeCode: storeCode,
+          waitingNumber: newWaitingNumber,
+          myInfo: myInfo,
+        ));
+
+        // UI에 성공 메시지 또는 웨이팅 정보 업데이트를 알리는 로직 구현 필요
+      } else {
+        // 합류 실패 시 에러 처리 로직 구현 필요
+      }
+    });
   }
 }
 
