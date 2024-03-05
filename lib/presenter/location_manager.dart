@@ -157,6 +157,7 @@ class _LocationManagementScreenState
                   ref
                       .read(locationListProvider.notifier)
                       .selectLocation(location);
+                  Navigator.pop(context); // 현재 창을 닫음
                 }
               },
               selected: isSelected,

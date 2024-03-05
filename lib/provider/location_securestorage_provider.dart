@@ -40,10 +40,6 @@ class LocationListNotifier extends StateNotifier<LocationState> {
   }
 
   final _storage = FlutterSecureStorage(); // 안전한 저장소 인스턴스
-  bool _isDuplicate = false; // 동일한 이름의 위치가 추가 시도될 때 true
-
-  // 반려 상태 확인을 위한 getter
-  bool get isDuplicate => _isDuplicate;
 
   // 앱 시작 시 현재 위치 정보를 로드하고 "nowLocation"을 업데이트
   Future<void> _init(Ref ref) async {
