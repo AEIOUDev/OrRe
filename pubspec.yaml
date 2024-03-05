@@ -13,8 +13,11 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.4.10
+  flutter_secure_storage: ^9.0.0
   flutter_test:
     sdk: flutter
+  geocoding: ^2.2.0
+  geolocator: ^11.0.0
   mockito: ^5.4.4
   riverpod_annotation: ^2.3.4
   url_strategy: ^0.2.0
