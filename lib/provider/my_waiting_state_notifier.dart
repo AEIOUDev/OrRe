@@ -13,6 +13,15 @@ class MyInfo {
     required this.phoneNumber,
     required this.numberOfUs,
   });
+
+  // JSON에서 Dart 객체 생성자
+  factory MyInfo.fromJson(Map<String, dynamic> json) {
+    return MyInfo(
+      myName: json['myName'],
+      phoneNumber: json['phoneNumber'],
+      numberOfUs: json['numberOfUs'],
+    );
+  }
 }
 
 // App State로 사용할 "나의 대기정보"의 구성 멤버를 정의해준다
