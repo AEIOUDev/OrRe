@@ -50,5 +50,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>가게와 사용자님의 거리 차이를 계산하기 위해 위치 권한이 필요합니다!</string>
 </dict>
 </plist>
