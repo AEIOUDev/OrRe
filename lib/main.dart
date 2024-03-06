@@ -1,8 +1,10 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:orre/presenter/homepage.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'presenter/addLocationScreen.dart';
 import 'presenter/reservation.dart';
 import 'presenter/store_waiting_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -30,6 +32,15 @@ void main() async {
   print('User granted permission: ${settings.authorizationStatus}');
   final fcmToken = await FirebaseMessaging.instance.getToken();
   print(fcmToken);
+
+  // 네이버 지도 초기화
+  await NaverMapSdk.instance.initialize(clientId: "mlravb678f");
+
+  await NaverMapSdk.instance.initialize(
+      clientId: 'your client id',
+      onAuthFailed: (ex) {
+        print("********* 네이버맵 인증오류 : $ex *********");
+      });
 
   FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
     if (message != null) {
@@ -70,7 +81,8 @@ class MyApp extends StatelessWidget {
         }
         // 다른 경로는 여기에서 처리
         // 기본적으로 홈페이지로 리다이렉트
-        return MaterialPageRoute(builder: (context) => HomeScreen());
+        // return MaterialPageRoute(builder: (context) => HomeScreen());
+        return MaterialPageRoute(builder: (context) => AddLocationScreen());
       },
     );
   }
