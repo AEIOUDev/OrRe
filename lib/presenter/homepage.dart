@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/location_model.dart';
-import 'package:orre/provider/location_info_provider.dart';
+import 'package:orre/provider/location/location_info_provider.dart';
 
-import '../provider/location_securestorage_provider.dart';
-import 'location_manager.dart';
+import '../provider/location/location_securestorage_provider.dart';
+import 'location/location_manager_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   @override

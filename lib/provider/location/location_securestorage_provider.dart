@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import '../model/location_model.dart';
+import '../../model/location_model.dart';
 import 'location_info_provider.dart';
 
 // 새로운 상태 클래스 정의
@@ -116,7 +116,7 @@ class LocationListNotifier extends StateNotifier<LocationState> {
     saveLocations(); // 변경 사항 저장
   }
 
-// 위치 정보 리스트를 안전한 저장소에 저장
+  // 위치 정보 리스트를 안전한 저장소에 저장
   Future<void> saveLocations() async {
     print("saveLocations");
     List<String> stringList = state.locations
@@ -125,7 +125,7 @@ class LocationListNotifier extends StateNotifier<LocationState> {
     await _storage.write(key: 'savedLocations', value: json.encode(stringList));
   }
 
-// 저장소에서 위치 정보 리스트 로드
+  // 저장소에서 위치 정보 리스트 로드
   Future<void> loadLocations() async {
     print("loadLocations");
     String? stringListJson = await _storage.read(key: 'savedLocations');
