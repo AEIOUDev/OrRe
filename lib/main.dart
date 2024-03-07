@@ -4,7 +4,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:orre/presenter/homepage.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'presenter/addLocationScreen.dart';
+import 'presenter/location/add_location_screen.dart';
 import 'presenter/reservation.dart';
 import 'presenter/store_waiting_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -81,8 +81,8 @@ class MyApp extends StatelessWidget {
         }
         // 다른 경로는 여기에서 처리
         // 기본적으로 홈페이지로 리다이렉트
-        // return MaterialPageRoute(builder: (context) => HomeScreen());
-        return MaterialPageRoute(builder: (context) => AddLocationScreen());
+        return MaterialPageRoute(builder: (context) => HomeScreen());
+        // return MaterialPageRoute(builder: (context) => AddLocationScreen());
       },
     );
   }
