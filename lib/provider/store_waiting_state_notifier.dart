@@ -3,29 +3,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class StoreWaitingInfo {
-  final String storeCode;
-  final List<int> waitingQueue;
-  final int lastWaitingNumber;
-  final int predictWaitingTime;
-
-  StoreWaitingInfo({
-    required this.storeCode,
-    required this.waitingQueue,
-    required this.lastWaitingNumber,
-    required this.predictWaitingTime,
-  });
-
-  // JSON에서 Dart 객체 생성자
-  factory StoreWaitingInfo.fromJson(Map<String, dynamic> json) {
-    return StoreWaitingInfo(
-      storeCode: json['serverCode'],
-      waitingQueue: [],
-      lastWaitingNumber: json['lastWaitingNumber'],
-      predictWaitingTime: json['predictWaitingTime'],
-    );
-  }
-}
+import '../model/store_info_model.dart';
 
 final storeWaitingInfoStreamProvider =
     StreamProvider.family<StoreWaitingInfo, String>((ref, storeCode) {
@@ -64,9 +42,9 @@ final storeWaitingInfoStreamProvider =
           // JSON 문자열을 Waitingtime 객체로 변환
           final waitingTime = StoreWaitingInfo.fromJson(messageData);
           // 객체 필드에 접근하여 출력
-          print('Server Code 2: ${waitingTime.storeCode}');
-          print('Last Waiting Number: ${waitingTime.lastWaitingNumber}');
-          print('Predict Waiting Time: ${waitingTime.predictWaitingTime}');
+          print('Server Code 2: ${waitingTime.storeInfo.storeCode}');
+          print('nowEnteringNumbers: ${waitingTime.nowEnteringNumbers}');
+          print('Predict Waiting Time: ${waitingTime.estimatedWaitingTime}');
         } catch (e) {
           print('Error parsing JSON: $e');
           print('Original payload: $payload');
@@ -80,10 +58,10 @@ final storeWaitingInfoStreamProvider =
     final jsonData = jsonDecode(data);
     print(jsonData);
     return StoreWaitingInfo(
-      storeCode: jsonData['storeCode'],
-      waitingQueue: List<int>.from(jsonData['waitingQueue']),
-      lastWaitingNumber: jsonData['lastWaitingNumber'],
-      predictWaitingTime: jsonData['predictWaitingTime'],
+      storeInfo: jsonData['storeInfo'],
+      estimatedWaitingTime: jsonData['estimatedWaitingTime'],
+      nowEnteringNumbers: List<int>.from(jsonData['waitingQueue']),
+      numberOfTeamsWaiting: jsonData['numberOfTeamsWaiting'],
     );
   });
 });

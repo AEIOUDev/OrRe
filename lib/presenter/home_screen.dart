@@ -4,20 +4,34 @@ import 'package:orre/model/location_model.dart';
 import 'package:orre/provider/location/location_info_provider.dart';
 
 import '../provider/location/location_securestorage_provider.dart';
+import '../provider/store_list_item.dart';
 import 'location/location_manager_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final nowLocation = ref.watch(locationProvider);
     final location = ref.watch(locationListProvider); // 선택된 위치
+    // if (location.selectedLocation != null || location.nowLocation != null) {
+    //   final LocationInfo selectedLocation = location.selectedLocation!;
+    //   final listWebsocket =
+    //       ref.watch(storeListStreamProvider(selectedLocation));
+    // }
+    print(location.selectedLocation?.address);
 
     print(location.selectedLocation?.locationName);
     return Scaffold(
       appBar: AppBar(
         title: PopupMenuButton<String>(
           // 현재 선택된 위치의 이름을 표시
-          child: Text(location.selectedLocation?.locationName ?? '위치를 선택해주세요'),
+          child: Row(
+            mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물에 맞게 조절합니다.
+            children: [
+              Text(location.selectedLocation?.locationName ??
+                  '위치를 선택해주세요'), // 여기에 원하는 텍스트를 입력하세요.
+              Icon(Icons.arrow_drop_down), // arrow_drop_down 아이콘을 추가합니다.
+            ],
+          ),
+
           onSelected: (String result) {
             if (result == 'changeLocation') {
               Navigator.push(
@@ -31,7 +45,7 @@ class HomeScreen extends ConsumerWidget {
               // 현재 위치로 변경
               ref
                   .read(locationListProvider.notifier)
-                  .selectLocation(location.nowLocation as LocationModel);
+                  .selectLocation(location.nowLocation as LocationInfo);
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -50,6 +64,12 @@ class HomeScreen extends ConsumerWidget {
             icon: Icon(Icons.search),
             onPressed: () {
               // 위치 검색 로직
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.star),
+            onPressed: () {
+              // 즐겨찾기 페이지로 이동
             },
           ),
           IconButton(
@@ -85,26 +105,6 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: '즐겨찾기',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '홈',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: '웨이팅 리스트',
-          ),
-        ],
-        currentIndex: 1, // 홈화면이 선택된 상태
-        onTap: (index) {
-          // 네비게이션 바 아이템 탭 로직
-        },
       ),
     );
   }
