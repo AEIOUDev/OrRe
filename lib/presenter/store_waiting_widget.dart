@@ -26,18 +26,26 @@ class WaitingInfoWidget extends StatelessWidget {
               data: (waitingInfo) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Store Code: ${waitingInfo.storeCode}',
+                  Text('Store Name: ${waitingInfo.storeInfo.storeName}',
+                      style: TextStyle(fontSize: 20)),
+                  SizedBox(height: 8),
+                  Text('Store Code: ${waitingInfo.storeInfo.storeCode}',
                       style: TextStyle(fontSize: 20)),
                   SizedBox(height: 8),
                   Text(
-                      'Current Waiting Queue: ${waitingInfo.waitingQueue.join(', ')}',
-                      style: TextStyle(fontSize: 16)),
+                      'Store Location: ${waitingInfo.storeInfo.locationInfo.address}',
+                      style: TextStyle(fontSize: 20)),
                   SizedBox(height: 8),
-                  Text('Last Waiting Number: ${waitingInfo.lastWaitingNumber}',
+                  Text(
+                      'Now Entering Numbers: ${waitingInfo.nowEnteringNumbers.join(', ')}',
                       style: TextStyle(fontSize: 16)),
                   SizedBox(height: 8),
                   Text(
-                      'Predicted Waiting Time: ${waitingInfo.predictWaitingTime} minutes',
+                      'Number of Teams Waiting: ${waitingInfo.numberOfTeamsWaiting}',
+                      style: TextStyle(fontSize: 16)),
+                  SizedBox(height: 8),
+                  Text(
+                      'Estimated Waiting Time: ${waitingInfo.estimatedWaitingTime} minutes',
                       style: TextStyle(fontSize: 16)),
                 ],
               ),

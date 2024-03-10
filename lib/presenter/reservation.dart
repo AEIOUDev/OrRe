@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/provider/store_waiting_state_notifier.dart';
 
-import '../model/storeservice.dart';
+import '../services/storeservice.dart';
 
 final storeService = StoreService();
 

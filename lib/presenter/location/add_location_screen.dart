@@ -41,10 +41,11 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
                 return Center(child: Text('위치 정보를 가져오는 데 실패했습니다.'));
               } else {
                 // 데이터 로딩이 성공하면 지도를 표시합니다.
-                final userLocation = snapshot.data; // 사용자 위치 정보
-                final latitude = userLocation.locationInfo?.latitude ?? 0; // 위도
+                final userLocationInfo = snapshot.data; // 사용자 위치 정보
+                final latitude =
+                    userLocationInfo.locationInfo?.latitude ?? 0; // 위도
                 final longitude =
-                    userLocation.locationInfo?.longitude ?? 0; // 경도
+                    userLocationInfo.locationInfo?.longitude ?? 0; // 경도
 
                 return NaverMap(
                   options: NaverMapViewOptions(
@@ -152,7 +153,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
                             // 성공적으로 주소를 가져왔을 경우의 로직
                             ref
                                 .read(locationListProvider.notifier)
-                                .addLocation(LocationModel(
+                                .addLocation(LocationInfo(
                                   locationName: nameLibrary ??
                                       "즐겨찾기" +
                                           length.toString(), // 주소를 위치 이름으로 사용

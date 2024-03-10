@@ -1,10 +1,11 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:orre/presenter/homepage.dart';
+import 'package:orre/presenter/home_screen.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'presenter/location/add_location_screen.dart';
+import 'presenter/main_screen.dart';
 import 'presenter/reservation.dart';
 import 'presenter/store_waiting_widget.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -81,69 +82,10 @@ class MyApp extends StatelessWidget {
         }
         // 다른 경로는 여기에서 처리
         // 기본적으로 홈페이지로 리다이렉트
-        return MaterialPageRoute(builder: (context) => HomeScreen());
+        // return MaterialPageRoute(builder: (context) => HomeScreen());
         // return MaterialPageRoute(builder: (context) => AddLocationScreen());
+        return MaterialPageRoute(builder: (context) => MainScreen());
       },
     );
   }
 }
-
-// class HomePage extends StatefulWidget {
-//   @override
-//   _HomePageState createState() => _HomePageState();
-// }
-
-// class _HomePageState extends State<HomePage> {
-//   late Future<String?> fcmToken;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     fcmToken =
-//         FirebaseMessaging.instance.getToken(); // Fetch the token asynchronously
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text("Home Page"),
-//       ),
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             // FCM Token을 표시하는 FutureBuilder
-//             FutureBuilder<String?>(
-//               future: fcmToken,
-//               builder: (context, snapshot) {
-//                 if (snapshot.connectionState == ConnectionState.done &&
-//                     snapshot.hasData) {
-//                   return Text("FCM Token: ${snapshot.data}");
-//                 } else if (snapshot.hasError) {
-//                   return Text("Error fetching FCM Token");
-//                 } else {
-//                   return CircularProgressIndicator();
-//                 }
-//               },
-//             ),
-//             SizedBox(height: 20), // 버튼과의 간격 추가
-//             // StoreWaitingWidget으로 넘어가는 버튼
-//             ElevatedButton(
-//               onPressed: () {
-//                 // 'StoreWaitingWidget'으로 화면 전환
-//                 Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                       builder: (context) =>
-//                           WaitingInfoWidget(storeCode: 'your_store_code_here')),
-//                 );
-//               },
-//               child: Text('Go to Store Waiting Widget'),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

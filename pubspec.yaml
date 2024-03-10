@@ -8,6 +8,7 @@ environment:
   flutter: ">=3.0.0"
 
 dependencies:
+  android_intent_plus: ^4.0.3
   firebase_core: ^2.25.5
   firebase_messaging: ^14.7.17
   flutter:
@@ -22,7 +23,9 @@ dependencies:
   google_maps_flutter: ^2.5.3
   http: ^1.2.0
   mockito: ^5.4.4
+  nfc_manager: ^3.4.0
   riverpod_annotation: ^2.3.4
+  stomp_dart_client: ^1.0.3
   url_strategy: ^0.2.0
 
 dev_dependencies:
