@@ -59,7 +59,7 @@ class _LocationManagementScreenState
               // );
               // if (newLocationName != null && newLocationName.isNotEmpty) {
               //   ref.read(locationListProvider.notifier).addLocation(
-              //         LocationModel(
+              //         LocationInfo(
               //           locationName: newLocationName,
               //           latitude: 0.0, // 새 위치의 위도
               //           longitude: 0.0, // 새 위치의 경도
