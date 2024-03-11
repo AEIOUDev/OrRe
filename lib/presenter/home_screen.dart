@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/provider/location/location_info_provider.dart';
 
@@ -10,15 +11,44 @@ import 'location/location_manager_screen.dart';
 class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final location = ref.watch(locationListProvider); // 선택된 위치
-    // if (location.selectedLocation != null || location.nowLocation != null) {
-    //   final LocationInfo selectedLocation = location.selectedLocation!;
-    //   final listWebsocket =
-    //       ref.watch(storeListStreamProvider(selectedLocation));
-    // }
-    print(location.selectedLocation?.address);
+    final nowLocationAsyncValue = ref.watch(locationProvider);
 
-    print(location.selectedLocation?.locationName);
+    // AsyncValue를 사용하여 상태 처리
+    return nowLocationAsyncValue.when(
+      data: (data) {
+        // 데이터가 정상적으로 로드되었을 때 UI를 표시
+        final location = ref.watch(locationListProvider); // 선택된 위치
+        return buildLoadedScreen(context, ref, location);
+      },
+      error: (error, stack) {
+        // 에러가 발생했을 때 다시 시도하도록 유도하는 UI를 표시
+        return Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('위치 정보를 불러오는데 실패했습니다.'),
+                ElevatedButton(
+                  onPressed: () => ref.refresh(locationProvider),
+                  child: Text('다시 시도하기'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+      loading: () => Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
+
+// 데이터가 정상적으로 로드되었을 때 화면 구성
+  Widget buildLoadedScreen(
+      BuildContext context, WidgetRef ref, LocationState location) {
+    final storeList = ref.watch(stompClientProvider.notifier);
+    storeList.setupStompClient();
+
     return Scaffold(
       appBar: AppBar(
         title: PopupMenuButton<String>(
@@ -43,9 +73,10 @@ class HomeScreen extends ConsumerWidget {
               });
             } else if (result == 'nowLocation') {
               // 현재 위치로 변경
+              ref.refresh(locationProvider);
               ref
                   .read(locationListProvider.notifier)
-                  .selectLocation(location.nowLocation as LocationInfo);
+                  .updateNowLocation(location.nowLocation as LocationInfo);
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
