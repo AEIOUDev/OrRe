@@ -42,8 +42,8 @@ class _LocationManagementScreenState
   @override
   Widget build(BuildContext context) {
     final myLocationAsyncValue = ref.watch(locationProvider);
-    final locations = ref.watch(locationListProvider);
-    final selectedLocation = locations.selectedLocation;
+    final customLocations = ref.watch(locationListProvider);
+    final selectedLocation = customLocations.selectedLocation;
 
     return Scaffold(
       appBar: AppBar(
@@ -76,9 +76,9 @@ class _LocationManagementScreenState
       ),
       body: myLocationAsyncValue.when(
         data: (myLocation) => ListView.builder(
-          itemCount: locations.locations.length,
+          itemCount: customLocations.customLocations.length,
           itemBuilder: (context, index) {
-            final location = locations.locations[index];
+            final location = customLocations.customLocations[index];
             return ListTile(
               title: Text(location.locationName),
               subtitle: Text('${location.address}'),

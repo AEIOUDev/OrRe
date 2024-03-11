@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:orre/model/location_model.dart';
+import 'package:orre/provider/location/location_securestorage_provider.dart';
 
 import '../../model/user_info_model.dart';
 import '../../services/geocording/geocording_library_service.dart'; // 추가
@@ -20,6 +21,8 @@ final locationProvider = FutureProvider<UserLocationInfo>((ref) async {
   final position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high);
 
+  print(position.latitude);
+
   // 권한이 허용되었을 때 도로명 주소 변환 로직
   String? placemarks = await getAddressFromLatLngLibrary(
       position.latitude, position.longitude, 4, true);
@@ -28,13 +31,15 @@ final locationProvider = FutureProvider<UserLocationInfo>((ref) async {
   if (placemarks == null) {
     return UserLocationInfo.cannotFindUserLocation();
   } else {
+    final locationInfo = LocationInfo(
+        locationName: 'nowLocation',
+        address: placemarks,
+        latitude: position.latitude,
+        longitude: position.longitude);
+    ref.read(locationListProvider.notifier).updateNowLocation(locationInfo);
     return UserLocationInfo(
       isPermissionGranted: true,
-      locationInfo: LocationInfo(
-          locationName: 'nowLocation',
-          address: placemarks,
-          latitude: position.latitude,
-          longitude: position.longitude),
+      locationInfo: locationInfo,
     );
   }
 });

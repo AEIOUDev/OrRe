@@ -129,7 +129,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
                           final length = ref
                               .watch(locationListProvider.notifier)
                               .state
-                              .locations
+                              .customLocations
                               .length;
 
                           // getAddressFromLatLng를 비동기적으로 호출
