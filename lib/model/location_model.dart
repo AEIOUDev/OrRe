@@ -30,29 +30,25 @@ class LocationInfo {
 
 // 새로운 상태 클래스 정의
 class LocationState {
-  final List<LocationInfo> locations;
-  final LocationInfo? selectedLocation;
   final LocationInfo? nowLocation;
-  final bool isDuplicate;
+  final LocationInfo? selectedLocation;
+  final List<LocationInfo> customLocations;
 
   LocationState({
-    this.locations = const [],
-    this.selectedLocation,
     this.nowLocation,
-    this.isDuplicate = false,
+    this.selectedLocation,
+    this.customLocations = const [],
   });
 
   LocationState copyWith({
-    List<LocationInfo>? locations,
-    LocationInfo? selectedLocation,
     LocationInfo? nowLocation,
-    bool? isDuplicate,
+    LocationInfo? selectedLocation,
+    List<LocationInfo>? customLocations,
   }) {
     return LocationState(
-      locations: locations ?? this.locations,
-      selectedLocation: selectedLocation ?? this.selectedLocation,
       nowLocation: nowLocation ?? this.nowLocation,
-      isDuplicate: isDuplicate ?? this.isDuplicate,
+      selectedLocation: selectedLocation ?? this.selectedLocation,
+      customLocations: customLocations ?? this.customLocations,
     );
   }
 }

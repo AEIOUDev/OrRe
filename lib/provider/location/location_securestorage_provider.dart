@@ -15,48 +15,23 @@ class LocationListNotifier extends StateNotifier<LocationState> {
   // 앱 시작 시 현재 위치 정보를 로드하고 "nowLocation"을 업데이트
   Future<void> init(Ref ref) async {
     print("_init");
-    await loadLocations(); // 저장된 위치 정보 로드
-
-    // 현재 위치 정보를 가져와 "nowLocation" 업데이트
-    ref.read(locationProvider.future).then((userLocationInfo) async {
-      if (userLocationInfo.isPermissionGranted &&
-          userLocationInfo.locationInfo != null) {
-        LocationInfo currentLocation = userLocationInfo.locationInfo!;
-        if (currentLocation.address == "unknown") {
-          // 주소가 유효하지 않은 경우 기본 주소 사용
-          currentLocation = LocationInfo(
-            locationName: "nowLocation",
-            latitude: 0,
-            longitude: 0,
-            address: "기본 주소", // 기본 주소 설정
-          );
-        }
-        // 현재 위치를 "nowLocation"으로 업데이트
-        await updateNowLocation(currentLocation); // 현재 위치 업데이트
-      }
-    });
+    await loadLocations(); // 저장된 위치 정보 로드);
   }
 
   // 새로운 위치를 리스트에 추가
   Future<void> addLocation(LocationInfo locationInfo) async {
     print("addLocation");
-    if (state.locations.any(
-        (location) => location.locationName == locationInfo.locationName)) {
-      // 중복된 이름이 있을 경우 상태 업데이트
-      state = state.copyWith(isDuplicate: true);
-      return;
-    }
-    // 중복된 이름이 없을 경우 위치 추가 및 상태 업데이트
-    final updatedLocations = List<LocationInfo>.from(state.locations)
+
+    final updatedLocations = List<LocationInfo>.from(state.customLocations)
       ..add(locationInfo);
-    state = state.copyWith(locations: updatedLocations, isDuplicate: false);
+    state = state.copyWith(customLocations: updatedLocations);
     saveLocations();
   }
 
   // 지정된 이름의 위치 정보 제거
   Future<void> removeLocation(String locationName) async {
     print("removeLocation");
-    List<LocationInfo> updatedLocations = state.locations
+    List<LocationInfo> updatedLocations = state.customLocations
         .where((location) => location.locationName != locationName)
         .toList();
 
@@ -72,7 +47,8 @@ class LocationListNotifier extends StateNotifier<LocationState> {
             : state.selectedLocation;
 
     state = state.copyWith(
-        locations: updatedLocations, selectedLocation: updatedSelectedLocation);
+        customLocations: updatedLocations,
+        selectedLocation: updatedSelectedLocation);
 
     saveLocations(); // 변경 사항 저장
   }
@@ -80,7 +56,7 @@ class LocationListNotifier extends StateNotifier<LocationState> {
   // 위치 정보 리스트를 안전한 저장소에 저장
   Future<void> saveLocations() async {
     print("saveLocations");
-    List<String> stringList = state.locations
+    List<String> stringList = state.customLocations
         .map((location) => json.encode(location.toJson()))
         .toList();
     await _storage.write(key: 'savedLocations', value: json.encode(stringList));
@@ -104,17 +80,18 @@ class LocationListNotifier extends StateNotifier<LocationState> {
     }
 
     state = LocationState(
-        locations: loadedLocations, selectedLocation: initialSelectedLocation);
+        customLocations: loadedLocations,
+        selectedLocation: initialSelectedLocation);
   }
 
   // "nowLocation"을 현재 위치 정보로 업데이트하는 메서드
   Future<void> updateNowLocation(LocationInfo newLocation) async {
     print("updateNowLocation " + newLocation.locationName);
     // "nowLocation"을 찾습니다.
-    int index =
-        state.locations.indexWhere((loc) => loc.locationName == "nowLocation");
+    int index = state.customLocations
+        .indexWhere((loc) => loc.locationName == "nowLocation");
 
-    List<LocationInfo> updatedLocations = List.from(state.locations);
+    List<LocationInfo> updatedLocations = List.from(state.customLocations);
 
     if (index != -1) {
       // "nowLocation"이 이미 존재한다면, 해당 위치를 업데이트합니다.
@@ -126,7 +103,7 @@ class LocationListNotifier extends StateNotifier<LocationState> {
 
     // 상태를 업데이트합니다.
     state = state.copyWith(
-        locations: updatedLocations,
+        customLocations: updatedLocations,
         selectedLocation: newLocation,
         nowLocation: newLocation);
 
