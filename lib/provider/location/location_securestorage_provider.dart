@@ -3,19 +3,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../model/location_model.dart';
-import 'location_info_provider.dart';
+import 'now_location_provider.dart';
 
 class LocationListNotifier extends StateNotifier<LocationState> {
   LocationListNotifier(Ref ref) : super(LocationState()) {
-    init(ref);
+    _init(ref);
   }
 
-  final _storage = FlutterSecureStorage(); // 안전한 저장소 인스턴스
+  final _storage = FlutterSecureStorage();
 
-  // 앱 시작 시 현재 위치 정보를 로드하고 "nowLocation"을 업데이트
-  Future<void> init(Ref ref) async {
-    print("_init");
-    await loadLocations(); // 저장된 위치 정보 로드);
+  Future<void> _init(Ref ref) async {
+    await loadLocations();
+
+    // nowLocationProvider를 사용하여 현재 위치 업데이트
+    ref.read(nowLocationProvider.future).then((userLocationInfo) {
+      updateNowLocation(userLocationInfo.locationInfo!);
+    }).catchError((error) {
+      // 오류 처리
+      print("Error fetching now location: $error");
+    });
   }
 
   // 새로운 위치를 리스트에 추가
@@ -106,8 +112,7 @@ class LocationListNotifier extends StateNotifier<LocationState> {
         customLocations: updatedLocations,
         selectedLocation: newLocation,
         nowLocation: newLocation);
-
-    print(state.selectedLocation?.locationName);
+    print("locationListProvider : ${state.selectedLocation?.locationName}");
     // 변경된 위치 정보를 저장합니다.
     saveLocations();
   }

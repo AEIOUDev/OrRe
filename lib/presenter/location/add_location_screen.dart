@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/location_model.dart';
-import 'package:orre/provider/location/location_info_provider.dart';
+import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/services/geocording/geocording_library_service.dart';
 
@@ -31,7 +31,8 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
       body: Stack(
         children: [
           FutureBuilder(
-            future: ref.watch(locationProvider.future), // 위치 정보를 비동기적으로 가져옵니다.
+            future:
+                ref.watch(nowLocationProvider.future), // 위치 정보를 비동기적으로 가져옵니다.
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 // 데이터 로딩 중에는 로딩 인디케이터를 보여줍니다.

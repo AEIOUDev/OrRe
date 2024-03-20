@@ -1,43 +1,39 @@
 import 'package:flutter/widgets.dart';
 
 class MenuInfo {
-  final String menuCode;
-  final String menuName;
-  final String? menuDescription;
-  final double menuPrice;
-  final Image? menuImage;
+  final String name;
+  final String description;
+  final int price;
+  final String image;
   final bool isRecommended;
 
-  MenuInfo(
-      {required this.menuCode,
-      required this.menuName,
-      required this.menuDescription,
-      required this.menuPrice,
-      required this.menuImage,
-      required this.isRecommended});
+  MenuInfo({
+    required this.name,
+    required this.description,
+    required this.price,
+    required this.image,
+    required this.isRecommended,
+  });
+
+  factory MenuInfo.fromJson(Map<String, dynamic> json) {
+    return MenuInfo(
+      name: json['name'],
+      description: json['description'],
+      price: json['price'],
+      // Image.asset("test") 는 정적 방식으로 사용하므로, JSON에서 이미지 경로를 받아 Image 객체를 생성하는 방식으로 변경해야 합니다.
+      // 예: json['img']의 값을 기반으로 Image 객체 생성. 실제 경로는 JSON 데이터에 따라 다를 수 있습니다.
+      image: json['img'],
+      isRecommended: json['isRecommended'],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-        'menuCode': menuCode,
-        'menuName': menuName,
-        'menuDescription': menuDescription,
-        'menuPrice': menuPrice,
-        'menuImage': menuImage,
+        'name': name,
+        'description': description,
+        'price': price,
+        'image': image,
         'isRecommended': isRecommended,
       };
-
-  factory MenuInfo.fromJson(Map<String, dynamic> json) => MenuInfo(
-        menuCode: json['menuCode'],
-        menuName: json['menuName'],
-        menuDescription: json['menuDescription'],
-        menuPrice: json['menuPrice'],
-        menuImage: json['menuImage'],
-        isRecommended: json['isRecommended'],
-      );
 }
 
-class OrderedMenuList {
-  final MenuInfo menuInfo;
-  final double numberOfMenus;
-
-  OrderedMenuList({required this.menuInfo, required this.numberOfMenus});
-}
+class OrderedMenuList {}

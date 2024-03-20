@@ -6,8 +6,8 @@ import 'package:orre/provider/location/location_securestorage_provider.dart';
 import '../../model/user_info_model.dart';
 import '../../services/geocording/geocording_library_service.dart'; // 추가
 
-final locationProvider = FutureProvider<UserLocationInfo>((ref) async {
-  print("locationProvider");
+final nowLocationProvider = FutureProvider<UserLocationInfo>((ref) async {
+  print("nowLocationProvider");
   LocationPermission permission = await Geolocator.checkPermission();
   if (permission == LocationPermission.denied) {
     permission = await Geolocator.requestPermission();
@@ -29,14 +29,15 @@ final locationProvider = FutureProvider<UserLocationInfo>((ref) async {
 
   // 내 위치를 불러올 수 없을 때 팩토리 생성자 반환
   if (placemarks == null) {
+    print("cannot find user location");
     return UserLocationInfo.cannotFindUserLocation();
   } else {
+    print("nowLocationProvider : $placemarks");
     final locationInfo = LocationInfo(
         locationName: 'nowLocation',
         address: placemarks,
         latitude: position.latitude,
         longitude: position.longitude);
-    ref.read(locationListProvider.notifier).updateNowLocation(locationInfo);
     return UserLocationInfo(
       isPermissionGranted: true,
       locationInfo: locationInfo,

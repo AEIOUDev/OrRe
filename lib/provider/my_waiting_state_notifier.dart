@@ -63,11 +63,10 @@ class MyWaitingStateNotifier extends StateNotifier<List<UserWaitingStoreInfo>> {
             longitude: 127.1187733611165),
         menuList: [
           MenuInfo(
-              menuCode: "A01",
-              menuName: "라면",
-              menuDescription: "매콤짭짤",
-              menuPrice: 2000,
-              menuImage: Image.asset("test"),
+              name: "라면",
+              description: "매콤짭짤",
+              price: 2000,
+              image: "test",
               isRecommended: true)
         ],
       );
