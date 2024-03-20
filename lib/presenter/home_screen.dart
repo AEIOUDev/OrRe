@@ -2,23 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:orre/model/location_model.dart';
-import 'package:orre/provider/location/location_info_provider.dart';
+import 'package:orre/provider/location/now_location_provider.dart';
 
 import '../provider/location/location_securestorage_provider.dart';
-import '../provider/store_list_item.dart';
+import '../provider/stomp_client_future_provider.dart';
+import '../provider/store_location_list_state_notifier.dart';
 import 'location/location_manager_screen.dart';
+import 'store_info_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final nowLocationAsyncValue = ref.watch(locationProvider);
+    final nowLocationAsyncValue = ref.watch(nowLocationProvider);
 
     // AsyncValue를 사용하여 상태 처리
     return nowLocationAsyncValue.when(
       data: (data) {
+        print("nowLocationProvider value : " + data.locationInfo!.locationName);
         // 데이터가 정상적으로 로드되었을 때 UI를 표시
-        final location = ref.watch(locationListProvider); // 선택된 위치
-        return buildLoadedScreen(context, ref, location);
+        final location = ref.watch(locationListProvider
+            .select((value) => value.selectedLocation)); // 선택된 위치
+        final nowLocationName = location?.locationName;
+        print("nowLocationAsyncValue : " + (nowLocationName ?? ""));
+        return locationLoadedScreen(
+            context, ref, location ?? data.locationInfo!);
       },
       error: (error, stack) {
         // 에러가 발생했을 때 다시 시도하도록 유도하는 UI를 표시
@@ -29,7 +36,7 @@ class HomeScreen extends ConsumerWidget {
               children: [
                 Text('위치 정보를 불러오는데 실패했습니다.'),
                 ElevatedButton(
-                  onPressed: () => ref.refresh(locationProvider),
+                  onPressed: () => ref.refresh(nowLocationProvider),
                   child: Text('다시 시도하기'),
                 ),
               ],
@@ -43,25 +50,76 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
+  void _refreshCurrentLocation(BuildContext context, WidgetRef ref) async {
+    print("_refreshCurrentLocation");
+    try {
+      // nowLocationProvider를 refresh하고 결과를 기다립니다.
+      final userLocationInfo = await ref.refresh(nowLocationProvider.future);
+      // 성공적으로 위치 정보를 받았으면, 이를 LocationListProvider에 업데이트합니다.
+      ref
+          .read(locationListProvider.notifier)
+          .updateNowLocation(userLocationInfo.locationInfo!);
+    } catch (error) {
+      // 에러 처리...
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('현재 위치를 불러오는데 실패했습니다.')),
+      );
+    }
+  }
+
 // 데이터가 정상적으로 로드되었을 때 화면 구성
-  Widget buildLoadedScreen(
-      BuildContext context, WidgetRef ref, LocationState location) {
-    final storeList = ref.watch(stompClientProvider.notifier);
-    storeList.setupStompClient();
+  Widget locationLoadedScreen(
+      BuildContext context, WidgetRef ref, LocationInfo location) {
+    final stompClient = ref.watch(stompClientProvider);
+    print("locationLoadedScreen");
+
+    // AsyncValue를 사용하여 상태 처리
+    return stompClient.when(
+      data: (data) {
+        // 데이터가 정상적으로 로드되었을 때 UI를 표시
+        return stompLoadedScreen(context, ref, location);
+      },
+      error: (error, stack) {
+        print(error);
+        // 에러가 발생했을 때 다시 시도하도록 유도하는 UI를 표시
+        return Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('서버와 연결을 실패했습니다.'),
+                ElevatedButton(
+                  onPressed: () => ref.refresh(stompClientProvider),
+                  child: Text('다시 시도하기'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+      loading: () => Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
+
+  Widget stompLoadedScreen(
+      BuildContext context, WidgetRef ref, LocationInfo location) {
+    print("stompLoadedScreen");
+    ref
+        .read(storeInfoListNotifierProvider.notifier)
+        .sendMyLocation(location.latitude, location.longitude);
 
     return Scaffold(
       appBar: AppBar(
         title: PopupMenuButton<String>(
-          // 현재 선택된 위치의 이름을 표시
           child: Row(
-            mainAxisSize: MainAxisSize.min, // Row의 크기를 내용물에 맞게 조절합니다.
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(location.selectedLocation?.locationName ??
-                  '위치를 선택해주세요'), // 여기에 원하는 텍스트를 입력하세요.
-              Icon(Icons.arrow_drop_down), // arrow_drop_down 아이콘을 추가합니다.
+              Text(location.locationName),
+              Icon(Icons.arrow_drop_down),
             ],
           ),
-
           onSelected: (String result) {
             if (result == 'changeLocation') {
               Navigator.push(
@@ -73,10 +131,8 @@ class HomeScreen extends ConsumerWidget {
               });
             } else if (result == 'nowLocation') {
               // 현재 위치로 변경
-              ref.refresh(locationProvider);
-              ref
-                  .read(locationListProvider.notifier)
-                  .updateNowLocation(location.nowLocation as LocationInfo);
+              print("nowLocation selected!!!!!!!!!!!!");
+              _refreshCurrentLocation(context, ref);
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -111,31 +167,53 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // 가게 카테고리 섹션
-          Container(
-            height: 100,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: <Widget>[
-                CategoryItem(title: '식당'),
-                CategoryItem(title: '팝업 스토어'),
-                // 다른 카테고리 추가...
-              ],
+      body: Center(
+        child: Column(
+          children: [
+            Text('가게 목록', style: Theme.of(context).textTheme.headline6),
+            Expanded(
+              child: Consumer(
+                builder: (context, ref, child) {
+                  // storeInfoListNotifierProvider에서 상태를 구독
+                  final storeInfoList =
+                      ref.watch(storeInfoListNotifierProvider);
+
+                  return ListView.builder(
+                    itemCount: storeInfoList.length,
+                    itemBuilder: (context, index) {
+                      final storeInfo = storeInfoList[index];
+                      return InkWell(
+                        onTap: () {
+                          // 다음 페이지로 네비게이션
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => StoreDetailInfoWidget(
+                                      storeCode: storeInfo.storeCode)));
+                          print(
+                              'Navigating with storeCode: ${storeInfo.storeCode}');
+                        },
+                        child: ListTile(
+                          title: Text(
+                              '가게 ${storeInfo.storeCode}: ${storeInfo.storeName}'),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('주소: ${storeInfo.address}'),
+                              Text('거리: ${storeInfo.distance}'),
+                              Text('위도: ${storeInfo.latitude}'),
+                              Text('경도: ${storeInfo.longitude}'),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-          // 근처 가게 리스트
-          Expanded(
-            child: ListView(
-              children: <Widget>[
-                StoreItem(name: '가게 1', distance: '1km'),
-                StoreItem(name: '가게 2', distance: '2km'),
-                // 더 많은 가게 아이템...
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

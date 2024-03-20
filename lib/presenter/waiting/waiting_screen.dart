@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../provider/my_waiting_state_notifier.dart';
+import '../../provider/store_waiting_request_state_notifier.dart';
 import '../../services/nfc_services.dart';
 import '../store_waiting_widget.dart';
+import '../store_info_screen.dart';
 
 class WaitingScreen extends ConsumerStatefulWidget {
   @override
@@ -13,25 +14,26 @@ class WaitingScreen extends ConsumerStatefulWidget {
 class _WaitingScreenState extends ConsumerState<WaitingScreen> {
   @override
   Widget build(BuildContext context) {
-    final waitingList = ref.watch(myWaitingsProvider);
+    final listOfWaitingStoreProvider =
+        ref.watch(storeWaitingListProvider.notifier).state;
     final textField = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(title: Text('줄서기 진행 중인 목록')),
       body: ListView.builder(
-        itemCount: waitingList.length,
+        itemCount: listOfWaitingStoreProvider.length,
         itemBuilder: (context, index) {
-          final item = waitingList[index];
+          final item = listOfWaitingStoreProvider[index];
           return GestureDetector(
             onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (_) => WaitingInfoWidget(
-                        storeCode: item.storeInfo.storeCode))),
+                    builder: (_) =>
+                        StoreDetailInfoWidget(storeCode: item.storeCode))),
             child: ListTile(
               leading: Icon(Icons.store),
-              title: Text(item.storeInfo.storeName),
-              subtitle: Text('Waiting Number: ${item.waitingNumber}'),
+              title: Text(item.storeName),
+              subtitle: Text('Waiting Number: ${item.numberOfTeamsWaiting}'),
               trailing: IconButton(
                 icon: Icon(Icons.exit_to_app),
                 onPressed: () => showDialog(
@@ -55,14 +57,15 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
                         child: Text('확인'),
                         onPressed: () {
                           final enteredCode = int.parse(textField.text);
-                          final phoneNumber =
-                              item.userSimpleInfo.phoneNumber; // 접근 방법 수정
+                          // final phoneNumber =
+                          //     item.userSimpleInfo.phoneNumber; // 접근 방법 수정
+                          final phoneNumber = "01092566504";
                           final lastFourDigits = int.parse(
                               phoneNumber.substring(phoneNumber.length - 4));
 
                           if (enteredCode == lastFourDigits) {
                             ref
-                                .read(myWaitingsProvider.notifier)
+                                .read(storeWaitingListProvider.notifier)
                                 .removeWaiting(item);
                             Navigator.pop(context);
                           } else {
