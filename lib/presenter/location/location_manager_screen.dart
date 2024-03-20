@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../model/location_model.dart';
 import '../../provider/location/location_securestorage_provider.dart'; // 필요에 따라 경로 수정
-import '../../provider/location/location_info_provider.dart';
+import '../../provider/location/now_location_provider.dart';
 import 'add_location_screen.dart'; // 필요에 따라 경로 수정
 
 class LocationManagementScreen extends ConsumerStatefulWidget {
@@ -41,7 +41,7 @@ class _LocationManagementScreenState
 
   @override
   Widget build(BuildContext context) {
-    final myLocationAsyncValue = ref.watch(locationProvider);
+    final myLocationAsyncValue = ref.watch(nowLocationProvider);
     final customLocations = ref.watch(locationListProvider);
     final selectedLocation = customLocations.selectedLocation;
 

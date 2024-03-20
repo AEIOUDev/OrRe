@@ -7,8 +7,11 @@ import 'package:orre/model/location_model.dart';
 import 'package:orre/model/menu_info_model.dart';
 import 'package:orre/model/store_info_model.dart';
 import 'package:orre/model/user_info_model.dart';
+import 'package:orre/provider/store_info_state_notifier.dart';
 import '../presenter/main_screen.dart';
 import '../provider/my_waiting_state_notifier.dart';
+import '../provider/store_location_list_state_notifier.dart';
+import '../provider/store_waiting_request_state_notifier.dart';
 
 // NFC 스캔 가능 상태를 관리하는 StateProvider
 final nfcScanAvailableProvider = StateProvider<bool>((ref) => true);
@@ -82,6 +85,9 @@ String uriSwitcher(String uri, WidgetRef ref) {
     ref.read(selectedIndexProvider.notifier).state =
         pageIndex.waitingScreen.index;
     // 'waiting'을 포함하는 경우, 'w'을 붙여 반환합니다.
+    print(identifier);
+    ref.read(storeWaitingListProvider.notifier).sendStoreCode(identifier);
+    ref.read(storeInfoProvider.notifier).sendStoreCode(identifier);
     ref.read(myWaitingsProvider.notifier).requestWaiting(
         identifier,
         UserSimpleInfo(

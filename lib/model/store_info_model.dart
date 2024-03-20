@@ -30,10 +30,11 @@ class StoreInfo {
 
   factory StoreInfo.fromJson(Map<String, dynamic> json) {
     return StoreInfo(
-      storeCode: json['storeCode'],
+      storeCode: json['storeCode'].toString(),
       storeName: json['storeName'],
       storeInfoVersion: json['storeInfoVersion'],
-      locationInfo: LocationInfo.fromJson(json['locationInfo']),
+      locationInfo: LocationInfo(
+          locationName: "", latitude: 0, longitude: 0, address: ""),
       menuList: List<MenuInfo>.from(
         json['menuList'].map((menu) => MenuInfo.fromJson(menu)),
       ),

@@ -1,16 +1,16 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:orre/presenter/home_screen.dart';
-import 'package:url_strategy/url_strategy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'presenter/location/add_location_screen.dart';
-import 'presenter/main_screen.dart';
-import 'presenter/reservation.dart';
-import 'presenter/store_waiting_widget.dart';
+import 'package:url_strategy/url_strategy.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-import 'services/notifications_services.dart'; // Firebase 초기화 옵션을 포함한 파일
+
+import 'firebase_options.dart'; // Firebase 초기화 옵션을 포함한 파일
+
+import 'services/notifications_services.dart';
+
+import 'presenter/main_screen.dart';
+import 'presenter/store_waiting_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutter 엔진과 위젯 바인딩을 초기화
@@ -61,9 +61,9 @@ void main() async {
   runApp(ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(

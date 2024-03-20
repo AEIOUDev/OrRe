@@ -1,59 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../provider/store_waiting_state_notifier.dart';
+import '../provider/store_waiting_request_state_notifier.dart';
 
-class WaitingInfoWidget extends StatelessWidget {
+class WaitingInfoWidget extends ConsumerWidget {
   final String storeCode;
 
   WaitingInfoWidget({Key? key, required this.storeCode}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // storeWaitingListProvider에서 상태를 구독합니다.
+    final waitingInfos = ref.watch(storeWaitingListProvider);
+    // 특정 storeCode에 해당하는 StoreWaitingInfo를 찾습니다.
+    final waitingInfo = waitingInfos.firstWhere(
+      (info) => info.storeCode == storeCode,
+      orElse: () => StoreWaitingInfo(
+        storeCode: '',
+        storeName: '정보 없음',
+        storeInfoVersion: 0,
+        numberOfTeamsWaiting: 0,
+        estimatedWaitingTime: 0,
+        menuInfo: null,
+      ),
+    );
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 다른 UI 부분
         Text('Some other UI parts', style: TextStyle(fontSize: 20)),
         SizedBox(height: 8),
-        // Consumer를 사용하여 특정 부분만 리빌드되도록 함
-        Consumer(
-          builder: (context, ref, child) {
-            final waitingInfoAsyncValue =
-                ref.watch(storeWaitingInfoStreamProvider(storeCode));
-
-            return waitingInfoAsyncValue.when(
-              data: (waitingInfo) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Store Name: ${waitingInfo.storeInfo.storeName}',
-                      style: TextStyle(fontSize: 20)),
-                  SizedBox(height: 8),
-                  Text('Store Code: ${waitingInfo.storeInfo.storeCode}',
-                      style: TextStyle(fontSize: 20)),
-                  SizedBox(height: 8),
-                  Text(
-                      'Store Location: ${waitingInfo.storeInfo.locationInfo.address}',
-                      style: TextStyle(fontSize: 20)),
-                  SizedBox(height: 8),
-                  Text(
-                      'Now Entering Numbers: ${waitingInfo.nowEnteringNumbers.join(', ')}',
-                      style: TextStyle(fontSize: 16)),
-                  SizedBox(height: 8),
-                  Text(
-                      'Number of Teams Waiting: ${waitingInfo.numberOfTeamsWaiting}',
-                      style: TextStyle(fontSize: 16)),
-                  SizedBox(height: 8),
-                  Text(
-                      'Estimated Waiting Time: ${waitingInfo.estimatedWaitingTime} minutes',
-                      style: TextStyle(fontSize: 16)),
-                ],
-              ),
-              loading: () => Center(child: CircularProgressIndicator()),
-              error: (e, stack) => Center(child: Text('Error: $e')),
-            );
-          },
-        ),
+        // 특정 storeCode에 해당하는 정보를 표시합니다.
+        Text('Store Name: ${waitingInfo.storeName}',
+            style: TextStyle(fontSize: 20)),
+        SizedBox(height: 8),
+        Text('Store Code: ${waitingInfo.storeCode}',
+            style: TextStyle(fontSize: 20)),
+        SizedBox(height: 8),
+        Text('Number of Teams Waiting: ${waitingInfo.numberOfTeamsWaiting}',
+            style: TextStyle(fontSize: 16)),
+        SizedBox(height: 8),
+        Text(
+            'Estimated Waiting Time: ${waitingInfo.estimatedWaitingTime} minutes',
+            style: TextStyle(fontSize: 16)),
       ],
     );
   }
