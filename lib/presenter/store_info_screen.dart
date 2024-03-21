@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../provider/store_info_state_notifier.dart';
+import '../provider/websocket/store_info_state_notifier.dart';
 
 class StoreDetailInfoWidget extends ConsumerStatefulWidget {
-  final String storeCode;
+  final int storeCode;
 
   StoreDetailInfoWidget({Key? key, required this.storeCode}) : super(key: key);
 
@@ -16,6 +16,12 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
   void initState() {
     super.initState();
     ref.read(storeInfoProvider.notifier).sendStoreCode(widget.storeCode);
+  }
+
+  @override
+  void dispose() {
+    ref.read(storeInfoProvider.notifier).unSubscribe();
+    super.dispose();
   }
 
   @override
@@ -63,6 +69,60 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                 ],
               ),
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _startWaiting,
+        tooltip: '웨이팅 시작',
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+
+  void _startWaiting() {
+    // 웨이팅 시작을 위한 정보 입력 다이얼로그 표시
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("웨이팅 시작"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: InputDecoration(
+                  labelText: "이름",
+                ),
+              ),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: "전화번호",
+                ),
+              ),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: "인원 수",
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text("취소"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("확인"),
+              onPressed: () {
+                // 여기에서 입력된 정보를 처리합니다.
+                // 예를 들어, 웨이팅 요청을 서버에 보내는 로직을 구현할 수 있습니다.
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

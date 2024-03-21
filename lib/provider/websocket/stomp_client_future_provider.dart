@@ -1,14 +1,13 @@
 // stomp_client_provider.dart
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart';
+import 'package:orre/provider/websocket/store_waiting_info_list_state_notifier.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
-import '../services/websocket_services.dart';
+import '../../services/websocket_services.dart';
 import 'store_info_state_notifier.dart';
 import 'store_location_list_state_notifier.dart';
 
@@ -25,6 +24,7 @@ final stompClientProvider = FutureProvider<StompClient>((ref) async {
         // 필요한 초기화 수행, 여기서 client는 이미 정의되어 있으므로 사용 가능합니다.
         ref.read(storeInfoListNotifierProvider.notifier).setClient(client);
         ref.read(storeInfoProvider.notifier).setClient(client);
+        ref.read(storeWaitingInfoNotifierProvider.notifier).setClient(client);
         completer.complete(client);
       },
       beforeConnect: () async {
@@ -33,6 +33,8 @@ final stompClientProvider = FutureProvider<StompClient>((ref) async {
       onWebSocketError: (dynamic error) {
         print(error.toString());
         completer.completeError(error);
+        Future.delayed(Duration(seconds: 1)); // 2초 후 재시도
+        client.activate();
       },
     ),
   );

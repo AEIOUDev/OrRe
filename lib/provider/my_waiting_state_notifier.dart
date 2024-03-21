@@ -24,7 +24,7 @@ class MyWaitingStateNotifier extends StateNotifier<List<UserWaitingStoreInfo>> {
   }
 
   // 특정 UserWaitingStoreInfo의 numberOfUs를 업데이트
-  void updateNumberOfUs(String storeCode, int newNumberOfUs) {
+  void updateNumberOfUs(int storeCode, int newNumberOfUs) {
     state = [
       for (final info in state)
         // 한 가게에서 웨이팅을 한 번만 진행할 수 있기 때문에, 웨이팅 번호는 조건에 관여하지 않음
@@ -44,7 +44,7 @@ class MyWaitingStateNotifier extends StateNotifier<List<UserWaitingStoreInfo>> {
     ];
   }
 
-  void requestWaiting(String storeCode, UserSimpleInfo userSimpleInfo) {
+  void requestWaiting(int storeCode, UserSimpleInfo userSimpleInfo) {
     // 서버와의 웹소켓 통신을 모의하는 로직
     // 실제 애플리케이션에서는 여기서 웹소켓 통신 코드를 작성하여 서버에 웨이팅 합류 요청을 보내야 함
 

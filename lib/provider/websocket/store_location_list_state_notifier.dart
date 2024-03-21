@@ -4,7 +4,7 @@ import 'package:stomp_dart_client/stomp.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class StoreLocationInfo {
-  final String storeCode;
+  final int storeCode;
   final String storeName;
   final String address;
   final double distance;
@@ -22,7 +22,7 @@ class StoreLocationInfo {
 
   factory StoreLocationInfo.fromJson(Map<String, dynamic> json) {
     return StoreLocationInfo(
-      storeCode: json['storeCode'].toString(),
+      storeCode: json['storeCode'],
       storeName: json['storeName'],
       address: json['address'],
       distance: json['distance'],
@@ -57,6 +57,7 @@ class StoreInfoListNotifier extends StateNotifier<List<StoreLocationInfo>> {
       destination: '/topic/user/storeList/nearestStores',
       callback: (frame) {
         if (frame.body != null) {
+          print("subscribeToNearestStores : ${frame.body}");
           List<dynamic> result = json.decode(frame.body!);
           List<StoreLocationInfo> newList =
               result.map((item) => StoreLocationInfo.fromJson(item)).toList();
@@ -75,8 +76,20 @@ class StoreInfoListNotifier extends StateNotifier<List<StoreLocationInfo>> {
     );
   }
 
-  // StoreInfo를 제거하는 메소드
-  void removeStoreInfo(int storeCode) {
-    state = state.where((info) => info.storeCode != storeCode).toList();
+  void unSubscribe() {
+    dynamic unsubscribeFn = _client?.subscribe(
+        destination: '/topic/user/storeInfo',
+        headers: {},
+        callback: (frame) {
+          // Received a frame for this subscription
+          print(frame.body);
+        });
+    unsubscribeFn(unsubscribeHeaders: {});
+  }
+
+  @override
+  void dispose() {
+    unSubscribe();
+    super.dispose();
   }
 }

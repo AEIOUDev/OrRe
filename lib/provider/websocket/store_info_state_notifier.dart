@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
-import '../model/store_info_model.dart';
-
 class StoreDetailInfo {
   final int storeCode;
   final String storeName;
@@ -75,7 +73,7 @@ class StoreInfoNotifier extends StateNotifier<StoreDetailInfo?> {
   }
 
   // NFC 스캔 후 storeCode를 보내는 메서드
-  void sendStoreCode(String storeCode) {
+  void sendStoreCode(int storeCode) {
     print("StoreInfo : sendStoreCode : $storeCode");
     _client?.send(
       destination: '/app/user/storeInfo',
@@ -83,9 +81,20 @@ class StoreInfoNotifier extends StateNotifier<StoreDetailInfo?> {
     );
   }
 
+  void unSubscribe() {
+    dynamic unsubscribeFn = _client?.subscribe(
+        destination: '/topic/user/storeInfo',
+        headers: {},
+        callback: (frame) {
+          // Received a frame for this subscription
+          print(frame.body);
+        });
+    unsubscribeFn(unsubscribeHeaders: {});
+  }
+
   @override
   void dispose() {
-    _client?.deactivate();
+    unSubscribe();
     super.dispose();
   }
 }
