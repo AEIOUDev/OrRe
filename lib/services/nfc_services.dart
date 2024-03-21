@@ -3,16 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nfc_manager/nfc_manager.dart';
-import 'package:orre/model/location_model.dart';
-import 'package:orre/model/menu_info_model.dart';
-import 'package:orre/model/store_info_model.dart';
-import 'package:orre/model/user_info_model.dart';
-import 'package:orre/provider/websocket/store_info_state_notifier.dart';
 import '../presenter/main_screen.dart';
 import '../presenter/store_info_screen.dart';
-import '../provider/my_waiting_state_notifier.dart';
-import '../provider/websocket/store_location_list_state_notifier.dart';
-import '../provider/store_waiting_list_state_notifier.dart';
 
 // NFC 스캔 가능 상태를 관리하는 StateProvider
 final nfcScanAvailableProvider = StateProvider<bool>((ref) => true);
