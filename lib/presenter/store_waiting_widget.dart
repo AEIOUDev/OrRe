@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../provider/store_waiting_request_state_notifier.dart';
+import '../provider/store_waiting_list_state_notifier.dart';
 
 class WaitingInfoWidget extends ConsumerWidget {
-  final String storeCode;
+  final int storeCode;
 
   WaitingInfoWidget({Key? key, required this.storeCode}) : super(key: key);
 
@@ -15,7 +15,7 @@ class WaitingInfoWidget extends ConsumerWidget {
     final waitingInfo = waitingInfos.firstWhere(
       (info) => info.storeCode == storeCode,
       orElse: () => StoreWaitingInfo(
-        storeCode: '',
+        storeCode: 0,
         storeName: '정보 없음',
         storeInfoVersion: 0,
         numberOfTeamsWaiting: 0,

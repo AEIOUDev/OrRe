@@ -57,7 +57,7 @@ class MainScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (nfcAvailable) {
-            startNFCScan(ref);
+            startNFCScan(ref, context);
           } else {
             print(nfcAvailable);
           }

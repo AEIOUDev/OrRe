@@ -9,7 +9,7 @@ import 'package:stomp_dart_client/stomp_frame.dart';
 import '../services/websocket_services.dart';
 
 class StoreWaitingInfo {
-  final String storeCode;
+  final int storeCode;
   final String storeName;
   final int storeInfoVersion;
   final int numberOfTeamsWaiting;
@@ -27,7 +27,7 @@ class StoreWaitingInfo {
 
   factory StoreWaitingInfo.fromJson(Map<String, dynamic> json) {
     return StoreWaitingInfo(
-      storeCode: json['storeCode'].toString(),
+      storeCode: json['storeCode'],
       storeName: json['storeName'],
       storeInfoVersion: json['storeInfoVersion'],
       numberOfTeamsWaiting: json['numberOfTeamsWaiting'],
@@ -105,7 +105,7 @@ class StoreWaitingListNotifier extends StateNotifier<List<StoreWaitingInfo>> {
   }
 
   // NFC 스캔 후 storeCode를 보내는 메서드
-  void sendStoreCode(String storeCode) {
+  void sendStoreCode(int storeCode) {
     print(storeCode);
     stompClient.send(
       destination: '/app/user/storeInfo',

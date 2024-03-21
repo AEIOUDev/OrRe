@@ -1,18 +1,21 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:orre/provider/websocket/store_waiting_info_list_state_notifier.dart';
 
 import '../../model/location_model.dart';
 import 'now_location_provider.dart';
 
 class LocationListNotifier extends StateNotifier<LocationState> {
-  LocationListNotifier(Ref ref) : super(LocationState()) {
-    _init(ref);
+  late Ref ref;
+  LocationListNotifier(Ref _ref) : super(LocationState()) {
+    ref = _ref;
+    _init();
   }
 
   final _storage = FlutterSecureStorage();
 
-  Future<void> _init(Ref ref) async {
+  Future<void> _init() async {
     await loadLocations();
 
     // nowLocationProvider를 사용하여 현재 위치 업데이트
@@ -109,16 +112,16 @@ class LocationListNotifier extends StateNotifier<LocationState> {
 
     // 상태를 업데이트합니다.
     state = state.copyWith(
-        customLocations: updatedLocations,
-        selectedLocation: newLocation,
-        nowLocation: newLocation);
+        customLocations: updatedLocations, nowLocation: newLocation);
     print("locationListProvider : ${state.selectedLocation?.locationName}");
+    selectLocation(newLocation);
     // 변경된 위치 정보를 저장합니다.
     saveLocations();
   }
 
   // 선택된 위치를 업데이트하는 메서드
   void selectLocation(LocationInfo location) {
+    ref.read(storeWaitingInfoNotifierProvider.notifier).unSubscribeAll();
     print("selectLocation");
     print(location.locationName);
     state = state.copyWith(selectedLocation: location);

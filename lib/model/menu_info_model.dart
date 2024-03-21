@@ -1,5 +1,3 @@
-import 'package:flutter/widgets.dart';
-
 class MenuInfo {
   final String name;
   final String description;
