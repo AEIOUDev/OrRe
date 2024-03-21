@@ -1,6 +1,5 @@
 // 요청자의 정보를 담는 모델
 import 'location_model.dart';
-import 'menu_info_model.dart';
 import 'store_info_model.dart';
 
 class UserInfo {
@@ -61,7 +60,7 @@ class UserWaitingStoreInfo {
 }
 
 class UserOrderingStoreInfo {
-  final String storeCode;
+  final int storeCode;
   final TableInfo tableInfo;
 
   UserOrderingStoreInfo({

@@ -76,7 +76,7 @@ class MyApp extends ConsumerWidget {
         // '/reservation/{가게코드}' 경로 처리
         if (uri.pathSegments.length == 2 &&
             uri.pathSegments.first == 'reservation') {
-          String storeCode = uri.pathSegments[1];
+          int storeCode = int.parse(uri.pathSegments[1]);
           return MaterialPageRoute(
               builder: (context) => WaitingInfoWidget(storeCode: storeCode));
         }

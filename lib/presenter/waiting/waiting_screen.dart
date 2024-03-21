@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../provider/store_waiting_request_state_notifier.dart';
-import '../../services/nfc_services.dart';
-import '../store_waiting_widget.dart';
+import '../../provider/store_waiting_list_state_notifier.dart';
 import '../store_info_screen.dart';
 
 class WaitingScreen extends ConsumerStatefulWidget {
@@ -14,8 +12,7 @@ class WaitingScreen extends ConsumerStatefulWidget {
 class _WaitingScreenState extends ConsumerState<WaitingScreen> {
   @override
   Widget build(BuildContext context) {
-    final listOfWaitingStoreProvider =
-        ref.watch(storeWaitingListProvider.notifier).state;
+    final listOfWaitingStoreProvider = ref.watch(storeWaitingListProvider);
     final textField = TextEditingController();
 
     return Scaffold(

@@ -16,7 +16,7 @@ class StoreService {
   };
 
   // storeCode를 사용하여 상점 정보를 가져오는 메서드
-  Map<String, dynamic>? getStoreInfo(String storeCode) {
+  Map<String, dynamic>? getStoreInfo(int storeCode) {
     return _stores[storeCode];
   }
 }

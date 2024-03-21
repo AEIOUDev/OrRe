@@ -1,8 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:orre/model/location_model.dart';
-import 'package:orre/provider/location/location_securestorage_provider.dart';
-
 import '../../model/user_info_model.dart';
 import '../../services/geocording/geocording_library_service.dart'; // 추가
 

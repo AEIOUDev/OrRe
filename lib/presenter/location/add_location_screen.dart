@@ -6,7 +6,7 @@ import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/services/geocording/geocording_library_service.dart';
 
-import '../../services/geocording/naver_map_services.dart';
+// import '../../services/geocording/naver_map_services.dart';
 
 // 마커 상태를 관리하는 프로바이더를 정의합니다. 처음에는 마커가 없으므로 null로 초기화합니다.
 final markerProvider = StateProvider<NMarker?>((ref) => null);
@@ -128,8 +128,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
                           final latitude = marker.position.latitude;
                           final longitude = marker.position.longitude;
                           final length = ref
-                              .watch(locationListProvider.notifier)
-                              .state
+                              .watch(locationListProvider)
                               .customLocations
                               .length;
 

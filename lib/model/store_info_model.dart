@@ -1,12 +1,11 @@
 import 'package:orre/model/location_model.dart';
-import 'package:orre/provider/my_waiting_state_notifier.dart';
 
 import 'menu_info_model.dart';
 import 'user_info_model.dart';
 
 // 모델
 class StoreInfo {
-  final String storeCode;
+  final int storeCode;
   final String storeName;
   final int storeInfoVersion;
   final LocationInfo locationInfo;
@@ -30,7 +29,7 @@ class StoreInfo {
 
   factory StoreInfo.fromJson(Map<String, dynamic> json) {
     return StoreInfo(
-      storeCode: json['storeCode'].toString(),
+      storeCode: json['storeCode'],
       storeName: json['storeName'],
       storeInfoVersion: json['storeInfoVersion'],
       locationInfo: LocationInfo(

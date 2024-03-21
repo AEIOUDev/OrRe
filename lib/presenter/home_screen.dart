@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
+import 'package:orre/provider/websocket/store_waiting_info_list_state_notifier.dart';
 
 import '../provider/location/location_securestorage_provider.dart';
-import '../provider/stomp_client_future_provider.dart';
-import '../provider/store_location_list_state_notifier.dart';
+import '../provider/websocket/stomp_client_future_provider.dart';
+import '../provider/websocket/store_location_list_state_notifier.dart';
 import 'location/location_manager_screen.dart';
 import 'store_info_screen.dart';
 
@@ -182,6 +182,30 @@ class HomeScreen extends ConsumerWidget {
                     itemCount: storeInfoList.length,
                     itemBuilder: (context, index) {
                       final storeInfo = storeInfoList[index];
+                      ref
+                          .read(storeWaitingInfoNotifierProvider.notifier)
+                          .subscribeToStoreWaitingInfo(storeInfo.storeCode);
+                      final storeWaitingInfo = ref.watch(
+                        storeWaitingInfoNotifierProvider.select((state) {
+                          // state를 StoreWaitingInfo의 리스트로 가정합니다.
+                          // storeInfo.storeCode와 일치하는 첫 번째 객체를 찾습니다.
+                          print("storeInfo.storeCode : ${storeInfo.storeCode}");
+                          return state.firstWhere(
+                            (storeWaitingInfo) =>
+                                storeWaitingInfo.storeCode ==
+                                storeInfo.storeCode,
+                            orElse: () => StoreWaitingInfo(
+                                storeCode: storeInfo.storeCode,
+                                waitingTeamList: [],
+                                enteringTeamList: [],
+                                estimatedWaitingTimePerTeam:
+                                    0), // 일치하는 객체가 없을 경우 0을 반환합니다.
+                          );
+                        }),
+                      );
+                      print(
+                          "storeWaitingInfo ${storeWaitingInfo.storeCode} : WaitingTeamLength ${storeWaitingInfo.waitingTeamList.length}");
+
                       return InkWell(
                         onTap: () {
                           // 다음 페이지로 네비게이션
@@ -190,8 +214,6 @@ class HomeScreen extends ConsumerWidget {
                               MaterialPageRoute(
                                   builder: (context) => StoreDetailInfoWidget(
                                       storeCode: storeInfo.storeCode)));
-                          print(
-                              'Navigating with storeCode: ${storeInfo.storeCode}');
                         },
                         child: ListTile(
                           title: Text(
@@ -203,6 +225,15 @@ class HomeScreen extends ConsumerWidget {
                               Text('거리: ${storeInfo.distance}'),
                               Text('위도: ${storeInfo.latitude}'),
                               Text('경도: ${storeInfo.longitude}'),
+                            ],
+                          ),
+                          trailing: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                  "대기팀 수: ${storeWaitingInfo.waitingTeamList.length}"),
+                              Text(
+                                  "예상 대기 시간: ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam}분"),
                             ],
                           ),
                         ),
