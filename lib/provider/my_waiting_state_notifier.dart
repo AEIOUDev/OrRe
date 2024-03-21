@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../model/location_model.dart';
@@ -79,6 +78,7 @@ class MyWaitingStateNotifier extends StateNotifier<List<UserWaitingStoreInfo>> {
         ));
 
         // UI에 성공 메시지 또는 웨이팅 정보 업데이트를 알리는 로직 구현 필요
+        // ignore: dead_code
       } else {
         // 합류 실패 시 에러 처리 로직 구현 필요
       }
