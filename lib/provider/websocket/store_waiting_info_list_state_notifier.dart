@@ -74,10 +74,10 @@ class StoreWaitingInfoListNotifier
           if (decodedBody is Map<String, dynamic>) {
             // 첫 번째 요소를 추출하고 StoreWaitingInfo 인스턴스로 변환
             var firstResult = StoreWaitingInfo.fromJson(decodedBody);
-            print("firstResult : ${firstResult.storeCode}");
-            print("firstResult : ${firstResult.enteringTeamList}");
-            print("firstResult : ${firstResult.waitingTeamList}");
-            print("firstResult : ${firstResult.estimatedWaitingTimePerTeam}");
+            // print("firstResult : ${firstResult.storeCode}");
+            // print("firstResult : ${firstResult.enteringTeamList}");
+            // print("firstResult : ${firstResult.waitingTeamList}");
+            // print("firstResult : ${firstResult.estimatedWaitingTimePerTeam}");
 
             // 이미 있는 storeCode인 경우, 해당 요소의 내용을 업데이트
             var existingIndex = state
@@ -90,7 +90,7 @@ class StoreWaitingInfoListNotifier
               state = [...state, firstResult];
             }
           }
-          print("state : $state");
+          // print("state : $state");
         }
       },
     );

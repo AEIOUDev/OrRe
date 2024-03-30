@@ -4,6 +4,8 @@ import 'package:orre/model/location_model.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/websocket/store_waiting_info_list_state_notifier.dart';
 
+import '../provider/home_screen/store_category_provider.dart';
+import '../provider/home_screen/store_list_sort_type_provider.dart';
 import '../provider/location/location_securestorage_provider.dart';
 import '../provider/websocket/stomp_client_future_provider.dart';
 import '../provider/websocket/store_location_list_state_notifier.dart';
@@ -12,6 +14,7 @@ import 'store_info_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   @override
+  // 위치 정보를 불러오는 프로바이더를 사용하여 화면을 구성
   Widget build(BuildContext context, WidgetRef ref) {
     final nowLocationAsyncValue = ref.watch(nowLocationProvider);
 
@@ -50,24 +53,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  void _refreshCurrentLocation(BuildContext context, WidgetRef ref) async {
-    print("_refreshCurrentLocation");
-    try {
-      // nowLocationProvider를 refresh하고 결과를 기다립니다.
-      final userLocationInfo = await ref.refresh(nowLocationProvider.future);
-      // 성공적으로 위치 정보를 받았으면, 이를 LocationListProvider에 업데이트합니다.
-      ref
-          .read(locationListProvider.notifier)
-          .updateNowLocation(userLocationInfo.locationInfo!);
-    } catch (error) {
-      // 에러 처리...
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('현재 위치를 불러오는데 실패했습니다.')),
-      );
-    }
-  }
-
-// 데이터가 정상적으로 로드되었을 때 화면 구성
+  // 위치 데이터가 정상적으로 로드되었을 때 가게 목록을 요청하는 화면을 구성
   Widget locationLoadedScreen(
       BuildContext context, WidgetRef ref, LocationInfo location) {
     final stompClient = ref.watch(stompClientProvider);
@@ -103,74 +89,47 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
+  // 가게 데이터가 정상적으로 로드되어 화면을 구성할 때
   Widget stompLoadedScreen(
       BuildContext context, WidgetRef ref, LocationInfo location) {
-    print("stompLoadedScreen");
-    ref
-        .read(storeInfoListNotifierProvider.notifier)
-        .sendMyLocation(location.latitude, location.longitude);
-
+    final nowCategory = ref.watch(selecteCategoryProvider);
     return Scaffold(
-      appBar: AppBar(
-        title: PopupMenuButton<String>(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(location.locationName),
-              Icon(Icons.arrow_drop_down),
-            ],
-          ),
-          onSelected: (String result) {
-            if (result == 'changeLocation') {
-              Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => LocationManagementScreen()))
-                  .then((_) {
-                // 위치 변경 후 HomeScreen으로 돌아왔을 때 필요한 로직 (예: 상태 업데이트)
-              });
-            } else if (result == 'nowLocation') {
-              // 현재 위치로 변경
-              print("nowLocation selected!!!!!!!!!!!!");
-              _refreshCurrentLocation(context, ref);
-            }
-          },
-          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-            PopupMenuItem<String>(
-              value: 'nowLocation',
-              child: Text('현재 위치'),
-            ),
-            PopupMenuItem<String>(
-              value: 'changeLocation',
-              child: Text('위치 변경하기'),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              // 위치 검색 로직
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.star),
-            onPressed: () {
-              // 즐겨찾기 페이지로 이동
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              // 설정 페이지로 이동
-            },
-          ),
-        ],
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: HomeScreenAppBar(location: location),
       ),
       body: Center(
         child: Column(
           children: [
-            Text('가게 목록', style: Theme.of(context).textTheme.headline6),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Column(children: [
+                Row(
+                  children: [
+                    CategoryItem(category: StoreCategory.all),
+                    CategoryItem(category: StoreCategory.korean),
+                    CategoryItem(category: StoreCategory.chinese),
+                    CategoryItem(category: StoreCategory.japanese),
+                  ],
+                ),
+                Row(
+                  children: [
+                    CategoryItem(category: StoreCategory.western),
+                    CategoryItem(category: StoreCategory.snack),
+                    CategoryItem(category: StoreCategory.cafe),
+                    CategoryItem(category: StoreCategory.etc),
+                  ],
+                ),
+              ]),
+            ),
+            Row(
+              children: [
+                Text(nowCategory.toKoKr(),
+                    style: Theme.of(context).textTheme.headline6),
+                Spacer(),
+                HomeScreenModalBottomSheet(location: location),
+              ],
+            ),
             Expanded(
               child: Consumer(
                 builder: (context, ref, child) {
@@ -182,61 +141,8 @@ class HomeScreen extends ConsumerWidget {
                     itemCount: storeInfoList.length,
                     itemBuilder: (context, index) {
                       final storeInfo = storeInfoList[index];
-                      ref
-                          .read(storeWaitingInfoNotifierProvider.notifier)
-                          .subscribeToStoreWaitingInfo(storeInfo.storeCode);
-                      final storeWaitingInfo = ref.watch(
-                        storeWaitingInfoNotifierProvider.select((state) {
-                          // state를 StoreWaitingInfo의 리스트로 가정합니다.
-                          // storeInfo.storeCode와 일치하는 첫 번째 객체를 찾습니다.
-                          print("storeInfo.storeCode : ${storeInfo.storeCode}");
-                          return state.firstWhere(
-                            (storeWaitingInfo) =>
-                                storeWaitingInfo.storeCode ==
-                                storeInfo.storeCode,
-                            orElse: () => StoreWaitingInfo(
-                                storeCode: storeInfo.storeCode,
-                                waitingTeamList: [],
-                                enteringTeamList: [],
-                                estimatedWaitingTimePerTeam:
-                                    0), // 일치하는 객체가 없을 경우 0을 반환합니다.
-                          );
-                        }),
-                      );
-                      print(
-                          "storeWaitingInfo ${storeWaitingInfo.storeCode} : WaitingTeamLength ${storeWaitingInfo.waitingTeamList.length}");
-
-                      return InkWell(
-                        onTap: () {
-                          // 다음 페이지로 네비게이션
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => StoreDetailInfoWidget(
-                                      storeCode: storeInfo.storeCode)));
-                        },
-                        child: ListTile(
-                          title: Text(
-                              '가게 ${storeInfo.storeCode}: ${storeInfo.storeName}'),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('주소: ${storeInfo.address}'),
-                              Text('거리: ${storeInfo.distance}'),
-                              Text('위도: ${storeInfo.latitude}'),
-                              Text('경도: ${storeInfo.longitude}'),
-                            ],
-                          ),
-                          trailing: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                  "대기팀 수: ${storeWaitingInfo.waitingTeamList.length}"),
-                              Text(
-                                  "예상 대기 시간: ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam}분"),
-                            ],
-                          ),
-                        ),
+                      return StoreItem(
+                        storeInfo: storeInfo,
                       );
                     },
                   );
@@ -250,38 +156,275 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class CategoryItem extends StatelessWidget {
-  final String title;
+class HomeScreenAppBar extends ConsumerWidget {
+  final LocationInfo location;
 
-  const CategoryItem({Key? key, required this.title}) : super(key: key);
+  const HomeScreenAppBar({Key? key, required this.location}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Chip(
-        label: Text(title),
-        backgroundColor: Colors.blue,
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref
+        .read(storeInfoListNotifierProvider.notifier)
+        .sendMyLocation(location.latitude, location.longitude);
+    return AppBar(
+      title: PopupMenuButton<String>(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(location.locationName),
+            Icon(Icons.arrow_drop_down),
+          ],
+        ),
+        onSelected: (String result) {
+          if (result == 'changeLocation') {
+            Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LocationManagementScreen()))
+                .then((_) {
+              // 위치 변경 후 HomeScreen으로 돌아왔을 때 필요한 로직 (예: 상태 업데이트)
+            });
+          } else if (result == 'nowLocation') {
+            // 현재 위치로 변경
+            print("nowLocation selected!!!!!!!!!!!!");
+            _refreshCurrentLocation(context, ref);
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+          PopupMenuItem<String>(
+            value: 'nowLocation',
+            child: Text('현재 위치'),
+          ),
+          PopupMenuItem<String>(
+            value: 'changeLocation',
+            child: Text('위치 변경하기'),
+          ),
+        ],
       ),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.search),
+          onPressed: () {
+            // 위치 검색 로직
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.star),
+          onPressed: () {
+            // 즐겨찾기 페이지로 이동
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.settings),
+          onPressed: () {
+            // 설정 페이지로 이동
+          },
+        ),
+      ],
+    );
+  }
+
+  // 현재 위치를 새로고침하는 메소드
+  void _refreshCurrentLocation(BuildContext context, WidgetRef ref) async {
+    print("_refreshCurrentLocation");
+    try {
+      // nowLocationProvider를 refresh하고 결과를 기다립니다.
+      final userLocationInfo = await ref.refresh(nowLocationProvider.future);
+      // 성공적으로 위치 정보를 받았으면, 이를 LocationListProvider에 업데이트합니다.
+      ref
+          .read(locationListProvider.notifier)
+          .updateNowLocation(userLocationInfo.locationInfo!);
+    } catch (error) {
+      // 에러 처리...
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('현재 위치를 불러오는데 실패했습니다.')),
+      );
+    }
+  }
+}
+
+class HomeScreenModalBottomSheet extends ConsumerWidget {
+  final LocationInfo location;
+  const HomeScreenModalBottomSheet({Key? key, required this.location})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final nowSortType = ref.watch(selecteSortTypeProvider);
+
+    return ElevatedButton(
+      onPressed: () {
+        showModalBottomSheet<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return Container(
+              color: Colors.white,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ListTile(
+                    title: Text(StoreListSortType.basic.toKoKr()),
+                    trailing: nowSortType == StoreListSortType.basic
+                        ? Icon(Icons.check, color: Colors.orange)
+                        : null,
+                    onTap: () {
+                      ref.read(selecteSortTypeProvider.notifier).state =
+                          StoreListSortType.basic;
+                      ref
+                          .read(storeInfoListNotifierProvider.notifier)
+                          .subscribeStoreList();
+                      ref
+                          .read(storeInfoListNotifierProvider.notifier)
+                          .sendMyLocation(
+                              location.latitude, location.longitude);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    title: Text(StoreListSortType.popular.toKoKr()),
+                    trailing: nowSortType == StoreListSortType.popular
+                        ? Icon(Icons.check, color: Colors.orange)
+                        : null,
+                    onTap: () {
+                      ref.read(selecteSortTypeProvider.notifier).state =
+                          StoreListSortType.popular;
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    title: Text(StoreListSortType.nearest.toKoKr()),
+                    trailing: nowSortType == StoreListSortType.nearest
+                        ? Icon(Icons.check, color: Colors.orange)
+                        : null,
+                    onTap: () {
+                      ref.read(selecteSortTypeProvider.notifier).state =
+                          StoreListSortType.nearest;
+                      ref
+                          .read(storeInfoListNotifierProvider.notifier)
+                          .subscribeStoreList();
+                      ref
+                          .read(storeInfoListNotifierProvider.notifier)
+                          .sendMyLocation(
+                              location.latitude, location.longitude);
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ListTile(
+                    title: Text(StoreListSortType.fast.toKoKr()),
+                    trailing: nowSortType == StoreListSortType.fast
+                        ? Icon(Icons.check, color: Colors.orange)
+                        : null,
+                    onTap: () {
+                      ref.read(selecteSortTypeProvider.notifier).state =
+                          StoreListSortType.fast;
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                    ),
+                    child: Text('닫기', style: TextStyle(color: Colors.black)),
+                    onPressed: () => Navigator.pop(context),
+                  )
+                ],
+              ),
+            );
+          },
+        );
+      },
+      child: Text(nowSortType.toKoKr()),
     );
   }
 }
 
-class StoreItem extends StatelessWidget {
-  final String name;
-  final String distance;
+class CategoryItem extends ConsumerWidget {
+  final StoreCategory category;
 
-  const StoreItem({Key? key, required this.name, required this.distance})
-      : super(key: key);
+  const CategoryItem({Key? key, required this.category}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(name),
-      subtitle: Text('거리: $distance'),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedTitle = ref.watch(selecteCategoryProvider);
+
+    return ButtonBar(
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            ref.read(selecteCategoryProvider.notifier).state = category;
+            print("category : " +
+                ref.read(selecteCategoryProvider.notifier).state.toKoKr());
+          },
+          child: Text(category.toKoKr()),
+          style: ElevatedButton.styleFrom(
+            backgroundColor:
+                selectedTitle == category ? Colors.blue : Colors.grey,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class StoreItem extends ConsumerWidget {
+  final StoreLocationInfo storeInfo;
+
+  const StoreItem({Key? key, required this.storeInfo}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref
+        .read(storeWaitingInfoNotifierProvider.notifier)
+        .subscribeToStoreWaitingInfo(storeInfo.storeCode);
+    final storeWaitingInfo = ref.watch(
+      storeWaitingInfoNotifierProvider.select((state) {
+        // state를 StoreWaitingInfo의 리스트로 가정합니다.
+        // storeInfo.storeCode와 일치하는 첫 번째 객체를 찾습니다.
+        // print("storeInfo.storeCode : ${storeInfo.storeCode}");
+        return state.firstWhere(
+          (storeWaitingInfo) =>
+              storeWaitingInfo.storeCode == storeInfo.storeCode,
+          orElse: () => StoreWaitingInfo(
+              storeCode: storeInfo.storeCode,
+              waitingTeamList: [],
+              enteringTeamList: [],
+              estimatedWaitingTimePerTeam: 0), // 일치하는 객체가 없을 경우 0을 반환합니다.
+        );
+      }),
+    );
+    return InkWell(
       onTap: () {
-        // 가게 상세 페이지로 이동
+        // 다음 페이지로 네비게이션
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    StoreDetailInfoWidget(storeCode: storeInfo.storeCode)));
       },
+      child: ListTile(
+        leading: Image.network(storeInfo.storeImageMain, width: 50, height: 50),
+        title: Text('가게 ${storeInfo.storeCode}: ${storeInfo.storeName}'),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Text('주소: ${storeInfo.address}'),
+            Text('거리: ${storeInfo.distance.round()}m'),
+            // Text('위도: ${storeInfo.latitude}'),
+            // Text('경도: ${storeInfo.longitude}'),
+            Text('소개: ${storeInfo.storeShortIntroduce}'),
+            Text("카테고리: ${storeInfo.storeCategory}"),
+          ],
+        ),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("대기팀 수: ${storeWaitingInfo.waitingTeamList.length}"),
+            Text(
+                "예상 대기 시간: ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam}분"),
+          ],
+        ),
+      ),
     );
   }
 }

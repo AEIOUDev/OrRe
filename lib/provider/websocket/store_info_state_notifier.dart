@@ -5,16 +5,22 @@ import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
 class StoreDetailInfo {
+  final String storeImageMain;
   final int storeCode;
   final String storeName;
+  final String storeIntroduce;
+  final String storeCategory;
   final int storeInfoVersion;
   final int numberOfTeamsWaiting;
   final int estimatedWaitingTime;
   final List<dynamic> menuInfo;
 
   StoreDetailInfo({
+    required this.storeImageMain,
     required this.storeCode,
     required this.storeName,
+    required this.storeIntroduce,
+    required this.storeCategory,
     required this.storeInfoVersion,
     required this.numberOfTeamsWaiting,
     required this.estimatedWaitingTime,
@@ -23,8 +29,11 @@ class StoreDetailInfo {
 
   factory StoreDetailInfo.fromJson(Map<String, dynamic> json) {
     return StoreDetailInfo(
+      storeImageMain: json['storeImageMain'],
       storeCode: json['storeCode'],
       storeName: json['storeName'],
+      storeIntroduce: json['storeIntroduce'],
+      storeCategory: json['storeCategory'],
       storeInfoVersion: json['storeInfoVersion'],
       numberOfTeamsWaiting: json['numberOfTeamsWaiting'],
       estimatedWaitingTime: json['estimatedWaitingTime'],
@@ -42,6 +51,7 @@ final storeInfoProvider =
 // StateNotifier를 확장하여 StoreInfo 객체를 관리하는 클래스를 정의합니다.
 class StoreInfoNotifier extends StateNotifier<StoreDetailInfo?> {
   StompClient? _client; // StompClient 인스턴스를 저장할 내부 변수 추가
+  dynamic _unsubscribeFn; // 구독 해제 함수를 저장할 변수 추가
 
   StoreInfoNotifier(StoreDetailInfo? initialState) : super(initialState);
 
@@ -49,11 +59,10 @@ class StoreInfoNotifier extends StateNotifier<StoreDetailInfo?> {
   void setClient(StompClient client) {
     print("StoreInfo : setClient");
     _client = client; // 내부 변수에 StompClient 인스턴스 저장
-    subscribeToStoreInfo(); // 구독 시작
   }
 
-  void subscribeToStoreInfo() {
-    _client?.subscribe(
+  void subscribeToStoreInfo(int storeCode) {
+    _unsubscribeFn = _client?.subscribe(
       destination: '/topic/user/storeInfo',
       callback: (StompFrame frame) {
         if (frame.body != null) {
@@ -70,6 +79,7 @@ class StoreInfoNotifier extends StateNotifier<StoreDetailInfo?> {
       },
     );
     print("StoreInfo : subscribe!");
+    sendStoreCode(storeCode);
   }
 
   // NFC 스캔 후 storeCode를 보내는 메서드
@@ -82,14 +92,11 @@ class StoreInfoNotifier extends StateNotifier<StoreDetailInfo?> {
   }
 
   void unSubscribe() {
-    dynamic unsubscribeFn = _client?.subscribe(
-        destination: '/topic/user/storeInfo',
-        headers: {},
-        callback: (frame) {
-          // Received a frame for this subscription
-          print(frame.body);
-        });
-    unsubscribeFn(unsubscribeHeaders: {});
+    print("StoreInfo : unSubscribe");
+    if (_unsubscribeFn != null) {
+      _unsubscribeFn(unsubscribeHeaders: null);
+      _unsubscribeFn = null;
+    }
   }
 
   @override
