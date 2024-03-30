@@ -64,7 +64,6 @@ class StoreWaitingListNotifier extends StateNotifier<List<StoreWaitingInfo>> {
   void setupStompClient() {
     stompClient = StompClient(
       config: StompConfig(
-        // url: 'ws://192.168.1.214:8080/ws',
         url: WebSocketService.url,
         beforeConnect: () async {
           print('waiting to connect...');

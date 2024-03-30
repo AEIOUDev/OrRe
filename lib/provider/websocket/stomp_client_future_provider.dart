@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/provider/websocket/store_waiting_info_list_state_notifier.dart';
+import 'package:orre/provider/websocket/store_waiting_info_request_state_notifier.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
@@ -17,7 +18,6 @@ final stompClientProvider = FutureProvider<StompClient>((ref) async {
 
   client = StompClient(
     config: StompConfig(
-      // url: 'ws://192.168.1.214:8080/ws',
       url: WebSocketService.url,
       onConnect: (StompFrame frame) {
         print("connected");
@@ -25,6 +25,9 @@ final stompClientProvider = FutureProvider<StompClient>((ref) async {
         ref.read(storeInfoListNotifierProvider.notifier).setClient(client);
         ref.read(storeInfoProvider.notifier).setClient(client);
         ref.read(storeWaitingInfoNotifierProvider.notifier).setClient(client);
+        ref
+            .read(storeWaitingRequestNotifierProvider.notifier)
+            .setClient(client);
         completer.complete(client);
       },
       beforeConnect: () async {
