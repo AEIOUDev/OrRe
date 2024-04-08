@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'firebase_options.dart'; // Firebase 초기화 옵션을 포함한 파일
 
+import 'presenter/store_info_screen.dart';
 import 'services/notifications_services.dart';
 
 import 'presenter/main_screen.dart';
@@ -77,8 +78,11 @@ class MyApp extends ConsumerWidget {
         if (uri.pathSegments.length == 2 &&
             uri.pathSegments.first == 'reservation') {
           int storeCode = int.parse(uri.pathSegments[1]);
+          // return MaterialPageRoute(
+          //     builder: (context) => WaitingInfoWidget(storeCode: storeCode));
           return MaterialPageRoute(
-              builder: (context) => WaitingInfoWidget(storeCode: storeCode));
+              builder: (context) =>
+                  StoreDetailInfoWidget(storeCode: storeCode));
         }
         // 다른 경로는 여기에서 처리
         // 기본적으로 홈페이지로 리다이렉트
