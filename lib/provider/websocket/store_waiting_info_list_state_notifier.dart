@@ -44,8 +44,7 @@ final storeWaitingInfoNotifierProvider =
 class StoreWaitingInfoListNotifier
     extends StateNotifier<List<StoreWaitingInfo>> {
   StompClient? _client;
-  final Set<int> _subscribedStoreCodes = {};
-  Map<String, dynamic> subscriptions = {};
+  Map<int, dynamic> _subscriptions = {};
 
   StoreWaitingInfoListNotifier(List<StoreWaitingInfo> initialState)
       : super(initialState);
@@ -57,47 +56,39 @@ class StoreWaitingInfoListNotifier
   }
 
   void subscribeToStoreWaitingInfo(int storeCode) {
-    if (_subscribedStoreCodes.contains(storeCode)) {
-      print("StoreWaitingInfoList/${storeCode} : already subscribed!");
-      return;
-    } else {
-      print("subscribedStoreCodes : ${_subscribedStoreCodes}");
+    if (_subscriptions[storeCode] == null) {
+      print("subscribedStoreCodes : ${storeCode}");
       print("getWaitingTeamsList : ${getWaitingTeamsList(storeCode)}");
-    }
+      _subscriptions[storeCode] = _client?.subscribe(
+        destination: '/topic/user/dynamicStoreWaitingInfo/$storeCode',
+        callback: (frame) {
+          if (frame.body != null) {
+            print("subscribeToStoreWaitingInfo : ${frame.body}");
+            var decodedBody = json.decode(frame.body!); // JSON 문자열을 객체로 변환
+            if (decodedBody is Map<String, dynamic>) {
+              // 첫 번째 요소를 추출하고 StoreWaitingInfo 인스턴스로 변환
+              var firstResult = StoreWaitingInfo.fromJson(decodedBody);
 
-    var subscription = _client?.subscribe(
-      destination: '/topic/user/dynamicStoreWaitingInfo/$storeCode',
-      callback: (frame) {
-        if (frame.body != null) {
-          print("subscribeToStoreWaitingInfo : ${frame.body}");
-          var decodedBody = json.decode(frame.body!); // JSON 문자열을 객체로 변환
-          if (decodedBody is Map<String, dynamic>) {
-            // 첫 번째 요소를 추출하고 StoreWaitingInfo 인스턴스로 변환
-            var firstResult = StoreWaitingInfo.fromJson(decodedBody);
-            // print("firstResult : ${firstResult.storeCode}");
-            // print("firstResult : ${firstResult.enteringTeamList}");
-            // print("firstResult : ${firstResult.waitingTeamList}");
-            // print("firstResult : ${firstResult.estimatedWaitingTimePerTeam}");
-
-            // 이미 있는 storeCode인 경우, 해당 요소의 내용을 업데이트
-            var existingIndex = state
-                .indexWhere((info) => info.storeCode == firstResult.storeCode);
-            if (existingIndex != -1) {
-              state[existingIndex] = firstResult;
-              state = List.from(state);
-            } else {
-              // 새로운 요소를 상태에 추가
-              state = [...state, firstResult];
+              // 이미 있는 storeCode인 경우, 해당 요소의 내용을 업데이트
+              var existingIndex = state.indexWhere(
+                  (info) => info.storeCode == firstResult.storeCode);
+              if (existingIndex != -1) {
+                state[existingIndex] = firstResult;
+                state = List.from(state);
+              } else {
+                // 새로운 요소를 상태에 추가
+                state = [...state, firstResult];
+              }
             }
+            // print("state : $state");
           }
-          // print("state : $state");
-        }
-      },
-    );
-    subscriptions['$storeCode'] = subscription;
-    _subscribedStoreCodes.add(storeCode);
-    print("StoreWaitingInfoList/${storeCode} : subscribe!");
-    sendStoreCode(storeCode);
+        },
+      );
+      print("StoreWaitingInfoList/${storeCode} : subscribe!");
+      sendStoreCode(storeCode);
+    } else {
+      print("StoreWaitingInfoList/${storeCode} : already subscribed!");
+    }
   }
 
   // 사용자의 위치 정보를 서버로 전송하는 메소드
@@ -111,17 +102,14 @@ class StoreWaitingInfoListNotifier
 
   void unSubscribeAll() {
     print("unSubscribeAll");
-    subscriptions.forEach((storeCode, unsubscribeFn) {
+    _subscriptions.forEach((storeCode, unsubscribeFn) {
       unsubscribeFn();
       print("unSubscribeAll/${storeCode} : unsubscribe!");
     });
     // 모든 구독을 해제한 후, 구독 목록을 초기화
-    subscriptions.clear();
-    _subscribedStoreCodes.clear();
+    _subscriptions.clear();
 
-    print(
-        "subscribed_subscribedStoreCodesStoreCodes : ${_subscribedStoreCodes}");
-    print("subscribedsubscriptionsStoreCodes : ${subscriptions}");
+    print("subscribedsubscriptionsStoreCodes : ${_subscriptions}");
   }
 
   List<int> getWaitingTeamsList(int storeCode) {

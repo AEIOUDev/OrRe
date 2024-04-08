@@ -4,6 +4,7 @@ import 'package:orre/provider/home_screen/store_list_sort_type_provider.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../model/location_model.dart';
 import '../home_screen/store_category_provider.dart';
 
 class StoreLocationInfo {
@@ -53,6 +54,7 @@ final storeInfoListNotifierProvider =
 class StoreInfoListNotifier extends StateNotifier<List<StoreLocationInfo>> {
   StompClient? _client; // StompClient 인스턴스를 저장할 내부 변수 추가
   late final Ref _ref; // Add a field to hold the Ref
+  dynamic _unsubscribeFn;
 
   StoreInfoListNotifier(this._ref, List<StoreLocationInfo> initialState)
       : super(initialState);
@@ -67,24 +69,27 @@ class StoreInfoListNotifier extends StateNotifier<List<StoreLocationInfo>> {
   // 가게 정보를 구독하는 메소드
   void subscribeStoreList() {
     final sortType = _ref.read(selecteSortTypeProvider).toEn();
-    _client?.subscribe(
-      destination: '/topic/user/storeList/${sortType}',
-      callback: (frame) {
-        if (frame.body != null) {
-          print("subscribeToNearestStores : ${frame.body}");
-          List<dynamic> result = json.decode(frame.body!);
-          // List<StoreLocationInfo> newList =
-          //     result.map((item) => StoreLocationInfo.fromJson(item)).toList();
-          // state = newList; // 상태 업데이트
-          // 상태 업데이트 전에 선택된 카테고리에 따라 필터링
+    if (_unsubscribeFn == null) {
+      _unsubscribeFn = _client?.subscribe(
+        destination: '/topic/user/storeList/${sortType}',
+        callback: (frame) {
+          if (frame.body != null) {
+            print("subscribeStoreList To ${sortType} : ${frame.body}");
+            List<dynamic> result = json.decode(frame.body!);
+            // List<StoreLocationInfo> newList =
+            //     result.map((item) => StoreLocationInfo.fromJson(item)).toList();
+            // state = newList; // 상태 업데이트
+            // 상태 업데이트 전에 선택된 카테고리에 따라 필터링
 
-          categoryApply(result
-              .map((item) => StoreLocationInfo.fromJson(item))
-              .toList()); // 상태 업데이트 전에 선택된 카테고리에 따라 필터링
-        }
-      },
-    );
-    print("StoreInfoList : subscribe!");
+            categoryApply(result
+                .map((item) => StoreLocationInfo.fromJson(item))
+                .toList()); // 상태 업데이트 전에 선택된 카테고리에 따라 필터링
+          }
+        },
+      );
+    } else {
+      print("StoreInfoList : already subscribe!");
+    }
   }
 
   void categoryApply(List<StoreLocationInfo> storeList) {
@@ -108,17 +113,18 @@ class StoreInfoListNotifier extends StateNotifier<List<StoreLocationInfo>> {
     );
   }
 
+  void changeSortType(StoreListSortType sortType, LocationInfo location) {
+    unSubscribe();
+    _ref.read(selecteSortTypeProvider.notifier).state = sortType;
+    subscribeStoreList();
+    sendMyLocation(location.latitude, location.longitude);
+  }
+
   void unSubscribe() {
     final sortType = _ref.read(selecteSortTypeProvider).toEn();
     print("StoreInfoList : unSubscribe ${sortType}");
-    dynamic unsubscribeFn = _client?.subscribe(
-        destination: '/topic/user/storeInfo/${sortType}',
-        headers: {},
-        callback: (frame) {
-          // Received a frame for this subscription
-          print(frame.body);
-        });
-    unsubscribeFn(unsubscribeHeaders: {});
+    _unsubscribeFn(unsubscribeHeaders: null);
+    _unsubscribeFn = null;
   }
 
   @override
