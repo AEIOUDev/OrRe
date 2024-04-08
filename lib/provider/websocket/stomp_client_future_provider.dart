@@ -11,6 +11,7 @@ import 'package:stomp_dart_client/stomp_frame.dart';
 import '../../services/websocket_services.dart';
 import 'store_info_state_notifier.dart';
 import 'store_location_list_state_notifier.dart';
+import 'store_waiting_usercall_list_state_notifier.dart';
 
 final stompClientProvider = FutureProvider<StompClient>((ref) async {
   final completer = Completer<StompClient>();
@@ -28,14 +29,31 @@ final stompClientProvider = FutureProvider<StompClient>((ref) async {
         ref
             .read(storeWaitingRequestNotifierProvider.notifier)
             .setClient(client);
+        ref
+            .read(storeWaitingUserCallNotifierProvider.notifier)
+            .setClient(client);
         completer.complete(client);
       },
       beforeConnect: () async {
         print('Connecting to websocket...');
       },
       onWebSocketError: (dynamic error) {
+        print("websocket error");
         print(error.toString());
         completer.completeError(error);
+        Future.delayed(Duration(seconds: 1)); // 2초 후 재시도
+        client.activate();
+      },
+      onStompError: (dynamic error) {
+        print("stomp error");
+        print(error.toString());
+        completer.completeError(error);
+        Future.delayed(Duration(seconds: 1)); // 2초 후 재시도
+        client.activate();
+      },
+      onDisconnect: (_) {
+        print('disconnected');
+        completer.completeError('disconnected');
         Future.delayed(Duration(seconds: 1)); // 2초 후 재시도
         client.activate();
       },

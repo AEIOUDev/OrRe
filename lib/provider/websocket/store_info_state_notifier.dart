@@ -62,24 +62,30 @@ class StoreInfoNotifier extends StateNotifier<StoreDetailInfo?> {
   }
 
   void subscribeToStoreInfo(int storeCode) {
-    _unsubscribeFn = _client?.subscribe(
-      destination: '/topic/user/storeInfo',
-      callback: (StompFrame frame) {
-        if (frame.body != null) {
-          print("StoreInfo : subscribeToStoreInfo : ${frame.body}");
-          try {
-            // JSON 문자열을 파싱하여 StoreDetailInfo 객체로 변환
-            final newInfo = StoreDetailInfo.fromJson(json.decode(frame.body!));
-            // 상태를 업데이트합니다.
-            state = newInfo;
-          } catch (e) {
-            print("Error parsing store info: $e");
+    if (_unsubscribeFn == null) {
+      print("StoreInfo : subscribeToStoreInfo : $storeCode");
+      _unsubscribeFn = _client?.subscribe(
+        destination: '/topic/user/storeInfo',
+        callback: (StompFrame frame) {
+          if (frame.body != null) {
+            print("StoreInfo : subscribeToStoreInfo : ${frame.body}");
+            try {
+              // JSON 문자열을 파싱하여 StoreDetailInfo 객체로 변환
+              final newInfo =
+                  StoreDetailInfo.fromJson(json.decode(frame.body!));
+              // 상태를 업데이트합니다.
+              state = newInfo;
+            } catch (e) {
+              print("Error parsing store info: $e");
+            }
           }
-        }
-      },
-    );
-    print("StoreInfo : subscribe!");
-    sendStoreCode(storeCode);
+        },
+      );
+      print("StoreInfo : subscribe!");
+      sendStoreCode(storeCode);
+    } else {
+      print("StoreInfo : already subscribed");
+    }
   }
 
   // NFC 스캔 후 storeCode를 보내는 메서드

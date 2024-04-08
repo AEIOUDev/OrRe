@@ -268,18 +268,13 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                         ? Icon(Icons.check, color: Colors.orange)
                         : null,
                     onTap: () {
-                      ref.read(selecteSortTypeProvider.notifier).state =
-                          StoreListSortType.basic;
                       ref
                           .read(storeInfoListNotifierProvider.notifier)
-                          .subscribeStoreList();
-                      ref
-                          .read(storeInfoListNotifierProvider.notifier)
-                          .sendMyLocation(
-                              location.latitude, location.longitude);
+                          .changeSortType(StoreListSortType.basic, location);
                       Navigator.pop(context);
                     },
                   ),
+                  // 아직 기능 안 함
                   ListTile(
                     title: Text(StoreListSortType.popular.toKoKr()),
                     trailing: nowSortType == StoreListSortType.popular
@@ -297,18 +292,13 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                         ? Icon(Icons.check, color: Colors.orange)
                         : null,
                     onTap: () {
-                      ref.read(selecteSortTypeProvider.notifier).state =
-                          StoreListSortType.nearest;
                       ref
                           .read(storeInfoListNotifierProvider.notifier)
-                          .subscribeStoreList();
-                      ref
-                          .read(storeInfoListNotifierProvider.notifier)
-                          .sendMyLocation(
-                              location.latitude, location.longitude);
+                          .changeSortType(StoreListSortType.nearest, location);
                       Navigator.pop(context);
                     },
                   ),
+                  // 아직 기능 안 함
                   ListTile(
                     title: Text(StoreListSortType.fast.toKoKr()),
                     trailing: nowSortType == StoreListSortType.fast
