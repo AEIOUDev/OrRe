@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
+import 'package:http/http.dart' as http;
+
 class StoreDetailInfo {
   final String storeImageMain;
   final int storeCode;
@@ -39,6 +41,33 @@ class StoreDetailInfo {
       estimatedWaitingTime: json['estimatedWaitingTime'],
       menuInfo: json['menuInfo'],
     );
+  }
+}
+
+Future<StoreDetailInfo> fetchStoreInfo(
+    int storeCode, int storeTableNumber) async {
+  print('fetchStoreInfo');
+  final url = Uri.parse('https://orre.store/api/user/storeInfo');
+  final body = {
+    'storeCode': storeCode.toString(),
+    'storeTableNumber': storeTableNumber.toString(),
+  };
+  final jsonBody = json.encode(body);
+  print('jsonBody: $jsonBody');
+  final response = await http.post(
+    url,
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+    }, // Set the 'Content-Type' header to 'application/json; charset=UTF-8'
+    body: jsonBody,
+  );
+  if (response.statusCode == 200) {
+    final jsonBody = json.decode(utf8.decode(response.bodyBytes));
+    print('jsonBody: $jsonBody');
+    return StoreDetailInfo.fromJson(jsonBody);
+  } else {
+    print('response.statusCode: ${response.statusCode}');
+    throw Exception('Failed to fetch store info');
   }
 }
 

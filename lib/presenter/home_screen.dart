@@ -56,7 +56,7 @@ class HomeScreen extends ConsumerWidget {
   // 위치 데이터가 정상적으로 로드되었을 때 가게 목록을 요청하는 화면을 구성
   Widget locationLoadedScreen(
       BuildContext context, WidgetRef ref, LocationInfo location) {
-    final stompClient = ref.watch(stompClientProvider);
+    final stompClient = ref.watch(stompClientStreamProvider);
     print("locationLoadedScreen");
 
     // AsyncValue를 사용하여 상태 처리

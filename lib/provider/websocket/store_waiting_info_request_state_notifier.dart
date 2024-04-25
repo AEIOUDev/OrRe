@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:ffi';
 
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,17 +22,17 @@ class StoreWaitingRequest {
         message: '',
         waitingDetails: StoreWaitingRequestDetail(
           storeCode: 0,
-          phoneNumber: '',
           waiting: -1,
           status: -1,
+          phoneNumber: '',
           personNumber: -1,
         ),
       );
     }
 
     return StoreWaitingRequest(
-      success: json['success'] ?? false,
-      message: json['message'] ?? '',
+      success: json['success'],
+      message: json['message'],
       waitingDetails:
           StoreWaitingRequestDetail.fromJson(json['waitingDetails']),
     );
@@ -40,38 +40,47 @@ class StoreWaitingRequest {
 }
 
 class StoreWaitingRequestDetail {
-  final String phoneNumber;
   final int storeCode;
   final int waiting;
   final int status;
   final int personNumber;
+  final String phoneNumber;
 
   StoreWaitingRequestDetail({
     required this.storeCode,
-    required this.phoneNumber,
     required this.waiting,
     required this.status,
     required this.personNumber,
+    required this.phoneNumber,
   });
 
   factory StoreWaitingRequestDetail.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
       return StoreWaitingRequestDetail(
         storeCode: 0,
-        phoneNumber: '',
         waiting: -1,
         status: -1,
         personNumber: -1,
+        phoneNumber: '',
       );
     }
 
     return StoreWaitingRequestDetail(
-      storeCode: json['storeCode'] ?? 0,
-      phoneNumber: json['phoneNumber'] ?? '',
-      waiting: json['waiting'] ?? -1,
-      status: json['status'] ?? -1,
-      personNumber: json['personNumber'] ?? -1,
-    );
+        storeCode: json['storeCode'],
+        waiting: json['waiting'],
+        status: json['status'],
+        personNumber: json['personNumber'],
+        phoneNumber: json['phoneNumber']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'storeCode': storeCode,
+      'waiting': waiting,
+      'status': status,
+      'phoneNumber': phoneNumber,
+      'personNumber': personNumber,
+    };
   }
 }
 
@@ -83,19 +92,24 @@ final storeWaitingRequestNotifierProvider = StateNotifierProvider<
 class StoreWaitingRequestNotifier
     extends StateNotifier<List<StoreWaitingRequest>> {
   StompClient? _client;
-  late final Ref _ref;
+  // late final Ref _ref;
+
+  final _storage = FlutterSecureStorage();
+
   Map<int, dynamic> _subscribeWaiting = {}; // 구독 해제 함수를 저장할 변수 추가
   Map<int, dynamic> _subscribeWaitingCancle = {}; // 구독 해제 함수를 저장할 변수 추가
+  Map<int, StoreWaitingRequestDetail> _subscribeList = {};
 
   StoreWaitingRequestNotifier(Ref ref, List<StoreWaitingRequest> initialState)
       : super([]) {
-    _ref = ref;
+    // _ref = ref;
   }
 
   // StompClient 인스턴스를 설정하는 메소드
   void setClient(StompClient client) {
     print("StoreWaitingRequest : setClient");
     _client = client; // 내부 변수에 StompClient 인스턴스 저장
+    loadWaitingRequestList();
   }
 
   void subscribeToStoreWaitingRequest(
@@ -197,6 +211,8 @@ class StoreWaitingRequestNotifier
   void waitingAddProcess(StoreWaitingRequest result) {
     if (result.success) {
       state = [...state, result];
+      _subscribeList[result.waitingDetails.storeCode] = result.waitingDetails;
+      saveWaitingRequestList();
     } else {
       print(result.message);
     }
@@ -225,9 +241,9 @@ class StoreWaitingRequestNotifier
               message: '',
               waitingDetails: StoreWaitingRequestDetail(
                 storeCode: 0,
-                phoneNumber: '',
                 waiting: -1,
                 status: -1,
+                phoneNumber: '',
                 personNumber: -1,
               ),
             ));
@@ -243,11 +259,45 @@ class StoreWaitingRequestNotifier
 
   void unSubscribe(int storeCode) {
     print("waiting/make/$storeCode");
+    _subscribeList.remove(storeCode);
     _subscribeWaiting[storeCode](unsubscribeHeaders: null); // 구독 해제 함수 호출
     _subscribeWaiting.remove(storeCode); // 구독 해제 함수 삭제
 
     print("waiting/cancle/$storeCode");
     _subscribeWaitingCancle[storeCode](unsubscribeHeaders: null); // 구독 해제 함수 호출
     _subscribeWaitingCancle.remove(storeCode); // 구독 해제 함수 삭제
+    _subscribeWaiting.remove(storeCode); // 구독 해제 함수 삭제
+    saveWaitingRequestList();
+  }
+
+  // 위치 정보 리스트를 안전한 저장소에 저장
+  Future<void> saveWaitingRequestList() async {
+    print("saveWaitingRequestList");
+    String json_data = json.encode(_subscribeList
+        .map((key, value) => MapEntry(key.toString(), value.toJson())));
+    print('json_data : $json_data');
+    await _storage.write(key: 'savedWaitingRequestList', value: json_data);
+  }
+
+  // 저장소에서 위치 정보 리스트 로드
+  Future<void> loadWaitingRequestList() async {
+    print("loadWaitingRequestList");
+    String? stringListJson =
+        await _storage.read(key: 'savedWaitingRequestList');
+    print('stringListJson : $stringListJson');
+
+    if (stringListJson != null) {
+      Map<String, dynamic> decodedJson = json.decode(stringListJson);
+      Map<int, StoreWaitingRequestDetail> myMap = decodedJson.map((key, value) {
+        return MapEntry(
+            int.parse(key), StoreWaitingRequestDetail.fromJson(value));
+      });
+      print('myMap : $myMap');
+      _subscribeList = myMap;
+      _subscribeList.forEach((key, value) {
+        subscribeToStoreWaitingRequest(
+            key, value.phoneNumber, value.personNumber);
+      });
+    } else {}
   }
 }
