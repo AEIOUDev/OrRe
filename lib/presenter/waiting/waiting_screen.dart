@@ -23,6 +23,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
         itemCount: listOfWaitingStoreProvider.length,
         itemBuilder: (context, index) {
           final item = listOfWaitingStoreProvider[index];
+
           return WaitingStoreItem(item);
         },
       ),
@@ -38,12 +39,24 @@ class WaitingStoreItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     print("?????????????????????????????");
+    print(storeWaitingRequest.waitingDetails.storeCode);
     final textField = TextEditingController();
 
     final storeInfo = ref.watch(storeInfoProvider);
-    ref
-        .read(storeInfoProvider.notifier)
-        .subscribeToStoreInfo(storeWaitingRequest.waitingDetails.storeCode);
+    String storeName = '';
+
+    fetchStoreInfo(storeWaitingRequest.waitingDetails.storeCode, 2)
+        .then((value) {
+      storeName = value.storeName;
+      print('storeName: $storeName');
+
+      ref
+          .read(storeInfoProvider.notifier)
+          .subscribeToStoreInfo(storeWaitingRequest.waitingDetails.storeCode);
+      storeInfo?.storeCode == storeWaitingRequest.waitingDetails.storeCode
+          ? storeInfo?.storeName
+          : '로딩 중';
+    });
     return GestureDetector(
       onTap: () => Navigator.push(
           context,
@@ -52,7 +65,7 @@ class WaitingStoreItem extends ConsumerWidget {
                   storeCode: storeWaitingRequest.waitingDetails.storeCode))),
       child: ListTile(
         leading: Icon(Icons.store),
-        title: Text(storeInfo!.storeName),
+        title: Text(storeName),
         subtitle: Text(
             'Waiting Number: ${storeWaitingRequest.waitingDetails.waiting}'),
         trailing: IconButton(

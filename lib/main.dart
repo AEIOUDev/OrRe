@@ -11,7 +11,6 @@ import 'presenter/store_info_screen.dart';
 import 'services/notifications_services.dart';
 
 import 'presenter/main_screen.dart';
-import 'presenter/store_waiting_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutter 엔진과 위젯 바인딩을 초기화

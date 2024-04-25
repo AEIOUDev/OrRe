@@ -44,7 +44,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
     final myWaitingInfo = ref.watch(storeWaitingRequestNotifierProvider.select(
         (value) => value
             .where((element) =>
-                element.waitingDetails.storeCode == storeDetailInfo!.storeCode)
+                element.waitingDetails.storeCode == widget.storeCode)
             .firstOrNull));
     final nowWaiting = myWaitingInfo != null;
     print(nowWaiting);
@@ -67,7 +67,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                     children: [
                       StoreBannerAppBar(storeDetailInfo),
                       WaitingStatusWidget(
-                          storeCode: storeDetailInfo.storeCode,
+                          storeCode: widget.storeCode,
                           myWaitingInfo: myWaitingInfo),
                       Divider(),
                       StoreMenuListWidget(storeDetailInfo: storeDetailInfo),
@@ -77,7 +77,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                 ),
           floatingActionButton: storeDetailInfo != null
               ? WaitingButton(
-                  storeCode: storeDetailInfo.storeCode,
+                  storeCode: widget.storeCode,
                   waitingState: nowWaiting,
                 )
               : null,
