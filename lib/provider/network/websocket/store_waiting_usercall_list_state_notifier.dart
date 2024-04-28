@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../waiting_usercall_time_list_state_notifier.dart';
+import '../../waiting_usercall_time_list_state_notifier.dart';
 
 class UserCall {
   final int storeCode;

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:orre/provider/websocket/store_waiting_info_list_state_notifier.dart';
+import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 
 import '../../model/location_model.dart';
 import 'now_location_provider.dart';

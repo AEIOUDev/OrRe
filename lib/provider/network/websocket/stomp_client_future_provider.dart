@@ -2,13 +2,13 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/provider/websocket/store_waiting_info_list_state_notifier.dart';
-import 'package:orre/provider/websocket/store_waiting_info_request_state_notifier.dart';
+import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
+import 'package:orre/provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
-import '../../services/websocket_services.dart';
+import '../../../services/websocket_services.dart';
 import 'store_info_state_notifier.dart';
 import 'store_location_list_state_notifier.dart';
 import 'store_waiting_usercall_list_state_notifier.dart';

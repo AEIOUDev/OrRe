@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/location_model.dart';
+import 'package:orre/model/store_list_model.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
-import 'package:orre/provider/websocket/store_waiting_info_list_state_notifier.dart';
+import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 
 import '../provider/home_screen/store_category_provider.dart';
 import '../provider/home_screen/store_list_sort_type_provider.dart';
 import '../provider/location/location_securestorage_provider.dart';
-import '../provider/websocket/stomp_client_future_provider.dart';
-import '../provider/websocket/store_location_list_state_notifier.dart';
+import '../provider/network/websocket/stomp_client_future_provider.dart';
+import '../provider/store_list_state_notifier.dart';
 import 'location/location_manager_screen.dart';
 import 'store_info_screen.dart';
 
@@ -93,6 +94,12 @@ class HomeScreen extends ConsumerWidget {
   Widget stompLoadedScreen(
       BuildContext context, WidgetRef ref, LocationInfo location) {
     final nowCategory = ref.watch(selecteCategoryProvider);
+    final storeList = ref
+        .watch(storeListProvider)
+        .where((store) =>
+            store.storeCategory == nowCategory.toKoKr() ||
+            nowCategory == StoreCategory.all)
+        .toList();
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
@@ -131,21 +138,10 @@ class HomeScreen extends ConsumerWidget {
               ],
             ),
             Expanded(
-              child: Consumer(
-                builder: (context, ref, child) {
-                  // storeInfoListNotifierProvider에서 상태를 구독
-                  final storeInfoList =
-                      ref.watch(storeInfoListNotifierProvider);
-
-                  return ListView.builder(
-                    itemCount: storeInfoList.length,
-                    itemBuilder: (context, index) {
-                      final storeInfo = storeInfoList[index];
-                      return StoreItem(
-                        storeInfo: storeInfo,
-                      );
-                    },
-                  );
+              child: ListView.builder(
+                itemCount: storeList.length,
+                itemBuilder: (context, index) {
+                  return StoreItem(storeInfo: storeList[index]);
                 },
               ),
             ),
@@ -163,9 +159,16 @@ class HomeScreenAppBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref
-        .read(storeInfoListNotifierProvider.notifier)
-        .sendMyLocation(location.latitude, location.longitude);
+    final params = StoreListParameters(
+        sortType: ref.watch(selecteSortTypeProvider),
+        latitude: location.latitude,
+        longitude: location.longitude);
+    if (ref.read(storeListProvider.notifier).isExistRequest(params)) {
+      print("storeListProvider isExistRequest");
+    } else {
+      print("storeListProvider fetchStoreDetailInfo");
+      ref.read(storeListProvider.notifier).fetchStoreDetailInfo(params);
+    }
     return AppBar(
       title: PopupMenuButton<String>(
         child: Row(
@@ -268,9 +271,15 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                         ? Icon(Icons.check, color: Colors.orange)
                         : null,
                     onTap: () {
+                      ref.read(selecteSortTypeProvider.notifier).state =
+                          StoreListSortType.basic;
+                      final params = StoreListParameters(
+                          sortType: StoreListSortType.basic,
+                          latitude: location.latitude,
+                          longitude: location.longitude);
                       ref
-                          .read(storeInfoListNotifierProvider.notifier)
-                          .changeSortType(StoreListSortType.basic, location);
+                          .read(storeListProvider.notifier)
+                          .fetchStoreDetailInfo(params);
                       Navigator.pop(context);
                     },
                   ),
@@ -292,9 +301,15 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                         ? Icon(Icons.check, color: Colors.orange)
                         : null,
                     onTap: () {
+                      ref.read(selecteSortTypeProvider.notifier).state =
+                          StoreListSortType.nearest;
+                      final params = StoreListParameters(
+                          sortType: StoreListSortType.nearest,
+                          latitude: location.latitude,
+                          longitude: location.longitude);
                       ref
-                          .read(storeInfoListNotifierProvider.notifier)
-                          .changeSortType(StoreListSortType.nearest, location);
+                          .read(storeListProvider.notifier)
+                          .fetchStoreDetailInfo(params);
                       Navigator.pop(context);
                     },
                   ),
