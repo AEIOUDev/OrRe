@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:orre/provider/websocket/store_waiting_info_list_state_notifier.dart';
+import '../model/store_info_model.dart';
+import '../provider/store_detail_info_state_notifier.dart';
+import '../provider/network/websocket/store_waiting_info_list_state_notifier.dart';
+import '../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
+import '../provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import '../provider/waiting_usercall_time_list_state_notifier.dart';
-import '../provider/websocket/store_info_state_notifier.dart';
-import '../provider/websocket/store_waiting_info_request_state_notifier.dart';
-import '../provider/websocket/store_waiting_usercall_list_state_notifier.dart';
 
 class StoreDetailInfoWidget extends ConsumerStatefulWidget {
   final int storeCode;
@@ -21,26 +21,14 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
   void initState() {
     super.initState();
     print('storeCode: ${widget.storeCode}');
-    ref.read(storeInfoProvider.notifier).subscribeToStoreInfo(widget.storeCode);
-    ref
-        .read(storeWaitingInfoNotifierProvider.notifier)
-        .subscribeToStoreWaitingInfo(widget.storeCode);
+    ref.read(storeDetailInfoProvider.notifier).fetchStoreDetailInfo(
+          StoreInfoParams(widget.storeCode, 1),
+        );
   }
-
-  // @override
-  // void dispose() {
-  //   ref.read(storeInfoProvider.notifier).unSubscribe();
-  //   super.dispose();
-  // }
 
   @override
   Widget build(BuildContext context) {
-    final storeDetailInfo = ref.watch(storeInfoProvider);
-    // final storeWaitingInfo = ref
-    //     .watch(storeWaitingInfoNotifierProvider.select((value) =>
-    //         value.where((element) => element.storeCode == widget.storeCode)))
-    //     .first;
-
+    final storeDetailInfo = ref.watch(storeDetailInfoProvider);
     final myWaitingInfo = ref.watch(storeWaitingRequestNotifierProvider.select(
         (value) => value
             .where((element) =>
@@ -49,48 +37,40 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
     final nowWaiting = myWaitingInfo != null;
     print(nowWaiting);
 
-    return PopScope(
-      canPop: true,
-      onPopInvoked: (didPop) {
-        print('didPop: $didPop');
-        if (didPop) {
-          ref.read(storeInfoProvider.notifier).unSubscribe();
-        }
-      },
-      child: Scaffold(
-          body: storeDetailInfo == null
-              ? Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.only(bottom: 10.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      StoreBannerAppBar(storeDetailInfo),
-                      WaitingStatusWidget(
-                          storeCode: widget.storeCode,
-                          myWaitingInfo: myWaitingInfo),
-                      Divider(),
-                      StoreMenuListWidget(storeDetailInfo: storeDetailInfo),
-                      Divider(),
-                    ],
-                  ),
-                ),
-          floatingActionButton: storeDetailInfo != null
-              ? WaitingButton(
-                  storeCode: widget.storeCode,
-                  waitingState: nowWaiting,
-                )
-              : null,
-          bottomNavigationBar: SizedBox(
-            width: double.infinity,
-            height: 70,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('닫기'),
+    return Scaffold(
+      body: storeDetailInfo == StoreDetailInfo.nullValue()
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 10.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  StoreBannerAppBar(storeDetailInfo),
+                  // WaitingStatusWidget(
+                  //     storeCode: widget.storeCode,
+                  //     myWaitingInfo: myWaitingInfo),
+                  Divider(),
+                  StoreMenuListWidget(storeDetailInfo: storeDetailInfo),
+                  Divider(),
+                ],
+              ),
             ),
-          )),
+      floatingActionButton: storeDetailInfo != StoreDetailInfo.nullValue()
+          ? WaitingButton(
+              storeCode: widget.storeCode,
+              waitingState: nowWaiting,
+            )
+          : null,
+      bottomNavigationBar: SizedBox(
+        width: double.infinity,
+        height: 70,
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('닫기'),
+        ),
+      ),
     );
   }
 }
@@ -148,16 +128,17 @@ class StoreBannerAppBar extends ConsumerWidget {
             ),
           ),
           Center(
-            child: ClipOval(
-              child: Image.network(
-                storeDetailInfo.storeImageMain,
-                width: 200,
-                height: 200,
-                fit: BoxFit.cover,
-                alignment: Alignment.center,
-              ),
-            ),
-          ),
+              child: storeDetailInfo.storeImageMain != ''
+                  ? ClipOval(
+                      child: Image.network(
+                        storeDetailInfo.storeImageMain,
+                        width: 200,
+                        height: 200,
+                        fit: BoxFit.cover,
+                        alignment: Alignment.center,
+                      ),
+                    )
+                  : Icon(Icons.store, size: 100, color: Colors.white)),
         ],
       ),
     );

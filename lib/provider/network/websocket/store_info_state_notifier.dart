@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/services/https_services.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
@@ -47,7 +48,7 @@ class StoreDetailInfo {
 Future<StoreDetailInfo> fetchStoreInfo(
     int storeCode, int storeTableNumber) async {
   print('fetchStoreInfo');
-  final url = Uri.parse('https://orre.store/api/user/storeInfo');
+  final url = HttpsService.getUri('/api/user/storeInfo');
   final body = {
     'storeCode': storeCode.toString(),
     'storeTableNumber': storeTableNumber.toString(),

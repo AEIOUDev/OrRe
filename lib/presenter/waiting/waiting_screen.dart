@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../provider/websocket/store_info_state_notifier.dart';
-import '../../provider/websocket/store_waiting_info_request_state_notifier.dart';
+import '../../provider/network/websocket/store_info_state_notifier.dart';
+import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import '../store_info_screen.dart';
 
 class WaitingScreen extends ConsumerStatefulWidget {

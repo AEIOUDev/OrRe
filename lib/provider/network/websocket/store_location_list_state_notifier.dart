@@ -4,8 +4,8 @@ import 'package:orre/provider/home_screen/store_list_sort_type_provider.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../model/location_model.dart';
-import '../home_screen/store_category_provider.dart';
+import '../../../model/location_model.dart';
+import '../../home_screen/store_category_provider.dart';
 
 class StoreLocationInfo {
   final String storeImageMain;
