@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/store_list_model.dart';
 import 'package:orre/provider/home_screen/store_list_sort_type_provider.dart';
-import 'package:orre/services/https_services.dart';
+import 'package:orre/services/network/https_services.dart';
 
 class StoreListParameters {
   StoreListSortType sortType;
