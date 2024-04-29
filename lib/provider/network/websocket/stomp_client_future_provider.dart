@@ -8,7 +8,7 @@ import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
-import '../../../services/websocket_services.dart';
+import '../../../services/network/websocket_services.dart';
 import 'store_info_state_notifier.dart';
 import 'store_location_list_state_notifier.dart';
 import 'store_waiting_usercall_list_state_notifier.dart';

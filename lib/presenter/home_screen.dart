@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/location_model.dart';
@@ -408,7 +409,20 @@ class StoreItem extends ConsumerWidget {
                     StoreDetailInfoWidget(storeCode: storeInfo.storeCode)));
       },
       child: ListTile(
-        leading: Image.network(storeInfo.storeImageMain, width: 50, height: 50),
+        leading: CachedNetworkImage(
+          imageUrl: storeInfo.storeImageMain,
+          imageBuilder: (context, imageProvider) => Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          width: 60,
+          height: 60,
+          placeholder: (context, url) => CircularProgressIndicator(),
+          errorWidget: (context, url, error) => Icon(Icons.error),
+        ),
         title: Text('가게 ${storeInfo.storeCode}: ${storeInfo.storeName}'),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../model/store_info_model.dart';
@@ -38,6 +39,9 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
     print(nowWaiting);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.orange,
+      ),
       body: storeDetailInfo == StoreDetailInfo.nullValue()
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -46,9 +50,10 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   StoreBannerAppBar(storeDetailInfo),
-                  // WaitingStatusWidget(
-                  //     storeCode: widget.storeCode,
-                  //     myWaitingInfo: myWaitingInfo),
+                  Divider(),
+                  WaitingStatusWidget(
+                      storeCode: widget.storeCode,
+                      myWaitingInfo: myWaitingInfo),
                   Divider(),
                   StoreMenuListWidget(storeDetailInfo: storeDetailInfo),
                   Divider(),
@@ -83,62 +88,56 @@ class StoreBannerAppBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      height: 350,
-      child: Stack(
+      alignment: Alignment.topCenter,
+      color: Colors.orange,
+      child: Column(
         children: [
-          Container(
-            width: double.infinity,
-            height: 350,
-            color: Colors.orange,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 15.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    storeDetailInfo.storeName,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Colors.white,
-                        ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        storeDetailInfo.storeCategory,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white,
-                            ),
-                      ),
-                      Text(" | ",
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(color: Colors.white)),
-                      Text(
-                        storeDetailInfo.storeIntroduce,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white,
-                            ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Center(
-              child: storeDetailInfo.storeImageMain != ''
-                  ? ClipOval(
-                      child: Image.network(
-                        storeDetailInfo.storeImageMain,
-                        width: 200,
-                        height: 200,
+          CachedNetworkImage(
+              imageUrl: storeDetailInfo.storeImageMain,
+              imageBuilder: (context, imageProvider) => Container(
+                    width: MediaQuery.of(context).size.height / 5,
+                    height: MediaQuery.of(context).size.height / 5,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        image: imageProvider,
                         fit: BoxFit.cover,
-                        alignment: Alignment.center,
                       ),
-                    )
-                  : Icon(Icons.store, size: 100, color: Colors.white)),
+                    ),
+                  ),
+              placeholder: (context, url) => CircularProgressIndicator(),
+              errorWidget: (context, url, error) => Icon(Icons.store)),
+          SizedBox(height: 8),
+          Text(
+            storeDetailInfo.storeName,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Colors.white,
+                ),
+          ),
+          SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                storeDetailInfo.storeCategory,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white,
+                    ),
+              ),
+              Text(" | ",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: Colors.white)),
+              Text(
+                storeDetailInfo.storeIntroduce,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white,
+                    ),
+              ),
+            ],
+          ),
+          SizedBox(height: 8),
         ],
       ),
     );
@@ -248,9 +247,23 @@ class StoreMenuListWidget extends ConsumerWidget {
           itemBuilder: (context, index) {
             final menu = storeDetailInfo.menuInfo[index];
             return ListTile(
-              leading: menu['img'] != null
-                  ? Image.network(menu['img'], width: 50, height: 50)
-                  : null,
+              leading: CachedNetworkImage(
+                imageUrl: menu['img'],
+                imageBuilder: (context, imageProvider) => Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                    ),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                placeholder: (context, url) => CircularProgressIndicator(),
+                errorWidget: (context, url, error) => Icon(Icons.no_food),
+              ),
               title: Text(menu['menu']),
               subtitle: Text('${menu['price']}원 - ${menu['introduce']}'),
             );
@@ -310,6 +323,7 @@ class WaitingButton extends ConsumerWidget {
                     TextButton(
                       child: Text("확인"),
                       onPressed: () {
+                        Navigator.of(context).pop();
                         // 여기에서 입력된 정보를 처리합니다.
                         // 예를 들어, 웨이팅 취소 요청을 서버에 보내는 로직을 구현할 수 있습니다.
                         print("전화번호: ${phoneNumberController.text}");
