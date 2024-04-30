@@ -9,8 +9,6 @@ import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
 import '../../../services/network/websocket_services.dart';
-import 'store_info_state_notifier.dart';
-import 'store_location_list_state_notifier.dart';
 import 'store_waiting_usercall_list_state_notifier.dart';
 
 final stompClientProvider = FutureProvider<StompClient>((ref) async {
@@ -23,8 +21,6 @@ final stompClientProvider = FutureProvider<StompClient>((ref) async {
       onConnect: (StompFrame frame) {
         print("connected");
         // 필요한 초기화 수행, 여기서 client는 이미 정의되어 있으므로 사용 가능합니다.
-        ref.read(storeInfoListNotifierProvider.notifier).setClient(client);
-        ref.read(storeInfoProvider.notifier).setClient(client);
         ref.read(storeWaitingInfoNotifierProvider.notifier).setClient(client);
         ref
             .read(storeWaitingRequestNotifierProvider.notifier)
@@ -78,8 +74,6 @@ final stompClientStreamProvider = StreamProvider<StompClient>((ref) {
           print("connected");
           // 필요한 초기화 수행
           // 예를 들어, 여기서 다시 구독 로직을 실행
-          ref.read(storeInfoListNotifierProvider.notifier).setClient(client);
-          ref.read(storeInfoProvider.notifier).setClient(client);
           ref.read(storeWaitingInfoNotifierProvider.notifier).setClient(client);
           ref
               .read(storeWaitingRequestNotifierProvider.notifier)

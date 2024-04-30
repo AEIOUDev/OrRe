@@ -38,5 +38,5 @@ extension StoreListSortTypeExtension on StoreListSortType {
   }
 }
 
-final selecteSortTypeProvider =
+final selectSortTypeProvider =
     StateProvider<StoreListSortType>((ref) => StoreListSortType.basic);

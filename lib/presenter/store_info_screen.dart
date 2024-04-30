@@ -23,7 +23,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
     super.initState();
     print('storeCode: ${widget.storeCode}');
     ref.read(storeDetailInfoProvider.notifier).fetchStoreDetailInfo(
-          StoreInfoParams(widget.storeCode, 1),
+          StoreInfoParams(widget.storeCode, 0),
         );
   }
 
@@ -35,15 +35,13 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
             .where((element) =>
                 element.waitingDetails.storeCode == widget.storeCode)
             .firstOrNull));
-    final nowWaiting = myWaitingInfo != null;
-    print(nowWaiting);
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orange,
       ),
-      body: storeDetailInfo == StoreDetailInfo.nullValue()
-          ? Center(child: CircularProgressIndicator())
+      body: storeDetailInfo.storeCode == 0
+          ? Center(child: CircularProgressIndicator()) // TODO: 추후 에러 페이지로 변경
           : SingleChildScrollView(
               padding: const EdgeInsets.only(bottom: 10.0),
               child: Column(
@@ -63,7 +61,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
       floatingActionButton: storeDetailInfo != StoreDetailInfo.nullValue()
           ? WaitingButton(
               storeCode: widget.storeCode,
-              waitingState: nowWaiting,
+              waitingState: (myWaitingInfo != null),
             )
           : null,
       bottomNavigationBar: SizedBox(
@@ -87,6 +85,7 @@ class StoreBannerAppBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    print("storeDetailInfo" + {storeDetailInfo.storeName}.toString());
     return Container(
       alignment: Alignment.topCenter,
       color: Colors.orange,
@@ -248,7 +247,7 @@ class StoreMenuListWidget extends ConsumerWidget {
             final menu = storeDetailInfo.menuInfo[index];
             return ListTile(
               leading: CachedNetworkImage(
-                imageUrl: menu['img'],
+                imageUrl: menu.image,
                 imageBuilder: (context, imageProvider) => Container(
                   width: 60,
                   height: 60,
@@ -264,8 +263,8 @@ class StoreMenuListWidget extends ConsumerWidget {
                 placeholder: (context, url) => CircularProgressIndicator(),
                 errorWidget: (context, url, error) => Icon(Icons.no_food),
               ),
-              title: Text(menu['menu']),
-              subtitle: Text('${menu['price']}원 - ${menu['introduce']}'),
+              title: Text(menu.menu),
+              subtitle: Text('${menu.price}원 - ${menu.introduce}'),
             );
           },
           separatorBuilder: (context, index) => Divider() // 구분선 추가,

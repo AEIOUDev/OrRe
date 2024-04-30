@@ -94,7 +94,7 @@ class HomeScreen extends ConsumerWidget {
   // 가게 데이터가 정상적으로 로드되어 화면을 구성할 때
   Widget stompLoadedScreen(
       BuildContext context, WidgetRef ref, LocationInfo location) {
-    final nowCategory = ref.watch(selecteCategoryProvider);
+    final nowCategory = ref.watch(selectCategoryProvider);
     final storeList = ref
         .watch(storeListProvider)
         .where((store) =>
@@ -161,7 +161,7 @@ class HomeScreenAppBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final params = StoreListParameters(
-        sortType: ref.watch(selecteSortTypeProvider),
+        sortType: ref.watch(selectSortTypeProvider),
         latitude: location.latitude,
         longitude: location.longitude);
     if (ref.read(storeListProvider.notifier).isExistRequest(params)) {
@@ -254,7 +254,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final nowSortType = ref.watch(selecteSortTypeProvider);
+    final nowSortType = ref.watch(selectSortTypeProvider);
 
     return ElevatedButton(
       onPressed: () {
@@ -272,7 +272,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                         ? Icon(Icons.check, color: Colors.orange)
                         : null,
                     onTap: () {
-                      ref.read(selecteSortTypeProvider.notifier).state =
+                      ref.read(selectSortTypeProvider.notifier).state =
                           StoreListSortType.basic;
                       final params = StoreListParameters(
                           sortType: StoreListSortType.basic,
@@ -291,7 +291,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                         ? Icon(Icons.check, color: Colors.orange)
                         : null,
                     onTap: () {
-                      ref.read(selecteSortTypeProvider.notifier).state =
+                      ref.read(selectSortTypeProvider.notifier).state =
                           StoreListSortType.popular;
                       Navigator.pop(context);
                     },
@@ -302,7 +302,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                         ? Icon(Icons.check, color: Colors.orange)
                         : null,
                     onTap: () {
-                      ref.read(selecteSortTypeProvider.notifier).state =
+                      ref.read(selectSortTypeProvider.notifier).state =
                           StoreListSortType.nearest;
                       final params = StoreListParameters(
                           sortType: StoreListSortType.nearest,
@@ -321,7 +321,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                         ? Icon(Icons.check, color: Colors.orange)
                         : null,
                     onTap: () {
-                      ref.read(selecteSortTypeProvider.notifier).state =
+                      ref.read(selectSortTypeProvider.notifier).state =
                           StoreListSortType.fast;
                       Navigator.pop(context);
                     },
@@ -352,15 +352,15 @@ class CategoryItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedTitle = ref.watch(selecteCategoryProvider);
+    final selectedTitle = ref.watch(selectCategoryProvider);
 
     return ButtonBar(
       children: [
         ElevatedButton(
           onPressed: () {
-            ref.read(selecteCategoryProvider.notifier).state = category;
+            ref.read(selectCategoryProvider.notifier).state = category;
             print("category : " +
-                ref.read(selecteCategoryProvider.notifier).state.toKoKr());
+                ref.read(selectCategoryProvider.notifier).state.toKoKr());
           },
           child: Text(category.toKoKr()),
           style: ElevatedButton.styleFrom(

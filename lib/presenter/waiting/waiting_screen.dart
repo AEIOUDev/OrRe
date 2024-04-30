@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/provider/store_detail_info_state_notifier.dart';
 
-import '../../provider/network/websocket/store_info_state_notifier.dart';
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import '../store_info_screen.dart';
 
@@ -42,21 +42,8 @@ class WaitingStoreItem extends ConsumerWidget {
     print(storeWaitingRequest.waitingDetails.storeCode);
     final textField = TextEditingController();
 
-    final storeInfo = ref.watch(storeInfoProvider);
-    String storeName = '';
-
-    fetchStoreInfo(storeWaitingRequest.waitingDetails.storeCode, 2)
-        .then((value) {
-      storeName = value.storeName;
-      print('storeName: $storeName');
-
-      ref
-          .read(storeInfoProvider.notifier)
-          .subscribeToStoreInfo(storeWaitingRequest.waitingDetails.storeCode);
-      storeInfo?.storeCode == storeWaitingRequest.waitingDetails.storeCode
-          ? storeInfo?.storeName
-          : '로딩 중';
-    });
+    final storeInfo = ref.watch(storeDetailInfoProvider);
+    String storeName = storeInfo.storeName;
     return GestureDetector(
       onTap: () => Navigator.push(
           context,

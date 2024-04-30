@@ -28,5 +28,5 @@ extension StoreCategoryExtension on StoreCategory {
 }
 
 // 홈 화면의 카테고리를 관리하는 Provider
-final selecteCategoryProvider =
+final selectCategoryProvider =
     StateProvider<StoreCategory>((ref) => StoreCategory.all);
