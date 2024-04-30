@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/provider/network/websocket/store_location_list_state_notifier.dart';
 import 'package:orre/services/network/https_services.dart';
+import 'package:orre/model/store_list_model.dart';
 
 class storeListParameters {
   String sortType;
