@@ -41,6 +41,7 @@ class StoreListNotifier extends StateNotifier<List<StoreLocationInfo>> {
       if (paramsMap.containsKey(params)) {
         print(
             "Already requested!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        state = paramsMap[params]!;
         return;
       } else {
         String sortType = params.sortType.toEn();
@@ -66,6 +67,7 @@ class StoreListNotifier extends StateNotifier<List<StoreLocationInfo>> {
           final result = (jsonBody as List)
               .map((e) => StoreLocationInfo.fromJson(e))
               .toList();
+          paramsMap.clear();
           print('result: $result');
           paramsMap.addEntries([MapEntry(params, result)]);
           print(
@@ -73,6 +75,8 @@ class StoreListNotifier extends StateNotifier<List<StoreLocationInfo>> {
           state = result;
         } else {
           print('response.statusCode: ${response.statusCode}');
+          paramsMap.clear();
+          paramsMap.addEntries([MapEntry(params, [])]);
           state = [];
           throw Exception('Failed to fetch store info');
         }

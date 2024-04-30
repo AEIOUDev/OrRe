@@ -32,7 +32,9 @@ class StoreDetailInfoNotifier extends StateNotifier<StoreDetailInfo> {
       final response = await HttpsService.postRequest("/storeInfo", jsonBody);
       if (response.statusCode == 200) {
         final jsonBody = json.decode(utf8.decode(response.bodyBytes));
+        print("storeDetailInfoProvider(json 200): $jsonBody");
         final result = StoreDetailInfo.fromJson(jsonBody);
+        print("storeDetailInfoProvider(result): ${result.storeName}");
         state = result;
       } else {
         state = StoreDetailInfo.nullValue();

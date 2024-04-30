@@ -47,7 +47,7 @@ class UserLocationInfo {
 
 // App State로 사용할 "나의 대기정보"의 구성 멤버를 정의해준다
 class UserWaitingStoreInfo {
-  final StoreInfo storeInfo;
+  final StoreDetailInfo storeInfo;
   final int waitingNumber;
 
   final UserSimpleInfo userSimpleInfo;
