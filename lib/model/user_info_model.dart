@@ -7,20 +7,71 @@ class UserInfo {
   final String password;
   final String name;
   final String fcmToken;
-  final List<CreditInfo> creditInfo;
-  final List<UserWaitingStoreInfo> userWaitingStoreInfo;
-  final List<UserOrderingStoreInfo> userOrderingStoreInfo;
-  final UserLocationInfo userLocationInfo;
 
-  UserInfo(
-      {required this.phoneNumber,
-      required this.password,
-      required this.name,
-      required this.fcmToken,
-      required this.creditInfo,
-      required this.userWaitingStoreInfo,
-      required this.userOrderingStoreInfo,
-      required this.userLocationInfo});
+  UserInfo({
+    required this.phoneNumber,
+    required this.password,
+    required this.name,
+    required this.fcmToken,
+  });
+
+  UserInfo copyWith({
+    String? phoneNumber,
+    String? password,
+    String? name,
+    String? fcmToken,
+  }) {
+    return UserInfo(
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      password: password ?? this.password,
+      name: name ?? this.name,
+      fcmToken: fcmToken ?? this.fcmToken,
+    );
+  }
+
+  static UserInfo nullValue() {
+    return UserInfo(
+      phoneNumber: '',
+      password: '',
+      name: '',
+      fcmToken: '',
+    );
+  }
+
+  @override
+  operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is UserInfo &&
+        other.phoneNumber == phoneNumber &&
+        other.password == password &&
+        other.name == name &&
+        other.fcmToken == fcmToken;
+  }
+}
+
+class SignUpInfo {
+  final String phoneNumber;
+  final String password;
+  final String nickname;
+  final String authCode;
+
+  SignUpInfo({
+    required this.phoneNumber,
+    required this.password,
+    required this.nickname,
+    required this.authCode,
+  });
+}
+
+class SignInInfo {
+  final String phoneNumber;
+  final String password;
+
+  SignInInfo({
+    required this.phoneNumber,
+    required this.password,
+  });
 }
 
 class CreditInfo {}
@@ -84,7 +135,7 @@ class UserSimpleInfo {
   factory UserSimpleInfo.fromJson(Map<String, dynamic> json) {
     return UserSimpleInfo(
       name: json['name'],
-      phoneNumber: json['phoneNumber'],
+      phoneNumber: json['userPhoneNumber'],
       numberOfUs: json['numberOfUs'],
     );
   }

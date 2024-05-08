@@ -3,16 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/model/store_list_model.dart';
+import 'package:orre/model/store_waiting_info_model.dart';
+import 'package:orre/presenter/setting_screen.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
+import 'package:orre/provider/network/websocket/stomp_client_stream_provider.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 
 import '../provider/home_screen/store_category_provider.dart';
 import '../provider/home_screen/store_list_sort_type_provider.dart';
 import '../provider/location/location_securestorage_provider.dart';
-import '../provider/network/websocket/stomp_client_future_provider.dart';
 import '../provider/store_list_state_notifier.dart';
 import 'location/location_manager_screen.dart';
-import 'store_info_screen.dart';
+import 'storeinfo/store_info_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   @override
@@ -77,7 +79,7 @@ class HomeScreen extends ConsumerWidget {
               children: [
                 Text('서버와 연결을 실패했습니다.'),
                 ElevatedButton(
-                  onPressed: () => ref.refresh(stompClientProvider),
+                  onPressed: () => ref.refresh(stompClientStreamProvider),
                   child: Text('다시 시도하기'),
                 ),
               ],
@@ -102,51 +104,32 @@ class HomeScreen extends ConsumerWidget {
             nowCategory == StoreCategory.all)
         .toList();
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
         child: HomeScreenAppBar(location: location),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Column(children: [
-                Row(
-                  children: [
-                    CategoryItem(category: StoreCategory.all),
-                    CategoryItem(category: StoreCategory.korean),
-                    CategoryItem(category: StoreCategory.chinese),
-                    CategoryItem(category: StoreCategory.japanese),
-                  ],
-                ),
-                Row(
-                  children: [
-                    CategoryItem(category: StoreCategory.western),
-                    CategoryItem(category: StoreCategory.snack),
-                    CategoryItem(category: StoreCategory.cafe),
-                    CategoryItem(category: StoreCategory.etc),
-                  ],
-                ),
-              ]),
-            ),
-            Row(
-              children: [
-                Text(nowCategory.toKoKr(),
-                    style: Theme.of(context).textTheme.headline6),
-                Spacer(),
-                HomeScreenModalBottomSheet(location: location),
-              ],
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: storeList.length,
-                itemBuilder: (context, index) {
-                  return StoreItem(storeInfo: storeList[index]);
-                },
-              ),
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CategoryWidget(location: location),
+              ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: storeList.length,
+                  itemBuilder: (context, index) {
+                    return StoreItem(storeInfo: storeList[index]);
+                  },
+                  separatorBuilder: (context, index) {
+                    return Divider();
+                  }),
+              SizedBox(height: 10),
+            ],
+          ),
         ),
       ),
     );
@@ -170,62 +153,73 @@ class HomeScreenAppBar extends ConsumerWidget {
       print("storeListProvider fetchStoreDetailInfo");
       ref.read(storeListProvider.notifier).fetchStoreDetailInfo(params);
     }
-    return AppBar(
-      title: PopupMenuButton<String>(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(location.locationName),
-            Icon(Icons.arrow_drop_down),
+    return Container(
+        height: 300,
+        color: Colors.transparent,
+        child: AppBar(
+          title: PopupMenuButton<String>(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(location.locationName),
+                Icon(Icons.arrow_drop_down),
+              ],
+            ),
+            onSelected: (String result) {
+              if (result == 'changeLocation') {
+                Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LocationManagementScreen()))
+                    .then((_) {
+                  // 위치 변경 후 HomeScreen으로 돌아왔을 때 필요한 로직 (예: 상태 업데이트)
+                });
+              } else if (result == 'nowLocation') {
+                // 현재 위치로 변경
+                print("nowLocation selected!!!!!!!!!!!!");
+                _refreshCurrentLocation(context, ref);
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              PopupMenuItem<String>(
+                value: 'nowLocation',
+                child: Text('현재 위치'),
+              ),
+              PopupMenuItem<String>(
+                value: 'changeLocation',
+                child: Text('위치 변경하기'),
+              ),
+            ],
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                // 위치 검색 로직
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.star),
+              onPressed: () {
+                // 즐겨찾기 페이지로 이동
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                // 설정 페이지로 이동
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SettingScreen()));
+              },
+            ),
           ],
-        ),
-        onSelected: (String result) {
-          if (result == 'changeLocation') {
-            Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => LocationManagementScreen()))
-                .then((_) {
-              // 위치 변경 후 HomeScreen으로 돌아왔을 때 필요한 로직 (예: 상태 업데이트)
-            });
-          } else if (result == 'nowLocation') {
-            // 현재 위치로 변경
-            print("nowLocation selected!!!!!!!!!!!!");
-            _refreshCurrentLocation(context, ref);
-          }
-        },
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-          PopupMenuItem<String>(
-            value: 'nowLocation',
-            child: Text('현재 위치'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(30),
+            ),
           ),
-          PopupMenuItem<String>(
-            value: 'changeLocation',
-            child: Text('위치 변경하기'),
-          ),
-        ],
-      ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.search),
-          onPressed: () {
-            // 위치 검색 로직
-          },
-        ),
-        IconButton(
-          icon: Icon(Icons.star),
-          onPressed: () {
-            // 즐겨찾기 페이지로 이동
-          },
-        ),
-        IconButton(
-          icon: Icon(Icons.settings),
-          onPressed: () {
-            // 설정 페이지로 이동
-          },
-        ),
-      ],
-    );
+          backgroundColor: Colors.orange,
+        ));
   }
 
   // 현재 위치를 새로고침하는 메소드
@@ -341,6 +335,46 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
         );
       },
       child: Text(nowSortType.toKoKr()),
+    );
+  }
+}
+
+class CategoryWidget extends ConsumerWidget {
+  final LocationInfo location;
+  const CategoryWidget({Key? key, required this.location}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final nowCategory = ref.watch(selectCategoryProvider);
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CategoryItem(category: StoreCategory.all),
+            CategoryItem(category: StoreCategory.korean),
+            CategoryItem(category: StoreCategory.chinese),
+            CategoryItem(category: StoreCategory.japanese),
+          ],
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CategoryItem(category: StoreCategory.western),
+            CategoryItem(category: StoreCategory.snack),
+            CategoryItem(category: StoreCategory.cafe),
+            CategoryItem(category: StoreCategory.etc),
+          ],
+        ),
+        Row(
+          children: [
+            Text(nowCategory.toKoKr(),
+                style: Theme.of(context).textTheme.headline6),
+            Spacer(),
+            HomeScreenModalBottomSheet(location: location),
+          ],
+        ),
+      ],
     );
   }
 }
