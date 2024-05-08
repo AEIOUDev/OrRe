@@ -108,7 +108,6 @@ class StoreWaitingUserCallNotifier extends StateNotifier<List<UserCall>> {
   void unSubscribe(int storeCode, int waitingNumber) {
     print("unSubscribe /user/userCall/$storeCode/$waitingNumber");
     _subscribeUserCall[storeCode](unsubscribeHeaders: null); // 구독 해제 함수 호출
-    _subscribeUserCall[storeCode].remove(); // 구독 해제 함수 삭제
     _subscribeUserCall[storeCode] = null; // 구독 해제 함수 초기화
     print("_unsubscribeUserCall : ${_subscribeUserCall[storeCode]}");
 

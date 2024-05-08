@@ -4,7 +4,6 @@ import 'package:orre/presenter/home_screen.dart';
 
 import '../services/nfc_services.dart';
 import 'order/order_prepare_screen.dart';
-import 'user/onboarding_screen.dart';
 import 'waiting/waiting_screen.dart';
 
 final selectedIndexProvider = StateProvider<int>((ref) {
@@ -27,7 +26,6 @@ class MainScreen extends ConsumerWidget {
     final pages = [
       OrderPrepareScreen(),
       HomeScreen(),
-      // OnboardingScreen(),
       WaitingScreen(), // 예시로 Text 위젯 사용, 실제로는 페이지 위젯을 사용합니다.
     ];
 

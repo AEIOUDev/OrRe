@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/store_info_model.dart';
 
 import '../services/network/https_services.dart';
+import '../services/time/time_services.dart';
 
 class StoreInfoParams {
   int storeCode;
@@ -34,7 +35,7 @@ class StoreDetailInfoNotifier extends StateNotifier<StoreDetailInfo> {
         final jsonBody = json.decode(utf8.decode(response.bodyBytes));
         print("storeDetailInfoProvider(json 200): $jsonBody");
         final result = StoreDetailInfo.fromJson(jsonBody);
-        print("storeDetailInfoProvider(result): ${result.storeName}");
+
         state = result;
       } else {
         state = StoreDetailInfo.nullValue();
@@ -44,5 +45,18 @@ class StoreDetailInfoNotifier extends StateNotifier<StoreDetailInfo> {
       state = StoreDetailInfo.nullValue();
       throw Exception('Failed to fetch store info');
     }
+  }
+
+  void clearStoreDetailInfo() {
+    state = StoreDetailInfo.nullValue();
+  }
+
+  bool isCanReserve() {
+    final isRunTime =
+        isCurrentTimeBetween(state.openingTime, state.closingTime);
+    final isBreakTime =
+        isCurrentTimeBetween(state.breakStartTime, state.breakEndTime);
+
+    return isRunTime && !isBreakTime;
   }
 }
