@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import '../presenter/main_screen.dart';
-import '../presenter/store_info_screen.dart';
+import '../presenter/storeinfo/store_info_screen.dart';
 
 // NFC 스캔 가능 상태를 관리하는 StateProvider
 final nfcScanAvailableProvider = StateProvider<bool>((ref) => true);

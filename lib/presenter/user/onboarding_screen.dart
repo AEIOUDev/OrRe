@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/presenter/user/sign_in_screen.dart';
 import 'package:orre/presenter/user/sign_up_screen.dart';
 
 class OnboardingScreen extends ConsumerWidget {
@@ -52,6 +53,8 @@ class OnboardingScreen extends ConsumerWidget {
               child: ElevatedButton(
                 onPressed: () {
                   // 로그인 로직을 추가합니다.
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => SignInScreen()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFFFFB74D), // 버튼 배경색을 조절합니다.
@@ -67,7 +70,7 @@ class OnboardingScreen extends ConsumerWidget {
                 onPressed: () {
                   // 회원 가입 로직을 추가합니다.
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SingUpScreen()));
+                      MaterialPageRoute(builder: (context) => SignUpScreen()));
                 },
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.black,

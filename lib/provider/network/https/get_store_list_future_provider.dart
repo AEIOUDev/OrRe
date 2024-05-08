@@ -46,7 +46,6 @@ final storeListProvider =
     return result;
   } else {
     print('response.statusCode: ${response.statusCode}');
-    return [];
     throw Exception('Failed to fetch store info');
   }
 });

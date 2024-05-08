@@ -2,15 +2,18 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'firebase_options.dart'; // Firebase 초기화 옵션을 포함한 파일
-
-import 'presenter/store_info_screen.dart';
+import 'presenter/storeinfo/store_info_screen.dart';
+import 'presenter/user/onboarding_screen.dart';
 import 'services/notifications_services.dart';
 
 import 'presenter/main_screen.dart';
+
+import 'provider/userinfo/user_info_state_notifier.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutter 엔진과 위젯 바인딩을 초기화
@@ -64,10 +67,32 @@ void main() async {
 class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    print("MyApp build() called");
+
     return MaterialApp(
+      home: FutureBuilder(
+        future: startInitialScreen(ref),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.data == true) {
+              print("snapshot.data is True");
+              return MainScreen();
+            } else {
+              print("snapshot.data is False");
+              return OnboardingScreen();
+            }
+          } else {
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+        },
+      ),
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.orange,
       ),
       initialRoute: '/',
       onGenerateRoute: (settings) {
@@ -83,12 +108,13 @@ class MyApp extends ConsumerWidget {
               builder: (context) =>
                   StoreDetailInfoWidget(storeCode: storeCode));
         }
-        // 다른 경로는 여기에서 처리
-        // 기본적으로 홈페이지로 리다이렉트
-        // return MaterialPageRoute(builder: (context) => HomeScreen());
-        // return MaterialPageRoute(builder: (context) => AddLocationScreen());
-        return MaterialPageRoute(builder: (context) => MainScreen());
+        return null;
       },
     );
   }
+}
+
+Future<bool> startInitialScreen(WidgetRef ref) async {
+  ref.read(locationListProvider.notifier).loadLocations();
+  return await ref.read(userInfoProvider.notifier).loadUserInfo();
 }
