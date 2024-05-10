@@ -15,7 +15,7 @@
 //     _liveActivitiesPlugin.init(appGroupId: "group.orre.liveactivities");
 //     return Scaffold(
 //       appBar: AppBar(
-//         title: Text('Store Detail Info'),
+//         title: TextWidget('Store Detail Info'),
 //         actions: [
 //           IconButton(
 //               icon: Icon(Icons.edit_note_rounded),
@@ -50,56 +50,56 @@
 //       body: ListView(
 //         children: [
 //           ListTile(
-//             title: Text('Name'),
-//             subtitle: Text(storeDetailInfo.storeName),
+//             title: TextWidget('Name'),
+//             subtitle: TextWidget(storeDetailInfo.storeName),
 //           ),
 //           ListTile(
-//             title: Text('Category'),
-//             subtitle: Text(storeDetailInfo.storeCategory),
+//             title: TextWidget('Category'),
+//             subtitle: TextWidget(storeDetailInfo.storeCategory),
 //           ),
 //           ListTile(
-//             title: Text('Introduce'),
-//             subtitle: Text(storeDetailInfo.storeIntroduce),
+//             title: TextWidget('Introduce'),
+//             subtitle: TextWidget(storeDetailInfo.storeIntroduce),
 //           ),
 //           ListTile(
-//             title: Text('Number of Teams Waiting'),
-//             subtitle: Text(storeDetailInfo.numberOfTeamsWaiting.toString()),
+//             title: TextWidget('Number of Teams Waiting'),
+//             subtitle: TextWidget(storeDetailInfo.numberOfTeamsWaiting.toString()),
 //           ),
 //           ListTile(
-//             title: Text('Estimated Waiting Time'),
-//             subtitle: Text(storeDetailInfo.estimatedWaitingTime.toString()),
+//             title: TextWidget('Estimated Waiting Time'),
+//             subtitle: TextWidget(storeDetailInfo.estimatedWaitingTime.toString()),
 //           ),
 //           ListTile(
-//             title: Text('Opening Time'),
-//             subtitle: Text(storeDetailInfo.openingTime.toString()),
+//             title: TextWidget('Opening Time'),
+//             subtitle: TextWidget(storeDetailInfo.openingTime.toString()),
 //           ),
 //           ListTile(
-//             title: Text('Closing Time'),
-//             subtitle: Text(storeDetailInfo.closingTime.toString()),
+//             title: TextWidget('Closing Time'),
+//             subtitle: TextWidget(storeDetailInfo.closingTime.toString()),
 //           ),
 //           ListTile(
-//             title: Text('Last Order Time'),
-//             subtitle: Text(storeDetailInfo.lastOrderTime.toString()),
+//             title: TextWidget('Last Order Time'),
+//             subtitle: TextWidget(storeDetailInfo.lastOrderTime.toString()),
 //           ),
 //           ListTile(
-//             title: Text('Break Start Time'),
-//             subtitle: Text(storeDetailInfo.breakStartTime.toString()),
+//             title: TextWidget('Break Start Time'),
+//             subtitle: TextWidget(storeDetailInfo.breakStartTime.toString()),
 //           ),
 //           ListTile(
-//             title: Text('Break End Time'),
-//             subtitle: Text(storeDetailInfo.breakEndTime.toString()),
+//             title: TextWidget('Break End Time'),
+//             subtitle: TextWidget(storeDetailInfo.breakEndTime.toString()),
 //           ),
 //           ListTile(
-//             title: Text('Phone Number'),
-//             subtitle: Text(storeDetailInfo.storePhoneNumber),
+//             title: TextWidget('Phone Number'),
+//             subtitle: TextWidget(storeDetailInfo.storePhoneNumber),
 //           ),
 //           ListTile(
-//             title: Text('Location Info'),
-//             subtitle: Text(storeDetailInfo.locationInfo.toString()),
+//             title: TextWidget('Location Info'),
+//             subtitle: TextWidget(storeDetailInfo.locationInfo.toString()),
 //           ),
 //           ListTile(
-//             title: Text('Menu Info'),
-//             subtitle: Text(storeDetailInfo.menuInfo.toString()),
+//             title: TextWidget('Menu Info'),
+//             subtitle: TextWidget(storeDetailInfo.menuInfo.toString()),
 //           ),
 //         ],
 //       ),

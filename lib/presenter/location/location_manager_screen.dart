@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/widget/text/text_widget.dart';
 import '../../provider/location/location_securestorage_provider.dart'; // 필요에 따라 경로 수정
 import '../../provider/location/now_location_provider.dart';
 import 'add_location_screen.dart'; // 필요에 따라 경로 수정
@@ -17,16 +18,16 @@ class _LocationManagementScreenState
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('삭제하시겠습니까?'),
-        content: Text('선택한 위치를 삭제합니다.'),
+        title: TextWidget('삭제하시겠습니까?'),
+        content: TextWidget('선택한 위치를 삭제합니다.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text('확인'),
+            child: TextWidget('확인'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('취소'),
+            child: TextWidget('취소'),
           ),
         ],
       ),
@@ -40,13 +41,13 @@ class _LocationManagementScreenState
 
   @override
   Widget build(BuildContext context) {
-    final myLocationAsyncValue = ref.watch(nowLocationProvider);
+    final myLocation = ref.watch(nowLocationProvider);
     final customLocations = ref.watch(locationListProvider);
     final selectedLocation = customLocations.selectedLocation;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(selectedLocation?.locationName ?? '위치 목록'),
+        title: TextWidget(selectedLocation?.locationName ?? '위치 목록'),
         actions: [
           IconButton(
             icon: Icon(Icons.add),
@@ -73,32 +74,19 @@ class _LocationManagementScreenState
           ),
         ],
       ),
-      body: myLocationAsyncValue.when(
-        data: (myLocation) => ListView.builder(
-          itemCount: customLocations.customLocations.length,
-          itemBuilder: (context, index) {
-            final location = customLocations.customLocations[index];
-            return ListTile(
-              title: Text(location.locationName),
-              subtitle: Text('${location.address}'),
-              onTap: () {
-                ref
-                    .read(locationListProvider.notifier)
-                    .selectLocation(location);
-                Navigator.pop(context);
-              },
-              trailing: location.locationName != 'nowLocation'
-                  ? IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () =>
-                          _deleteLocation(location.locationName, ref),
-                    )
-                  : null, // "nowLocation" 항목에는 삭제 버튼이 없음
-            );
-          },
-        ),
-        loading: () => CircularProgressIndicator(),
-        error: (error, stack) => Text('오류 발생: $error'),
+      body: ListTile(
+        title: TextWidget(myLocation.locationName),
+        subtitle: TextWidget('${myLocation.address}'),
+        onTap: () {
+          ref.read(locationListProvider.notifier).selectLocation(myLocation);
+          Navigator.pop(context);
+        },
+        trailing: myLocation.locationName != 'nowLocation'
+            ? IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _deleteLocation(myLocation.locationName, ref),
+              )
+            : null, // "nowLocation" 항목에는 삭제 버튼이 없음
       ),
     );
   }
@@ -110,7 +98,7 @@ class NewLocationDialog extends StatelessWidget {
     TextEditingController _controller = TextEditingController();
 
     return AlertDialog(
-      title: Text('새 위치 추가'),
+      title: TextWidget('새 위치 추가'),
       content: TextField(
         controller: _controller,
         decoration: InputDecoration(
@@ -120,11 +108,11 @@ class NewLocationDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(_controller.text),
-          child: Text('추가'),
+          child: TextWidget('추가'),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('취소'),
+          child: TextWidget('취소'),
         ),
       ],
     );

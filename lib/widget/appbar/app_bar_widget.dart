@@ -1,32 +1,125 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/widget/text/text_widget.dart';
+import 'package:sliver_app_bar_builder/sliver_app_bar_builder.dart';
 
 class AppBarWidget extends ConsumerWidget {
   final String title;
   final double fontSize;
-  final double leadingWidth;
+  final double contentHeight;
+  final Widget? leading;
+  final List<Widget>? actions;
 
   const AppBarWidget({
     Key? key,
     required this.title,
     this.fontSize = 40,
-    this.leadingWidth = 300,
+    this.contentHeight = 400,
+    this.leading,
+    this.actions,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return AppBar(
-      leading: Padding(
-        padding: const EdgeInsets.only(left: 12.0),
-        child: Text(
-          title,
-          style: TextStyle(fontSize: fontSize),
-          textAlign: TextAlign.left,
-        ),
-      ),
-      backgroundColor: Colors.transparent,
-      toolbarHeight: fontSize,
-      leadingWidth: 300,
+    return SliverAppBarBuilder(
+      backgroundColorAll: Colors.orange,
+      backgroundColorBar: Colors.transparent,
+      debug: false,
+      barHeight: 50,
+      initialBarHeight: 50,
+      pinned: true,
+      leadingActions: [
+        (context, expandRatio, barHeight, overlapsContent) {
+          return Row(
+            children: [
+              leading ?? SizedBox(width: 20),
+            ],
+          );
+        }
+      ],
+      trailingActions: [
+        (context, expandRatio, barHeight, overlapsContent) {
+          return Row(
+            children: [
+              if (actions != null) ...actions!,
+            ],
+          );
+        }
+      ],
+      initialContentHeight: contentHeight,
+      contentBuilder: (
+        context,
+        expandRatio,
+        contentHeight,
+        centerPadding,
+        overlapsContent,
+      ) {
+        return Stack(
+          children: [
+            // All height image that fades away on scroll.
+            Opacity(
+              opacity: expandRatio,
+              child: ShaderMask(
+                shaderCallback: _shaderCallback,
+                blendMode: BlendMode.dstIn,
+                child: Stack(
+                  children: [
+                    Image.asset(
+                      "assets/images/waveform/wave_shadow.png",
+                      width: MediaQuery.of(context).size.width,
+                      fit: BoxFit.cover,
+                    ),
+                    Image.asset(
+                      "assets/images/waveform/wave.png",
+                      width: MediaQuery.of(context).size.width,
+                      fit: BoxFit.cover,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Using alignment and padding, centers text to center of bar.
+            Container(
+              alignment: Alignment.centerLeft,
+              height: contentHeight,
+              padding: centerPadding.copyWith(
+                left: 10 + (1 - expandRatio) * 40,
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: TextWidget(
+                  title,
+                  fontSize: 24 + expandRatio * 10,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  shadows: [
+                    Shadow(
+                      color: Color.lerp(
+                            Colors.black,
+                            Colors.transparent,
+                            1 - expandRatio,
+                          ) ??
+                          Colors.transparent,
+                      blurRadius: 10,
+                      offset: const Offset(4, 2),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
+  }
+
+  Shader _shaderCallback(Rect rect) {
+    return const LinearGradient(
+      begin: Alignment.bottomCenter,
+      end: Alignment.topCenter,
+      colors: [Colors.black, Colors.transparent],
+      stops: [0.6, 1],
+    ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
   }
 }

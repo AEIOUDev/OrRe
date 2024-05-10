@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/widget/text/text_widget.dart';
 
 class TextInputWidget extends ConsumerWidget {
   final String hintText;
@@ -46,18 +47,17 @@ class TextInputWidget extends ConsumerWidget {
         if (title != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: Text(
+            child: TextWidget(
               title!,
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orange),
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFFFBF52),
+              fontSize: 16,
               textAlign: TextAlign.left,
             ),
           ),
         TextFormField(
             autovalidateMode: AutovalidateMode.always,
-            validator: (text) => errorText(
+            validator: (text) => errorTextWidget(
                 text!, minLength, maxLength, isRequired,
                 isPassword:
                     (autofillHints?.contains(AutofillHints.password) == true)),
@@ -72,9 +72,18 @@ class TextInputWidget extends ConsumerWidget {
                 filled: true,
                 fillColor: Colors.white,
                 hintText: hintText,
+                hintStyle: TextStyle(
+                  fontFamily: 'Dovemayo_gothic',
+                ),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: Color(0xFFDFDFDF)),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color(0xFFFFBF52), // 입력을 받을 때의 테두리 색상
+                  ),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -111,7 +120,7 @@ class TextInputWidget extends ConsumerWidget {
               }
             },
             onChanged: (text) {
-              print(errorText(text, minLength, maxLength, isRequired,
+              print(errorTextWidget(text, minLength, maxLength, isRequired,
                   isPassword:
                       autofillHints?.contains(AutofillHints.password) == true));
             }),
@@ -119,12 +128,10 @@ class TextInputWidget extends ConsumerWidget {
           Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.fromLTRB(8, 8, 0, 0),
-            child: Text(
+            child: TextWidget(
               subTitle!,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.black,
-              ),
+              fontSize: 12,
+              color: Color(0xFF666666),
             ),
           ),
       ],
@@ -132,7 +139,8 @@ class TextInputWidget extends ConsumerWidget {
   }
 }
 
-String? errorText(String text, int minLength, int? maxLength, bool isRequired,
+String? errorTextWidget(
+    String text, int minLength, int? maxLength, bool isRequired,
     {bool isPassword = false}) {
   // 특수문자 범위를 확장하고 정확하게 이스케이프 처리
   String pattern = r'^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,20})';
