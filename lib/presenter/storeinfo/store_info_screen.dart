@@ -99,13 +99,13 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                               icon: Icon(Icons.info),
                               onPressed: () {
                                 // Navigate to the store detail info page
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => StoreDetailInfoScreen(
-                                        storeDetailInfo: storeDetailInfo),
-                                  ),
-                                );
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => StoreDetailInfoScreen(
+                                //         storeDetailInfo: storeDetailInfo),
+                                //   ),
+                                // );
                               },
                             ));
                       }
