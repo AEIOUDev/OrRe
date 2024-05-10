@@ -28,4 +28,13 @@ class StoreWaitingInfo {
       estimatedWaitingTimePerTeam: json['estimatedWaitingTimePerTeam'] ?? 0,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'storeCode': storeCode,
+      'waitingTeamList': waitingTeamList,
+      'enteringTeamList': enteringTeamList,
+      'estimatedWaitingTimePerTeam': estimatedWaitingTimePerTeam,
+    };
+  }
 }
