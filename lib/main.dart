@@ -18,25 +18,38 @@ import 'provider/userinfo/user_info_state_notifier.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutter 엔진과 위젯 바인딩을 초기화
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  ); // Firebase를 현재 플랫폼에 맞게 초기화
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // ); // Firebase를 현재 플랫폼에 맞게 초기화
 
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  // FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    announcement: false,
-    badge: true,
-    carPlay: true,
-    criticalAlert: false,
-    provisional: false,
-    sound: true,
-  );
+  // NotificationSettings settings = await messaging.requestPermission(
+  //   alert: true,
+  //   announcement: false,
+  //   badge: true,
+  //   carPlay: true,
+  //   criticalAlert: false,
+  //   provisional: false,
+  //   sound: true,
+  // );
 
-  print('User granted permission: ${settings.authorizationStatus}');
-  final fcmToken = await FirebaseMessaging.instance.getToken();
-  print(fcmToken);
+  // print('User granted permission: ${settings.authorizationStatus}');
+  // final fcmToken = await FirebaseMessaging.instance.getToken();
+  // print(fcmToken);
+
+  // FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
+  //   if (message != null) {
+  //     if (message.notification != null) {
+  //       print(message.notification!.title);
+  //       print(message.notification!.body);
+  //       print(message.data["click_action"]);
+  //     }
+  //   }
+  // });
+
+  // final notificationService = NotificationService();
+  // notificationService.listenNotifications();
 
   // 네이버 지도 초기화
   await NaverMapSdk.instance.initialize(clientId: "mlravb678f");
@@ -46,19 +59,6 @@ void main() async {
       onAuthFailed: (ex) {
         print("********* 네이버맵 인증오류 : $ex *********");
       });
-
-  FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
-    if (message != null) {
-      if (message.notification != null) {
-        print(message.notification!.title);
-        print(message.notification!.body);
-        print(message.data["click_action"]);
-      }
-    }
-  });
-
-  final notificationService = NotificationService();
-  notificationService.listenNotifications();
 
   setPathUrlStrategy(); // 해시(#) 없이 URL 사용
 
