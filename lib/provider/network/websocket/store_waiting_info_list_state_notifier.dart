@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final storeWaitingInfoNotifierProvider =
     StateNotifierProvider<StoreWaitingInfoListNotifier, List<StoreWaitingInfo>>(
@@ -22,6 +23,7 @@ class StoreWaitingInfoListNotifier
   void setClient(StompClient client) {
     print("StoreWaitingInfoList : setClient");
     _client = client; // 내부 변수에 StompClient 인스턴스 저장
+    loadState();
   }
 
   void subscribeToStoreWaitingInfo(int storeCode) {
@@ -44,9 +46,11 @@ class StoreWaitingInfoListNotifier
               if (existingIndex != -1) {
                 state[existingIndex] = firstResult;
                 state = List.from(state);
+                saveState();
               } else {
                 // 새로운 요소를 상태에 추가
                 state = [...state, firstResult];
+                saveState();
               }
             }
             // print("state : $state");
@@ -91,6 +95,41 @@ class StoreWaitingInfoListNotifier
                   estimatedWaitingTimePerTeam: 0,
                 ));
     return storeWaitingInfo.waitingTeamList;
+  }
+
+  void clearWaitingInfoList() {
+    state = [];
+    saveState();
+  }
+
+  void saveState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<StoreWaitingInfo> storeWaitingInfoList = state;
+    String encodedList = json.encode(storeWaitingInfoList);
+    print("waitingInfoList saveState encodedList : $encodedList");
+    prefs.setString('waitingInfoList', encodedList);
+  }
+
+  void loadState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? encodedList = prefs.getString('waitingInfoList');
+    if (encodedList != null) {
+      print("waitingInfoList loadState encodedList : $encodedList");
+      List<dynamic> decodedList = json.decode(encodedList);
+      state = decodedList
+          .map((e) => StoreWaitingInfo.fromJson(e))
+          .toList(); // JSON 문자열을 객체로 변환
+      saveState();
+    }
+  }
+
+  void reconnect() {
+    _client?.activate();
+    loadState();
+    state.forEach((element) {
+      print("reconnect : ${element.storeCode}");
+      subscribeToStoreWaitingInfo(element.storeCode);
+    });
   }
 
   @override

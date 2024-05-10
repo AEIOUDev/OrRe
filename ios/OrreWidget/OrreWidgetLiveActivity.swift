@@ -27,11 +27,11 @@ struct OrreWidgetLiveActivity: Widget {
             
             let myVariableFromFlutter = sharedDefault.string(forKey: context.attributes.prefixedKey("myVariableFromFlutter"))!
             // Lock screen/banner UI goes here
-//            VStack {
-//                Text("Hello \(context.state.emoji)")
-//            }
-//            .activityBackgroundTint(Color.cyan)
-//            .activitySystemActionForegroundColor(Color.black)
+            VStack {
+                Text("Hello")
+            }
+            .activityBackgroundTint(Color.cyan)
+            .activitySystemActionForegroundColor(Color.black)
 
         } dynamicIsland: { context in
             DynamicIsland {

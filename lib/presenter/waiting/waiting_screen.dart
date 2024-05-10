@@ -21,7 +21,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
     final listOfWaitingStoreProvider =
         ref.watch(storeWaitingRequestNotifierProvider);
 
-    print("listOfWaitingStoreProvider: ${listOfWaitingStoreProvider.length}");
+    print("listOfWaitingStoreProvider: ${listOfWaitingStoreProvider}");
 
     return Scaffold(
       appBar: AppBar(
@@ -38,14 +38,16 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
         ],
       ),
       body: ListView.builder(
-        itemCount: listOfWaitingStoreProvider.length,
+        itemCount: 1,
         itemBuilder: (context, index) {
-          final item = listOfWaitingStoreProvider[index];
-          return Consumer(
-            builder: (context, ref, child) {
-              return WaitingStoreItem(item);
-            },
-          );
+          final item = listOfWaitingStoreProvider;
+          if (item == null) {
+            return ListTile(
+              title: Text('줄서기 중인 가게가 없습니다.'),
+            );
+          } else {
+            return WaitingStoreItem(item);
+          }
         },
       ),
     );

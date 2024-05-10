@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:orre/model/store_info_model.dart';
 import 'package:live_activities/live_activities.dart';
+import 'package:orre/presenter/storeinfo/store_detail_info_screen_test.dart';
 
 class StoreDetailInfoScreen extends StatelessWidget {
   final StoreDetailInfo storeDetailInfo;
@@ -17,6 +18,18 @@ class StoreDetailInfoScreen extends StatelessWidget {
         title: Text('Store Detail Info'),
         actions: [
           IconButton(
+              icon: Icon(Icons.edit_note_rounded),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => StoreDetailInfoTestScreen(
+                      storeDetailInfo: storeDetailInfo,
+                    ),
+                  ),
+                );
+              }),
+          IconButton(
               icon: Icon(Icons.exit_to_app),
               onPressed: () {
                 final Map<String, dynamic> activityModel = {
@@ -26,6 +39,11 @@ class StoreDetailInfoScreen extends StatelessWidget {
                 };
 
                 _liveActivitiesPlugin.createActivity(activityModel);
+              }),
+          IconButton(
+              icon: Icon(Icons.expand_circle_down),
+              onPressed: () {
+                _liveActivitiesPlugin.endAllActivities();
               }),
         ],
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/presenter/home_screen.dart';
+import 'package:orre/presenter/homescreen/home_screen.dart';
 
 import '../services/nfc_services.dart';
 import 'order/order_prepare_screen.dart';
