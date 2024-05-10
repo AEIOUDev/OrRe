@@ -6,7 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/presenter/user/onboarding_screen.dart';
 import 'package:orre/services/network/https_services.dart';
-import 'package:orre/widget/appbar/app_bar_widget.dart';
+import 'package:orre/widget/appbar/static_app_bar_widget.dart';
+import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/small_button_widget.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
 
@@ -15,6 +16,9 @@ import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/provider/timer_state_notifier.dart';
 
 final isObscureProvider = StateProvider<bool>((ref) => true);
+
+final phoneNumberFormKeyProvider = Provider((ref) => GlobalKey<FormState>());
+final resetFormKeyProvider = Provider((ref) => GlobalKey<FormState>());
 
 class SignUpResetPasswordScreen extends ConsumerWidget {
   final TextEditingController phoneNumberController = TextEditingController();
@@ -28,182 +32,207 @@ class SignUpResetPasswordScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isObscure = ref.watch(isObscureProvider);
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+    final formKey = ref.watch(resetFormKeyProvider);
 
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
-        child: AppBarWidget(
-          title: '비밀번호 재설정',
+    return WaveformBackgroundWidget(
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize:
+              Size.fromHeight(MediaQuery.of(context).size.height * 0.25),
+          child: StaticAppBarWidget(
+            title: '비밀번호 재설정',
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
         ),
-      ),
-      backgroundColor: Color(0xFFFFE0B2),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Form(
-              key: formKey,
-              child: Column(
-                children: [
-                  // 전화번호 입력창 및 인증번호 요청 버튼
-                  Consumer(builder: (context, ref, child) {
-                    final timer = ref.watch(timerProvider);
-                    return TextInputWidget(
-                      prefixIcon: Icon(Icons.phone),
-                      hintText: '전화번호를 입력해주세요.',
-                      subTitle: '비밀번호를 재설정할 전화번호를, 숫자만 입력해주세요.',
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    SizedBox(height: 16 * 5),
+                    // 전화번호 입력창 및 인증번호 요청 버튼
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final phoneNumberFormKey =
+                            ref.watch(phoneNumberFormKeyProvider);
+                        final timer = ref.watch(timerProvider);
+                        return Form(
+                          key: phoneNumberFormKey,
+                          child: TextInputWidget(
+                            prefixIcon: Icon(Icons.phone),
+                            hintText: '전화번호를 입력해주세요.',
+                            subTitle: '비밀번호를 재설정할 전화번호를, 숫자만 입력해주세요.',
+                            isObscure: false,
+                            type: TextInputType.number,
+                            ref: ref,
+                            autofillHints: [AutofillHints.telephoneNumber],
+                            controller: phoneNumberController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9]'))
+                            ],
+                            minLength: 11,
+                            maxLength: 11,
+                            focusNode: phoneNumberFocusNode,
+                            nextFocusNode: authCodeFocusNode,
+                            suffixIcon: SmallButtonWidget(
+                              onPressed: () {
+                                if (!phoneNumberFormKey.currentState!
+                                    .validate()) {
+                                  return;
+                                }
+                                print("authRequestTimer: $timer");
+                                if (timer == 0) {
+                                  // 버튼 클릭시 phoneNumberController에서 전화번호를 읽어서 사용
+                                  String phoneNumber = phoneNumberController
+                                      .text
+                                      .replaceAll(RegExp(r'[^0-9]'), '');
+                                  requestAuthCodeForReset(phoneNumber)
+                                      .then((value) {
+                                    print("authCodeGen: $value");
+                                    if (value == APIResponseStatus.success) {
+                                      print("authCodeGenSuccess");
+                                      ref
+                                          .read(timerProvider.notifier)
+                                          .setAndStartTimer(300);
+                                      FocusScope.of(context)
+                                          .requestFocus(authCodeFocusNode);
+                                    } else if (value ==
+                                        APIResponseStatus
+                                            .resetPasswordPhoneNumberFailure) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => Builder(
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        AlertPopupWidget(
+                                                  title: '인증번호 요청 실패',
+                                                  subtitle: '일치하는 전화번호가 없습니다.',
+                                                  buttonText: '확인',
+                                                ),
+                                              ));
+                                    }
+                                  });
+                                }
+                              },
+                              text: timer == 0
+                                  ? "인증 번호 받기"
+                                  : timer.toString() + "초 후 재시도",
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    SizedBox(height: 16),
+
+                    // 인증번호 입력창
+                    TextInputWidget(
+                      hintText: '인증번호를 입력해주세요.',
                       isObscure: false,
                       type: TextInputType.number,
+                      autofillHints: [AutofillHints.oneTimeCode],
                       ref: ref,
-                      autofillHints: [AutofillHints.telephoneNumber],
-                      controller: phoneNumberController,
+                      controller: authCodeController,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
                       ],
-                      minLength: 11,
-                      maxLength: 11,
-                      focusNode: phoneNumberFocusNode,
-                      nextFocusNode: authCodeFocusNode,
-                      suffixIcon: SmallButtonWidget(
-                        onPressed: () {
-                          print("authRequestTimer: $timer");
-                          if (timer == 0) {
-                            // 버튼 클릭시 phoneNumberController에서 전화번호를 읽어서 사용
-                            String phoneNumber = phoneNumberController.text
-                                .replaceAll(RegExp(r'[^0-9]'), '');
-                            requestAuthCodeForReset(phoneNumber).then((value) {
-                              print("authCodeGen: $value");
-                              if (value == APIResponseStatus.success) {
-                                print("authCodeGenSuccess");
-                                ref
-                                    .read(timerProvider.notifier)
-                                    .setAndStartTimer(300);
-                                FocusScope.of(context)
-                                    .requestFocus(authCodeFocusNode);
-                              } else if (value ==
-                                  APIResponseStatus
-                                      .resetPasswordPhoneNumberFailure) {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => Builder(
-                                          builder: (BuildContext context) =>
-                                              AlertPopupWidget(
-                                            title: '인증번호 요청 실패',
-                                            subtitle: '일치하는 전화번호가 없습니다.',
-                                            buttonText: '확인',
-                                          ),
-                                        ));
-                              }
-                            });
-                          }
-                        },
-                        text: timer == 0
-                            ? "인증 번호 받기"
-                            : timer.toString() + "초 후 재시도",
-                        maxSize: Size(double.infinity, 40),
-                      ),
-                    );
-                  }),
-                  SizedBox(height: 16),
-
-                  // 인증번호 입력창
-                  TextInputWidget(
-                    hintText: '인증번호를 입력해주세요.',
-                    isObscure: false,
-                    type: TextInputType.number,
-                    autofillHints: [AutofillHints.oneTimeCode],
-                    ref: ref,
-                    controller: authCodeController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
-                    ],
-                    prefixIcon: Icon(Icons.mark_as_unread_sharp),
-                    minLength: 6,
-                    maxLength: 6,
-                    focusNode: authCodeFocusNode,
-                    nextFocusNode: passwordFocusNode,
-                  ),
-                  SizedBox(height: 16),
-
-                  // 비밀번호 입력창
-                  TextInputWidget(
-                    subTitle: '영문, 숫자, 특수문자를 모두 포함한 8자 이상 20자 미만',
-                    hintText: '새로운 비밀번호를 입력해주세요.',
-                    isObscure: isObscure,
-                    type: TextInputType.emailAddress,
-                    ref: ref,
-                    controller: passwordController,
-                    autofillHints: [AutofillHints.password],
-                    prefixIcon: Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        ref.read(isObscureProvider.notifier).state =
-                            !ref.watch(isObscureProvider.notifier).state;
-                      },
-                      icon: Icon((isObscure == false)
-                          ? (Icons.visibility)
-                          : (Icons.visibility_off)),
+                      prefixIcon: Icon(Icons.mark_as_unread_sharp),
+                      minLength: 6,
+                      maxLength: 6,
+                      focusNode: authCodeFocusNode,
+                      nextFocusNode: passwordFocusNode,
                     ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'[0-9a-zA-Z!@#$%^&*]'))
-                    ],
-                    minLength: 8,
-                    maxLength: 20,
-                    focusNode: passwordFocusNode,
-                  ),
-                  SizedBox(height: 32),
+                    SizedBox(height: 16),
 
-                  // 하단 "회원 가입하기" 버튼
-                  BigButtonWidget(
-                    text: '비밀번호 재설정하기',
-                    onPressed: () {
-                      if (!formKey.currentState!.validate()) {
-                        return;
-                      }
-                      String phoneNumber = phoneNumberController.text
-                          .replaceAll(RegExp(r'[^0-9]'), '');
-                      String authCode = authCodeController.text;
-                      String newPassword = passwordController.text;
-                      requestResetPassword(phoneNumber, authCode, newPassword)
-                          .then((value) {
-                        if (value == true) {
-                          Future.delayed(Duration.zero, () {
-                            ref.read(timerProvider.notifier).cancelTimer();
-                          });
+                    // 비밀번호 입력창
+                    TextInputWidget(
+                      subTitle: '영문, 숫자, 특수문자를 모두 포함한 8자 이상 20자 미만',
+                      hintText: '새로운 비밀번호를 입력해주세요.',
+                      isObscure: isObscure,
+                      type: TextInputType.emailAddress,
+                      ref: ref,
+                      controller: passwordController,
+                      autofillHints: [AutofillHints.password],
+                      prefixIcon: Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          ref.read(isObscureProvider.notifier).state =
+                              !ref.watch(isObscureProvider.notifier).state;
+                        },
+                        icon: Icon((isObscure == false)
+                            ? (Icons.visibility)
+                            : (Icons.visibility_off)),
+                      ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'[0-9a-zA-Z!@#$%^&*]'))
+                      ],
+                      minLength: 8,
+                      maxLength: 20,
+                      focusNode: passwordFocusNode,
+                    ),
+                    SizedBox(height: 32),
 
-                          Navigator.popUntil(context, (route) => route.isFirst);
-                          Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: (context) {
-                            return OnboardingScreen();
-                          }));
-                          showDialog(
-                              context: context,
-                              builder: (context) => Builder(
-                                    builder: (BuildContext context) =>
-                                        AlertPopupWidget(
-                                      title: '비밀번호 재설정 성공',
-                                      subtitle: '새로운 비밀번호로 로그인해주세요.',
-                                      buttonText: '확인',
-                                    ),
-                                  ));
-                        } else {
-                          showDialog(
-                              context: context,
-                              builder: (context) => Builder(
-                                    builder: (BuildContext context) =>
-                                        AlertPopupWidget(
-                                      title: '비밀번호 재설정 실패',
-                                      subtitle: '인증번호 또는 전화번호를 확인해주세요.',
-                                      buttonText: '확인',
-                                    ),
-                                  ));
+                    // 하단 "회원 가입하기" 버튼
+                    BigButtonWidget(
+                      text: '비밀번호 재설정하기',
+                      onPressed: () {
+                        if (!formKey.currentState!.validate()) {
+                          return;
                         }
-                      });
-                    },
-                  ),
-                ],
+                        String phoneNumber = phoneNumberController.text
+                            .replaceAll(RegExp(r'[^0-9]'), '');
+                        String authCode = authCodeController.text;
+                        String newPassword = passwordController.text;
+                        requestResetPassword(phoneNumber, authCode, newPassword)
+                            .then((value) {
+                          if (value == true) {
+                            Future.delayed(Duration.zero, () {
+                              ref.read(timerProvider.notifier).cancelTimer();
+                            });
+
+                            Navigator.popUntil(
+                                context, (route) => route.isFirst);
+                            Navigator.pushReplacement(context,
+                                MaterialPageRoute(builder: (context) {
+                              return OnboardingScreen();
+                            }));
+                            showDialog(
+                                context: context,
+                                builder: (context) => Builder(
+                                      builder: (BuildContext context) =>
+                                          AlertPopupWidget(
+                                        title: '비밀번호 재설정 성공',
+                                        subtitle: '새로운 비밀번호로 로그인해주세요.',
+                                        buttonText: '확인',
+                                      ),
+                                    ));
+                          } else {
+                            showDialog(
+                                context: context,
+                                builder: (context) => Builder(
+                                      builder: (BuildContext context) =>
+                                          AlertPopupWidget(
+                                        title: '비밀번호 재설정 실패',
+                                        subtitle: '인증번호 또는 전화번호를 확인해주세요.',
+                                        buttonText: '확인',
+                                      ),
+                                    ));
+                          }
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

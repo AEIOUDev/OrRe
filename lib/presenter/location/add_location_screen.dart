@@ -5,6 +5,7 @@ import 'package:orre/model/location_model.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/services/geocording/geocording_library_service.dart';
+import 'package:orre/widget/text/text_widget.dart';
 
 // import '../../services/geocording/naver_map_services.dart';
 
@@ -26,20 +27,21 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('새 위치 추가'), // 앱 바 제목 설정
+        title: TextWidget('새 위치 추가'), // 앱 바 제목 설정
       ),
       body: Stack(
         children: [
           FutureBuilder(
-            future:
-                ref.watch(nowLocationProvider.future), // 위치 정보를 비동기적으로 가져옵니다.
+            future: ref
+                .read(nowLocationProvider.notifier)
+                .updateNowLocation(), // 위치 정보를 비동기적으로 가져옵니다.
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 // 데이터 로딩 중에는 로딩 인디케이터를 보여줍니다.
                 return Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 // 데이터 로딩 중 오류가 발생하면 오류 메시지를 보여줍니다.
-                return Center(child: Text('위치 정보를 가져오는 데 실패했습니다.'));
+                return Center(child: TextWidget('위치 정보를 가져오는 데 실패했습니다.'));
               } else {
                 // 데이터 로딩이 성공하면 지도를 표시합니다.
                 final userLocationInfo = snapshot.data; // 사용자 위치 정보
@@ -168,8 +170,8 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
                           }
                         }
                       : null, // 마커가 null이면 버튼을 비활성화합니다.
-                  child:
-                      Text(marker != null ? "선택된 위치 추가하기" : "원하는 위치를 클릭해보세요"),
+                  child: TextWidget(
+                      marker != null ? "선택된 위치 추가하기" : "원하는 위치를 클릭해보세요"),
                 );
               },
             ),

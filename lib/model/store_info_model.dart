@@ -21,6 +21,7 @@ class StoreDetailInfo {
   final String storePhoneNumber;
   final LocationInfo locationInfo;
   final List<MenuInfo> menuInfo;
+  final MenuCategories menuCategories;
 
   StoreDetailInfo({
     required this.storeImageMain,
@@ -39,6 +40,7 @@ class StoreDetailInfo {
     required this.storePhoneNumber,
     required this.locationInfo,
     required this.menuInfo,
+    required this.menuCategories,
   });
 
   factory StoreDetailInfo.fromJson(Map<String, dynamic> json) {
@@ -68,6 +70,10 @@ class StoreDetailInfo {
     final locationAddress = json['locationInfo'][0]['address'] ?? '';
     print("locationAddress: $locationAddress");
 
+    print("categories : ${json['menuCategories']}");
+    final menuCategories = MenuCategories.fromJson(json['menuCategories']);
+    print("menuCategories: $menuCategories");
+
     return StoreDetailInfo(
       storeImageMain: json['storeImageMain'] ?? '',
       storeCode: json['storeCode'] ?? 0,
@@ -91,6 +97,7 @@ class StoreDetailInfo {
       ),
       menuInfo: List<MenuInfo>.from(
           json['menuInfo'].map((x) => MenuInfo.fromJson(x))),
+      menuCategories: menuCategories,
     );
   }
 
@@ -110,7 +117,9 @@ class StoreDetailInfo {
         'breakEndTime': breakEndTime.toIso8601String(),
         'storePhoneNumber': storePhoneNumber,
         'locationInfo': locationInfo,
-        'menuInfo': menuInfo,
+        'menuInfo':
+            List<dynamic>.from(menuInfo.map((x) => x.toJson())).toString(),
+        'menuCategories': menuCategories.toJson(),
       };
 
   static nullValue() {
@@ -136,6 +145,7 @@ class StoreDetailInfo {
         address: '',
       ),
       menuInfo: [],
+      menuCategories: MenuCategories.nullValue(),
     );
   }
 

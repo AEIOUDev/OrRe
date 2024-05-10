@@ -23,12 +23,14 @@ dependencies:
     sdk: flutter
   geocoding: ^2.2.0
   geolocator: ^11.0.0
+  get: ^4.6.6
   google_maps_flutter: ^2.5.3
   http: ^1.2.0
   internet_connectivity_checker: ^1.0.2
   live_activities: ^1.9.1+1
   mockito: ^5.4.4
   nfc_manager: ^3.4.0
+  permission_handler: ^11.3.1
   photo_view: ^0.15.0
   riverpod_annotation: ^2.3.4
   shared_preferences: ^2.2.3
@@ -47,3 +49,10 @@ flutter:
   uses-material-design: true
   assets: 
     - assets/images/orre_logo.png
+    - assets/images/waveform/wave_shadow.png
+    - assets/images/waveform/wave.png
+
+  fonts :
+    - family: Dovemayo_gothic
+      fonts :
+        - asset : assets/fonts/Dovemayo_gothic.ttf

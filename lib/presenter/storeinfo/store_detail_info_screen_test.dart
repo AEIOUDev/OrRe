@@ -1,13 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/store_info_model.dart';
-import 'package:orre/presenter/storeinfo/store_detail_info_screen.dart';
 import 'package:orre/provider/network/connectivity_state_notifier.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
-import 'package:sliver_app_bar_builder/sliver_app_bar_builder.dart';
+import 'package:orre/widget/text/text_widget.dart';
 
 class StoreDetailInfoTestScreen extends ConsumerWidget {
   final StoreDetailInfo storeDetailInfo;
@@ -44,7 +40,7 @@ class StoreDetailInfoTestScreen extends ConsumerWidget {
     });
 
     return Scaffold(
-      body: Text("test"),
+      body: TextWidget("test"),
     );
   }
 }

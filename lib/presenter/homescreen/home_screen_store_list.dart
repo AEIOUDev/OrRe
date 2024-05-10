@@ -5,6 +5,7 @@ import 'package:orre/model/store_list_model.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import '../storeinfo/store_info_screen.dart';
+import 'package:orre/widget/text/text_widget.dart';
 
 class StoreListWidget extends ConsumerWidget {
   final List<StoreLocationInfo> storeList;
@@ -76,23 +77,23 @@ class StoreItem extends ConsumerWidget {
           placeholder: (context, url) => CircularProgressIndicator(),
           errorWidget: (context, url, error) => Icon(Icons.error),
         ),
-        title: Text('가게 ${storeInfo.storeCode}: ${storeInfo.storeName}'),
+        title: TextWidget('가게 ${storeInfo.storeCode}: ${storeInfo.storeName}'),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Text('주소: ${storeInfo.address}'),
-            Text('거리: ${storeInfo.distance.round()}m'),
-            // Text('위도: ${storeInfo.latitude}'),
-            // Text('경도: ${storeInfo.longitude}'),
-            Text('소개: ${storeInfo.storeShortIntroduce}'),
-            Text("카테고리: ${storeInfo.storeCategory}"),
+            // TextWidget('주소: ${storeInfo.address}'),
+            TextWidget('거리: ${storeInfo.distance.round()}m'),
+            // TextWidget('위도: ${storeInfo.latitude}'),
+            // TextWidget('경도: ${storeInfo.longitude}'),
+            TextWidget('소개: ${storeInfo.storeShortIntroduce}'),
+            TextWidget("카테고리: ${storeInfo.storeCategory}"),
           ],
         ),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("대기팀 수: ${storeWaitingInfo.waitingTeamList.length}"),
-            Text(
+            TextWidget("대기팀 수: ${storeWaitingInfo.waitingTeamList.length}"),
+            TextWidget(
                 "예상 대기 시간: ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam}분"),
           ],
         ),

@@ -13,7 +13,6 @@ enum StompStatus {
   CONNECTED,
   DISCONNECTED,
   ERROR,
-  RECONNECTED,
 }
 
 final stompState = StateProvider<StompStatus>((ref) {
@@ -27,8 +26,10 @@ final stompClientStateNotifierProvider =
 
 class StompClientStateNotifier extends StateNotifier<StompClient?> {
   final Ref ref;
-  StompClientStateNotifier(this.ref) : super(null);
   late StompClient client;
+  StompClientStateNotifier(this.ref) : super(null) {
+    configureClient();
+  }
 
   Stream<StompStatus> configureClient() {
     final streamController = StreamController<StompStatus>.broadcast();
@@ -113,9 +114,9 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
   void reconnectCallback() {
     print("reconnected");
     // 재시도 시, 구독 로직을 다시 실행
+    state?.activate();
     ref.read(storeWaitingInfoNotifierProvider.notifier).reconnect();
     ref.read(storeWaitingRequestNotifierProvider.notifier).reconnect();
-    ref.read(stompState.notifier).state = StompStatus.RECONNECTED;
   }
 
   // Example method to disconnect from the STOMP server

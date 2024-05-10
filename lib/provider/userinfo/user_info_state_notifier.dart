@@ -48,6 +48,56 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
     }
   }
 
+  Future<String?> requestSignIn(SignInInfo? signInInfo) async {
+    try {
+      late SignInInfo info;
+
+      // storage에 저장된 정보로 로그인하는 경우
+      if (signInInfo == null) {
+        await loadUserInfo().then((value) {
+          print("loadUserInfo: $value");
+          if (value) {
+            info = SignInInfo(
+              phoneNumber: state!.phoneNumber,
+              password: state!.password,
+            );
+          } else {
+            return null;
+          }
+        });
+      } else {
+        info = signInInfo;
+      }
+      final body = {
+        'userPhoneNumber': info.phoneNumber,
+        'userPassword': info.password,
+      };
+      final jsonBody = json.encode(body);
+      final response = await HttpsService.postRequest("/login", jsonBody);
+      if (response.statusCode == 200) {
+        final jsonBody = json.decode(utf8.decode(response.bodyBytes));
+        print("requestSignIn(json 200): $jsonBody");
+        if (APIResponseStatus.success.isEqualTo(jsonBody['status'])) {
+          print("requestSignIn: success");
+          state = UserInfo(
+            phoneNumber: info.phoneNumber,
+            password: info.password,
+            name: jsonBody['token'],
+            fcmToken: '',
+          );
+          return jsonBody['token'];
+        } else {
+          print("requestSignIn: failed");
+          return null;
+        }
+      } else {
+        throw Exception('Failed to request sign in');
+      }
+    } catch (error) {
+      throw Exception('Failed to request sign in');
+    }
+  }
+
   UserInfo? getUserInfo() {
     return state;
   }
