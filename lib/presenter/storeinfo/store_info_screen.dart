@@ -51,10 +51,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
   @override
   Widget build(BuildContext context) {
     final storeDetailInfo = ref.watch(storeDetailInfoProvider);
-    final myWaitingInfo = ref.watch(storeWaitingRequestNotifierProvider.select(
-        (value) => value
-            .where((element) => element.token.storeCode == widget.storeCode)
-            .firstOrNull));
+    final myWaitingInfo = ref.watch(storeWaitingRequestNotifierProvider);
 
     return Scaffold(
       body: storeDetailInfo.storeCode == 0
@@ -587,13 +584,10 @@ class WaitingDialog extends ConsumerWidget {
 
     print("stream: $stream");
     // 스트림의 각 결과에 대해 다른 대화 상자를 표시
-    stream.listen((result) {
+    stream.then((result) {
       print("result: $result");
       if (result) {
-        final myWaitingInfo = ref.read(
-            storeWaitingRequestNotifierProvider.select((value) => value
-                .where((element) => element.token.storeCode == storeCode)
-                .firstOrNull));
+        final myWaitingInfo = ref.read(storeWaitingRequestNotifierProvider);
         // 결과가 true 일 때의 대화 상자
         showDialog(
           context: context,
@@ -638,10 +632,7 @@ class WaitingCancleDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // 웨이팅 취소를 위한 정보 입력 다이얼로그 표시
-    final waitingInfo = ref.watch(storeWaitingRequestNotifierProvider.select(
-        (value) => value
-            .where((element) => element.token.storeCode == storeCode)
-            .firstOrNull));
+    final waitingInfo = ref.watch(storeWaitingRequestNotifierProvider);
     final phoneNumberController = TextEditingController();
     phoneNumberController.text = waitingInfo?.token.phoneNumber ?? "";
     final formKey = GlobalKey<FormState>();

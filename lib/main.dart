@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
+import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -68,7 +69,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     print("MyApp build() called");
-
+    ref.read(stompClientStateNotifierProvider.notifier).configureClient();
     return MaterialApp(
       home: FutureBuilder(
         future: startInitialScreen(ref),

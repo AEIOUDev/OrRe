@@ -11,6 +11,7 @@ dependencies:
   android_intent_plus: ^4.0.3
   animated_flip_counter: ^0.3.4
   cached_network_image: ^3.3.1
+  connectivity_plus: ^6.0.3
   firebase_core: ^2.25.5
   firebase_messaging: ^14.7.17
   flutter:
@@ -25,11 +26,13 @@ dependencies:
   geolocator: ^11.0.0
   google_maps_flutter: ^2.5.3
   http: ^1.2.0
+  internet_connectivity_checker: ^1.0.2
   live_activities: ^1.9.1+1
   mockito: ^5.4.4
   nfc_manager: ^3.4.0
   photo_view: ^0.15.0
   riverpod_annotation: ^2.3.4
+  shared_preferences: ^2.2.3
   sliver_app_bar_builder: ^1.1.0
   sqflite: ^2.3.3
   stomp_dart_client: ^1.0.3
