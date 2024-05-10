@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/widget/text/text_widget.dart';
 
 class TextButtonWidget extends ConsumerWidget {
   final String text;
@@ -19,7 +20,7 @@ class TextButtonWidget extends ConsumerWidget {
       onPressed: () {
         onPressed();
       },
-      child: Text(text),
+      child: TextWidget(text),
     );
   }
 }

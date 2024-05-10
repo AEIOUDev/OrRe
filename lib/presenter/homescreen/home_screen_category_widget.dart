@@ -5,6 +5,7 @@ import 'package:orre/model/location_model.dart';
 import '../../provider/home_screen/store_category_provider.dart';
 import 'home_screen_modal_sheet.dart';
 import '../../widget/grid/grid_tile_widget.dart';
+import 'package:orre/widget/text/text_widget.dart';
 
 class CategoryWidget extends ConsumerWidget {
   final LocationInfo location;
@@ -35,8 +36,8 @@ class CategoryWidget extends ConsumerWidget {
         ),
         Row(
           children: [
-            Text(nowCategory.toKoKr(),
-                style: Theme.of(context).textTheme.headline6),
+            TextWidget(nowCategory.toKoKr(),
+                fontSize: 30, fontWeight: FontWeight.bold),
             Spacer(),
             HomeScreenModalBottomSheet(location: location),
           ],

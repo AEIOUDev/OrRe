@@ -131,7 +131,7 @@
 //               placeholder: (context, url) => CircularProgressIndicator(),
 //               errorWidget: (context, url, error) => Icon(Icons.store)),
 //           SizedBox(height: 8),
-//           Text(
+//           TextWidget(
 //             storeDetailInfo.storeName,
 //             style: Theme.of(context).textTheme.titleLarge?.copyWith(
 //                   color: Colors.white,
@@ -141,18 +141,18 @@
 //           Row(
 //             mainAxisAlignment: MainAxisAlignment.center,
 //             children: [
-//               Text(
+//               TextWidget(
 //                 storeDetailInfo.storeCategory,
 //                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
 //                       color: Colors.white,
 //                     ),
 //               ),
-//               Text(" | ",
+//               TextWidget(" | ",
 //                   style: Theme.of(context)
 //                       .textTheme
 //                       .bodyMedium
 //                       ?.copyWith(color: Colors.white)),
-//               Text(
+//               TextWidget(
 //                 storeDetailInfo.storeIntroduce,
 //                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
 //                       color: Colors.white,
@@ -201,9 +201,9 @@
 //           mainAxisSize: MainAxisSize.min,
 //           mainAxisAlignment: MainAxisAlignment.center,
 //           children: [
-//             Text('내 웨이팅 번호: ${myWaitingInfo?.waitingDetails.waiting}'),
-//             Text('남은 팀 수 :  ${myWaitingIndex.toString()}'),
-//             Text('남은 입장 시간: ${remaingTime.inSeconds}초'),
+//             TextWidget('내 웨이팅 번호: ${myWaitingInfo?.waitingDetails.waiting}'),
+//             TextWidget('남은 팀 수 :  ${myWaitingIndex.toString()}'),
+//             TextWidget('남은 입장 시간: ${remaingTime.inSeconds}초'),
 //           ],
 //         );
 //       } else {
@@ -221,9 +221,9 @@
 //             mainAxisSize: MainAxisSize.min,
 //             mainAxisAlignment: MainAxisAlignment.center,
 //             children: [
-//               Text('내 웨이팅 번호: ${myWaitingInfo?.waitingDetails.waiting}'),
-//               Text('남은 팀 수 :  ${myWaitingIndex.toString()}'),
-//               Text(
+//               TextWidget('내 웨이팅 번호: ${myWaitingInfo?.waitingDetails.waiting}'),
+//               TextWidget('남은 팀 수 :  ${myWaitingIndex.toString()}'),
+//               TextWidget(
 //                   '예상 대기 시간: ${myWaitingIndex * storeWaitingInfo.estimatedWaitingTimePerTeam}분'),
 //             ],
 //           );
@@ -232,8 +232,8 @@
 //     } else {
 //       return Column(
 //         children: [
-//           Text('대기중인 팀 수: ${storeWaitingInfo.waitingTeamList.length}'),
-//           Text(
+//           TextWidget('대기중인 팀 수: ${storeWaitingInfo.waitingTeamList.length}'),
+//           TextWidget(
 //               '예상 대기 시간: ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam}분'),
 //           Divider(),
 //         ],
@@ -258,7 +258,7 @@
 //           crossAxisAlignment: CrossAxisAlignment.center,
 //           children: [
 //             Icon(Icons.menu_book, size: 50),
-//             Text('메뉴 정보가 없습니다.'),
+//             TextWidget('메뉴 정보가 없습니다.'),
 //           ],
 //         ),
 //       );
@@ -287,8 +287,8 @@
 //                 placeholder: (context, url) => CircularProgressIndicator(),
 //                 errorWidget: (context, url, error) => Icon(Icons.no_food),
 //               ),
-//               title: Text(menu.menu),
-//               subtitle: Text('${menu.price}원 - ${menu.introduce}'),
+//               title: TextWidget(menu.menu),
+//               subtitle: TextWidget('${menu.price}원 - ${menu.introduce}'),
 //             );
 //           },
 //           separatorBuilder: (context, index) => Divider() // 구분선 추가,
@@ -322,11 +322,11 @@
 //               context: context,
 //               builder: (BuildContext context) {
 //                 return AlertDialog(
-//                   title: Text("예약 불가"),
-//                   content: Text("현재 예약이 불가능한 시간입니다."),
+//                   title: TextWidget("예약 불가"),
+//                   content: TextWidget("현재 예약이 불가능한 시간입니다."),
 //                   actions: [
 //                     TextButton(
-//                       child: Text("확인"),
+//                       child: TextWidget("확인"),
 //                       onPressed: () {
 //                         Navigator.of(context).pop();
 //                       },
@@ -336,7 +336,7 @@
 //               },
 //             );
 //           },
-//           label: Text('예약 불가'));
+//           label: TextWidget('예약 불가'));
 //     }
 //   }
 // }
@@ -375,14 +375,14 @@
 //                 children: [
 //                   Icon(Icons.person_remove_alt_1),
 //                   SizedBox(width: 8),
-//                   Text('웨이팅 취소'),
+//                   TextWidget('웨이팅 취소'),
 //                 ],
 //               )
 //             : Row(
 //                 children: [
 //                   Icon(Icons.person_add),
 //                   SizedBox(width: 8),
-//                   Text('웨이팅 시작'),
+//                   TextWidget('웨이팅 시작'),
 //                 ],
 //               ));
 //   }
@@ -408,7 +408,7 @@
 //     final formKey = GlobalKey<FormState>();
 
 //     return AlertDialog(
-//       title: Text("웨이팅 시작"),
+//       title: TextWidget("웨이팅 시작"),
 //       content: Form(
 //         key: formKey,
 //         child: Column(
@@ -464,13 +464,13 @@
 //       ),
 //       actions: [
 //         TextButton(
-//           child: Text("취소"),
+//           child: TextWidget("취소"),
 //           onPressed: () {
 //             Navigator.of(context).pop();
 //           },
 //         ),
 //         TextButton(
-//           child: Text("확인"),
+//           child: TextWidget("확인"),
 //           onPressed: () {
 //             if (formKey.currentState!.validate()) {
 //               // 여기에서 입력된 정보를 처리합니다.
@@ -514,7 +514,7 @@
 //     final formKey = GlobalKey<FormState>();
 
 //     return AlertDialog(
-//       title: Text("웨이팅 취소"),
+//       title: TextWidget("웨이팅 취소"),
 //       content: Form(
 //         key: formKey,
 //         child: Column(
@@ -536,13 +536,13 @@
 //       ),
 //       actions: [
 //         TextButton(
-//           child: Text("취소"),
+//           child: TextWidget("취소"),
 //           onPressed: () {
 //             Navigator.of(context).pop();
 //           },
 //         ),
 //         TextButton(
-//           child: Text("확인"),
+//           child: TextWidget("확인"),
 //           onPressed: () {
 //             if (formKey.currentState!.validate()) {
 //               Navigator.of(context).pop();

@@ -26,6 +26,27 @@ class LocationInfo {
       locationName: json['locationName'],
     );
   }
+
+  static nullValue() {
+    return LocationInfo(
+      locationName: '보정동 카페거리',
+      latitude: 37.32152732612146,
+      longitude: 127.11053698988346,
+      address: '경기도 용인시 기흥구 보정동 죽전로 15번길',
+    );
+  }
+
+  // == 연산자 오버라이딩
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is LocationInfo &&
+        other.locationName == locationName &&
+        other.latitude == latitude &&
+        other.longitude == longitude &&
+        other.address == address;
+  }
 }
 
 // 새로운 상태 클래스 정의

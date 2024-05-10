@@ -19,8 +19,11 @@ class LocationListNotifier extends StateNotifier<LocationState> {
     await loadLocations();
 
     // nowLocationProvider를 사용하여 현재 위치 업데이트
-    ref.read(nowLocationProvider.future).then((userLocationInfo) {
-      updateNowLocation(userLocationInfo.locationInfo!);
+    ref
+        .read(nowLocationProvider.notifier)
+        .updateNowLocation()
+        .then((userLocationInfo) {
+      updateNowLocation(userLocationInfo);
     }).catchError((error) {
       // 오류 처리
       print("Error fetching now location: $error");

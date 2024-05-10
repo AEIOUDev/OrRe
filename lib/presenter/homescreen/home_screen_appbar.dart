@@ -5,10 +5,10 @@ import 'package:orre/presenter/location/location_manager_screen.dart';
 import 'package:orre/presenter/homescreen/setting_screen.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
 
-import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
 import '../../provider/home_screen/store_list_sort_type_provider.dart';
 import '../../provider/location/location_securestorage_provider.dart';
 import '../../provider/store_list_state_notifier.dart';
+import 'package:orre/widget/text/text_widget.dart';
 
 class HomeScreenAppBar extends ConsumerWidget {
   final LocationInfo location;
@@ -28,10 +28,10 @@ class HomeScreenAppBar extends ConsumerWidget {
       ref.read(storeListProvider.notifier).fetchStoreDetailInfo(params);
     }
 
-    final watchState = ref.watch(stompState);
+    // final watchState = ref.watch(stompState);
 
     // ScaffoldMessenger.of(context)
-    //     .showSnackBar(SnackBar(content: Text('stompState : {$watchState}')));
+    //     .showSnackBar(SnackBar(content: TextWidget('stompState : {$watchState}')));
 
     return Container(
         height: 300,
@@ -41,7 +41,7 @@ class HomeScreenAppBar extends ConsumerWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(location.locationName),
+                TextWidget(location.locationName),
                 Icon(Icons.arrow_drop_down),
               ],
             ),
@@ -63,11 +63,11 @@ class HomeScreenAppBar extends ConsumerWidget {
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               PopupMenuItem<String>(
                 value: 'nowLocation',
-                child: Text('현재 위치'),
+                child: TextWidget('현재 위치'),
               ),
               PopupMenuItem<String>(
                 value: 'changeLocation',
-                child: Text('위치 변경하기'),
+                child: TextWidget('위치 변경하기'),
               ),
             ],
           ),
@@ -107,15 +107,19 @@ class HomeScreenAppBar extends ConsumerWidget {
     print("_refreshCurrentLocation");
     try {
       // nowLocationProvider를 refresh하고 결과를 기다립니다.
-      final userLocationInfo = await ref.refresh(nowLocationProvider.future);
-      // 성공적으로 위치 정보를 받았으면, 이를 LocationListProvider에 업데이트합니다.
       ref
-          .read(locationListProvider.notifier)
-          .updateNowLocation(userLocationInfo.locationInfo!);
+          .refresh(nowLocationProvider.notifier)
+          .updateNowLocation()
+          .then((value) {
+        // 결과를 출력합니다.
+        print("updateNowLocation value : $value");
+        // 성공적으로 위치 정보를 받았으면, 이를 LocationListProvider에 업데이트합니다.
+        ref.read(locationListProvider.notifier).updateNowLocation(value);
+      });
     } catch (error) {
       // 에러 처리...
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('현재 위치를 불러오는데 실패했습니다.')),
+        SnackBar(content: TextWidget('현재 위치를 불러오는데 실패했습니다.')),
       );
     }
   }

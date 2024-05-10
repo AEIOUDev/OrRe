@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/location_model.dart';
 import '../../provider/home_screen/store_list_sort_type_provider.dart';
 import '../../provider/store_list_state_notifier.dart';
+import 'package:orre/widget/text/text_widget.dart';
 
 class HomeScreenModalBottomSheet extends ConsumerWidget {
   final LocationInfo location;
@@ -24,7 +25,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   ListTile(
-                    title: Text(StoreListSortType.basic.toKoKr()),
+                    title: TextWidget(StoreListSortType.basic.toKoKr()),
                     trailing: nowSortType == StoreListSortType.basic
                         ? Icon(Icons.check, color: Colors.orange)
                         : null,
@@ -43,7 +44,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                   ),
                   // 아직 기능 안 함
                   ListTile(
-                    title: Text(StoreListSortType.popular.toKoKr()),
+                    title: TextWidget(StoreListSortType.popular.toKoKr()),
                     trailing: nowSortType == StoreListSortType.popular
                         ? Icon(Icons.check, color: Colors.orange)
                         : null,
@@ -54,7 +55,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                     },
                   ),
                   ListTile(
-                    title: Text(StoreListSortType.nearest.toKoKr()),
+                    title: TextWidget(StoreListSortType.nearest.toKoKr()),
                     trailing: nowSortType == StoreListSortType.nearest
                         ? Icon(Icons.check, color: Colors.orange)
                         : null,
@@ -73,7 +74,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                   ),
                   // 아직 기능 안 함
                   ListTile(
-                    title: Text(StoreListSortType.fast.toKoKr()),
+                    title: TextWidget(StoreListSortType.fast.toKoKr()),
                     trailing: nowSortType == StoreListSortType.fast
                         ? Icon(Icons.check, color: Colors.orange)
                         : null,
@@ -88,7 +89,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
                     ),
-                    child: Text('닫기', style: TextStyle(color: Colors.black)),
+                    child: TextWidget('닫기', color: Colors.black),
                     onPressed: () => Navigator.pop(context),
                   )
                 ],
@@ -97,7 +98,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
           },
         );
       },
-      child: Text(nowSortType.toKoKr()),
+      child: TextWidget(nowSortType.toKoKr()),
     );
   }
 }
