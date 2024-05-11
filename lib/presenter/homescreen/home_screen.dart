@@ -7,7 +7,7 @@ import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
 import '../../provider/home_screen/store_category_provider.dart';
 import '../../provider/location/location_securestorage_provider.dart';
-import '../../provider/store_list_state_notifier.dart';
+import '../../provider/network/https/store_list_state_notifier.dart';
 import 'home_screen_appbar.dart';
 import 'home_screen_category_widget.dart';
 
@@ -57,6 +57,7 @@ class HomeScreen extends ConsumerWidget {
             store.storeCategory == nowCategory.toKoKr() ||
             nowCategory == StoreCategory.all)
         .toList();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 
-import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:orre/widget/text_field/text_input_widget.dart';
 
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
+
+final waitingCancleFormKeyProvider = Provider((ref) => GlobalKey<FormState>());
 
 class WaitingCancleDialog extends ConsumerWidget {
   final int storeCode;
@@ -21,7 +23,7 @@ class WaitingCancleDialog extends ConsumerWidget {
     final waitingInfo = ref.watch(storeWaitingRequestNotifierProvider);
     final phoneNumberController = TextEditingController();
     phoneNumberController.text = waitingInfo?.token.phoneNumber ?? "";
-    final formKey = GlobalKey<FormState>();
+    final formKey = ref.watch(waitingCancleFormKeyProvider);
 
     return AlertDialog(
       title: TextWidget("웨이팅 취소"),
@@ -62,33 +64,12 @@ class WaitingCancleDialog extends ConsumerWidget {
               print("가게 코드: $storeCode");
               print("웨이팅 취소");
               ref
+                  .read(storeWaitingUserCallNotifierProvider.notifier)
+                  .unSubscribe(storeCode, waitingInfo!.token.waiting);
+              ref
                   .read(storeWaitingRequestNotifierProvider.notifier)
                   .sendWaitingCancleRequest(
                       storeCode, phoneNumberController.text);
-
-              if (waitingInfo != null) {
-                print("waitingInfo != null" + {waitingInfo.status}.toString());
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertPopupWidget(
-                        title: '웨이팅 취소',
-                        subtitle: '웨이팅이 취소되었습니다.',
-                        buttonText: '확인',
-                      );
-                    });
-              } else {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertPopupWidget(
-                        title: '웨이팅 취소',
-                        subtitle: '웨이팅이 취소되지 않았습니다.',
-                        buttonText: '확인',
-                      );
-                    });
-              }
-              Navigator.of(context).pop();
             }
           },
         ),

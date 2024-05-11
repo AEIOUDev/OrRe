@@ -23,7 +23,6 @@ class StoreWaitingInfoListNotifier
   void setClient(StompClient client) {
     print("StoreWaitingInfoList : setClient");
     _client = client; // 내부 변수에 StompClient 인스턴스 저장
-    loadState();
   }
 
   void subscribeToStoreWaitingInfo(int storeCode) {

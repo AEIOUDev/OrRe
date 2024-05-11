@@ -4,14 +4,17 @@ import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/presenter/permission/permission_request_phone.dart';
 import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_category_list_widget.dart';
+import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
+import 'package:orre/provider/waiting_usercall_time_list_state_notifier.dart';
 import 'package:orre/widget/custom_scroll_view/csv_divider_widget.dart';
+import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sliver_app_bar_builder/sliver_app_bar_builder.dart';
 
 import '../../model/store_info_model.dart';
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
-import '../../provider/store_detail_info_state_notifier.dart';
+import '../../provider/network/https/store_detail_info_state_notifier.dart';
 import 'package:orre/presenter/storeinfo/store_info_screen_waiting_status.dart';
 import './store_info_screen_button_selector.dart';
 
@@ -47,6 +50,67 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
   Widget build(BuildContext context) {
     final storeDetailInfo = ref.watch(storeDetailInfoProvider);
     final myWaitingInfo = ref.watch(storeWaitingRequestNotifierProvider);
+    final cancleState = ref.watch(cancleDialogStatus);
+    if (cancleState != null) {
+      print("!!!!!!!!!!cancle state: $cancleState");
+      Future.microtask(() {
+        if (cancleState == 1103) {
+          ref.read(cancleDialogStatus.notifier).state = null;
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertPopupWidget(
+                  title: '웨이팅 취소',
+                  subtitle: '웨이팅이 가게에 의해 취소되었습니다.',
+                  buttonText: '확인',
+                );
+              });
+        } else if (cancleState == 200) {
+          ref.read(cancleDialogStatus.notifier).state = null;
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertPopupWidget(
+                  title: '웨이팅 취소',
+                  subtitle: '웨이팅을 취소했습니다.',
+                  buttonText: '확인',
+                );
+              });
+        } else if (cancleState == 1102) {
+          ref.read(cancleDialogStatus.notifier).state = null;
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertPopupWidget(
+                  title: '웨이팅 취소 실패',
+                  subtitle: '가게에 문의해주세요.',
+                  buttonText: '확인',
+                );
+              });
+        }
+      }).catchError((e) {
+        print("error: $e");
+      });
+    }
+
+    final remainingTime = ref.watch(waitingUserCallTimeListProvider);
+    final userCallAlert = ref.watch(userCallAlertProvider);
+
+    if (userCallAlert && (remainingTime != null)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(userCallAlertProvider.notifier).state = false;
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertPopupWidget(
+                title: '입장 알림',
+                subtitle:
+                    '${ref.watch(waitingUserCallTimeListProvider.notifier).state!.inSeconds}초 이내에 매장에 입장해주세요!',
+                buttonText: '빨리 갈게요!',
+              );
+            });
+      });
+    }
 
     return Scaffold(
       body: storeDetailInfo.storeCode == 0

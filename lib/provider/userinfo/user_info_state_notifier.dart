@@ -50,6 +50,7 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
 
   Future<String?> requestSignIn(SignInInfo? signInInfo) async {
     try {
+      print("requestSignIn: $signInInfo");
       late SignInInfo info;
 
       // storage에 저장된 정보로 로그인하는 경우
@@ -85,6 +86,7 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
             name: jsonBody['token'],
             fcmToken: '',
           );
+          saveUserInfo();
           return jsonBody['token'];
         } else {
           print("requestSignIn: failed");

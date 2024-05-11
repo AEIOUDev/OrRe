@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/location_model.dart';
 import '../../provider/home_screen/store_list_sort_type_provider.dart';
-import '../../provider/store_list_state_notifier.dart';
+import '../../provider/network/https/store_list_state_notifier.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 class HomeScreenModalBottomSheet extends ConsumerWidget {
