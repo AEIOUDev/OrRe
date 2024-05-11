@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/widget/button/small_button_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
@@ -7,12 +6,14 @@ class AlertPopupWidget extends StatelessWidget {
   final String title;
   final String? subtitle;
   final String buttonText;
+  final Function()? onPressed;
 
   const AlertPopupWidget({
     Key? key,
     required this.title,
     this.subtitle,
     required this.buttonText,
+    this.onPressed,
   }) : super(key: key);
 
   @override
@@ -44,6 +45,9 @@ class AlertPopupWidget extends StatelessWidget {
             minSize: Size(double.infinity, 50),
             text: buttonText,
             onPressed: () {
+              if (onPressed != null) {
+                onPressed!();
+              }
               Navigator.of(context).pop();
             },
           ),

@@ -2,13 +2,24 @@ import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
+import 'package:orre/provider/waiting_usercall_time_list_state_notifier.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:orre/widget/text_field/text_input_widget.dart';
+import 'package:sqflite/sqflite.dart';
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 
 final peopleNumberProvider = StateProvider<int>((ref) => 1);
+
+final waitingFormKeyProvider = Provider((ref) => GlobalKey<FormState>());
+final waitingPhoneNumberProvider = StateProvider<TextEditingController>((ref) {
+  final userInfo = ref.watch(userInfoProvider);
+  final phoneNumberController = TextEditingController();
+  phoneNumberController.text = userInfo?.phoneNumber ?? "";
+  return phoneNumberController;
+});
 
 class WaitingDialog extends ConsumerWidget {
   final int storeCode;
@@ -19,13 +30,10 @@ class WaitingDialog extends ConsumerWidget {
   // 웨이팅 시작을 위한 정보 입력 다이얼로그 표시
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final phoneNumberController = TextEditingController();
-    final userInfo = ref.watch(userInfoProvider);
+    final phoneNumberController = ref.watch(waitingPhoneNumberProvider);
     final numberOfPersonControlloer = ref.watch(peopleNumberProvider);
 
-    phoneNumberController.text = userInfo?.phoneNumber ?? "";
-
-    final formKey = GlobalKey<FormState>();
+    final formKey = ref.watch(waitingFormKeyProvider);
 
     return AlertDialog(
       title: TextWidget("웨이팅 시작"),
@@ -46,39 +54,41 @@ class WaitingDialog extends ConsumerWidget {
               ref: ref,
             ),
             SizedBox(height: 16),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.remove),
-                  onPressed: () {
-                    if (numberOfPersonControlloer > 1) {
-                      ref.read(peopleNumberProvider.notifier).state--;
-                    }
-                  },
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.orange, width: 2),
-                    borderRadius: BorderRadius.circular(30),
+            Consumer(builder: (context, ref, child) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.remove),
+                    onPressed: () {
+                      if (numberOfPersonControlloer > 1) {
+                        ref.read(peopleNumberProvider.notifier).state--;
+                      }
+                    },
                   ),
-                  child: AnimatedFlipCounter(
-                    value: numberOfPersonControlloer,
-                    suffix: "명",
-                    textStyle: TextStyle(
-                      fontSize: 40,
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.orange, width: 2),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: AnimatedFlipCounter(
+                      value: numberOfPersonControlloer,
+                      suffix: "명",
+                      textStyle: TextStyle(
+                        fontSize: 40,
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed: () {
-                    ref.read(peopleNumberProvider.notifier).state++;
-                  },
-                ),
-              ],
-            ),
+                  IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: () {
+                      ref.read(peopleNumberProvider.notifier).state++;
+                    },
+                  ),
+                ],
+              );
+            }),
           ],
         ),
       ),
@@ -135,6 +145,9 @@ class WaitingDialog extends ConsumerWidget {
       print("result: $result");
       if (result) {
         final myWaitingInfo = ref.read(storeWaitingRequestNotifierProvider);
+        ref
+            .read(storeWaitingUserCallNotifierProvider.notifier)
+            .subscribeToUserCall(storeCode, myWaitingInfo!.token.waiting);
         // 결과가 true 일 때의 대화 상자
         showDialog(
           context: context,
@@ -157,6 +170,7 @@ class WaitingDialog extends ConsumerWidget {
       }
     }, onError: (error) {
       // 스트림에서 에러 발생 시 처리
+      print("waiting error: ${error}");
       showDialog(
         context: context,
         builder: (context) => AlertPopupWidget(

@@ -7,7 +7,8 @@ class WebsocketErrorScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // final stomp = ref.watch(stompClientStateNotifierProvider);
-    ref.read(stompClientStateNotifierProvider.notifier).reconnectCallback();
+    Future.delayed(Duration(milliseconds: 0),
+        () => ref.read(stompClientStateNotifierProvider.notifier).reconnect());
     return Scaffold(
       body: Center(
         child: Column(
@@ -17,7 +18,7 @@ class WebsocketErrorScreen extends ConsumerWidget {
             ElevatedButton(
               onPressed: () => ref
                   .read(stompClientStateNotifierProvider.notifier)
-                  .reconnectCallback(),
+                  .reconnect(),
               child: TextWidget('다시 시도하기'),
             ),
           ],

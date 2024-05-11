@@ -7,7 +7,7 @@ import 'package:orre/provider/location/now_location_provider.dart';
 
 import '../../provider/home_screen/store_list_sort_type_provider.dart';
 import '../../provider/location/location_securestorage_provider.dart';
-import '../../provider/store_list_state_notifier.dart';
+import '../../provider/network/https/store_list_state_notifier.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 class HomeScreenAppBar extends ConsumerWidget {
