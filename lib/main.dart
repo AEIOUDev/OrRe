@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/presenter/error/error_screen.dart';
 import 'package:orre/provider/error_state_notifier.dart';
+import 'package:orre/provider/first_boot_future_provider.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
@@ -83,7 +85,42 @@ void main() async {
 class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userInfo = ref.watch(userInfoProvider);
     print("MyApp build() called");
+    return MaterialApp(
+      home: FlutterSplashScreen.fadeIn(
+        backgroundColor: Colors.white,
+        onInit: () async {
+          debugPrint("On Init");
+          await ref.watch(firstBootFutureProvider);
+        },
+        onEnd: () {
+          final first = ref.watch(firstBootState.notifier).state;
+          final error = ref.watch(errorStateNotifierProvider);
+          print("first: $first");
+          print("error: $error");
+          if (first && error.isEmpty) {
+            debugPrint("On End");
+            ref.read(locationListProvider.notifier).loadLocations();
+            ref.read(nowLocationProvider.notifier).updateNowLocation();
+          }
+        },
+        childWidget: SizedBox(
+          height: 200,
+          width: 200,
+          child: Image.asset("assets/images/orre_logo.png"),
+        ),
+        onAnimationEnd: () => debugPrint("On Fade In End"),
+        nextScreen: userInfo == null ? OnboardingScreen() : MainScreen(),
+      ),
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.orange,
+      ),
+    );
+  }
+
+  Widget firstBootWidget(BuildContext context, WidgetRef ref) {
     final connectState = ref.watch(networkStateNotifier);
     final locationPermission =
         ref.watch(locationPermissionStateNotifierProvider);
@@ -122,64 +159,48 @@ class MyApp extends ConsumerWidget {
     print(connectState);
     print(
         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    if (ref.read(errorStateNotifierProvider.notifier).hasError) {
-      print("ErrorScreen() called");
-      return MaterialApp(
-        home: ErrorScreen(),
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.orange,
-        ),
-      );
-    } else {
-      return MaterialApp(
-        home: FutureBuilder(
-          future: startInitialScreen(ref),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              print("snapshot.data is ${snapshot.data}");
-              if (snapshot.data != null) {
-                return MainScreen();
-              } else {
-                print("OnboardingScreen() called");
-                return OnboardingScreen();
-              }
-            } else {
-              return Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            }
-          },
-        ),
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.orange,
-        ),
-        initialRoute: '/',
-        onGenerateRoute: (settings) {
-          // 경로 이름 파싱
-          Uri uri = Uri.parse(settings.name!);
-          // '/reservation/{가게코드}' 경로 처리
-          if (uri.pathSegments.length == 2 &&
-              uri.pathSegments.first == 'reservation') {
-            int storeCode = int.parse(uri.pathSegments[1]);
-            // return MaterialPageRoute(
-            //     builder: (context) => WaitingInfoWidget(storeCode: storeCode));
-            return MaterialPageRoute(
-                builder: (context) =>
-                    StoreDetailInfoWidget(storeCode: storeCode));
-          }
-          return null;
-        },
-      );
-    }
-  }
-}
 
-Future<String?> startInitialScreen(WidgetRef ref) async {
-  ref.read(locationListProvider.notifier).loadLocations();
-  ref.read(nowLocationProvider.notifier).updateNowLocation();
-  return await ref.read(userInfoProvider.notifier).requestSignIn(null);
+    return MaterialApp(
+      home: FutureBuilder(
+        future: ref.read(userInfoProvider.notifier).loadUserInfo(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            print("snapshot.data is ${snapshot.data}");
+            if (snapshot.data != null) {
+              return MainScreen();
+            } else {
+              print("OnboardingScreen() called");
+              return OnboardingScreen();
+            }
+          } else {
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+        },
+      ),
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.orange,
+      ),
+      initialRoute: '/',
+      onGenerateRoute: (settings) {
+        // 경로 이름 파싱
+        Uri uri = Uri.parse(settings.name!);
+        // '/reservation/{가게코드}' 경로 처리
+        if (uri.pathSegments.length == 2 &&
+            uri.pathSegments.first == 'reservation') {
+          int storeCode = int.parse(uri.pathSegments[1]);
+          // return MaterialPageRoute(
+          //     builder: (context) => WaitingInfoWidget(storeCode: storeCode));
+          return MaterialPageRoute(
+              builder: (context) =>
+                  StoreDetailInfoWidget(storeCode: storeCode));
+        }
+        return null;
+      },
+    );
+  }
 }

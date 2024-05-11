@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/store_info_model.dart';
 
-import '../services/network/https_services.dart';
-import '../services/time/time_services.dart';
+import '../../../services/network/https_services.dart';
+import '../../../services/time/time_services.dart';
 
 class StoreInfoParams {
   int storeCode;
@@ -52,11 +52,12 @@ class StoreDetailInfoNotifier extends StateNotifier<StoreDetailInfo> {
   }
 
   bool isCanReserve() {
-    final isRunTime =
-        isCurrentTimeBetween(state.openingTime, state.closingTime);
-    final isBreakTime =
-        isCurrentTimeBetween(state.breakStartTime, state.breakEndTime);
+    // final isRunTime =
+    //     isCurrentTimeBetween(state.openingTime, state.closingTime);
+    // final isBreakTime =
+    //     isCurrentTimeBetween(state.breakStartTime, state.breakEndTime);
 
-    return isRunTime && !isBreakTime;
+    // return isRunTime && !isBreakTime;
+    return state.waitingAvailable == 0;
   }
 }

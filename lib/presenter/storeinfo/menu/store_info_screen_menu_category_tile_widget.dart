@@ -21,12 +21,12 @@ class StoreMenuCategoryTileWidget extends ConsumerWidget {
       itemCount: categoryKR.length,
       itemBuilder: (context, index) {
         final category = categoryKR[index];
-        print("category: $category");
+        // print("category: $category");
         final categoryCode = menuCategories.categories.keys.firstWhere(
           (key) => menuCategories.categories[key] == category,
           orElse: () => '',
         );
-        print("categoryCode: $categoryCode");
+        // print("categoryCode: $categoryCode");
         return Material(
           child: Column(
             children: [

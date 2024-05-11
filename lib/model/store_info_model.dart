@@ -11,6 +11,7 @@ class StoreDetailInfo {
   final String storeIntroduce;
   final String storeCategory;
   final int storeInfoVersion;
+  final int waitingAvailable;
   final int numberOfTeamsWaiting;
   final int estimatedWaitingTime;
   final DateTime openingTime;
@@ -30,6 +31,7 @@ class StoreDetailInfo {
     required this.storeIntroduce,
     required this.storeCategory,
     required this.storeInfoVersion,
+    required this.waitingAvailable,
     required this.numberOfTeamsWaiting,
     required this.estimatedWaitingTime,
     required this.openingTime,
@@ -71,7 +73,8 @@ class StoreDetailInfo {
     print("locationAddress: $locationAddress");
 
     print("categories : ${json['menuCategories']}");
-    final menuCategories = MenuCategories.fromJson(json['menuCategories']);
+    final menuCategories =
+        MenuCategories.fromJson(json['menuCategories'] ?? {});
     print("menuCategories: $menuCategories");
 
     return StoreDetailInfo(
@@ -83,6 +86,7 @@ class StoreDetailInfo {
       storeInfoVersion: json['storeInfoVersion'] ?? 0,
       numberOfTeamsWaiting: json['numberOfTeamsWaiting'] ?? 0,
       estimatedWaitingTime: json['estimatedWaitingTime'] ?? 0,
+      waitingAvailable: json['waitingAvailable'] ?? 0,
       openingTime: openingTime,
       closingTime: closingTime,
       lastOrderTime: lastOrderTime,
@@ -110,6 +114,7 @@ class StoreDetailInfo {
         'storeInfoVersion': storeInfoVersion,
         'numberOfTeamsWaiting': numberOfTeamsWaiting,
         'estimatedWaitingTime': estimatedWaitingTime,
+        'waitingAvailable': waitingAvailable,
         'openingTime': openingTime.toIso8601String(),
         'closingTime': closingTime.toIso8601String(),
         'lastOrderTime': lastOrderTime.toIso8601String(),
@@ -132,6 +137,7 @@ class StoreDetailInfo {
       storeInfoVersion: 0,
       numberOfTeamsWaiting: 0,
       estimatedWaitingTime: 0,
+      waitingAvailable: 0,
       openingTime: DateTime.now(),
       closingTime: DateTime.now(),
       lastOrderTime: DateTime.now(),

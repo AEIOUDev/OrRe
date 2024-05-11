@@ -65,6 +65,7 @@ class MenuCategories {
   });
 
   factory MenuCategories.fromJson(Map<String, dynamic> json) {
+    if (json.isEmpty) return MenuCategories.nullValue();
     try {
       return MenuCategories(
         storeCode: json['storeCode'] ?? -1,

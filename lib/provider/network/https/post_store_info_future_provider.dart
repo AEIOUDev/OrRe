@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/store_info_model.dart';
-import 'package:orre/provider/store_detail_info_state_notifier.dart';
+import 'package:orre/provider/network/https/store_detail_info_state_notifier.dart';
 import 'package:orre/services/network/https_services.dart';
 
 Future<StoreDetailInfo> fetchStoreDetailInfo(StoreInfoParams params) async {

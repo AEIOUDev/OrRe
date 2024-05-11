@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
@@ -32,21 +33,16 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
   }
 
   Stream<StompStatus> configureClient() {
+    print("configureClient");
     final streamController = StreamController<StompStatus>.broadcast();
 
     client = StompClient(
       config: StompConfig(
         url: WebSocketService.url,
         onConnect: (StompFrame frame) {
-          final state = ref.read(stompState);
-          if (state != StompStatus.DISCONNECTED) {
-            print("reconnected : {$state}");
-            reconnectCallback();
-          } else {
-            onConnectCallback(frame);
-            ref.read(stompState.notifier).state = StompStatus.CONNECTED;
-            streamController.add(StompStatus.CONNECTED);
-          }
+          onConnectCallback(frame);
+          ref.read(stompState.notifier).state = StompStatus.CONNECTED;
+          streamController.add(StompStatus.CONNECTED);
         },
         onWebSocketError: (dynamic error) {
           print("websocket error: $error");
@@ -88,7 +84,7 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
       ),
     );
 
-    Future.delayed(Duration(milliseconds: 500), () {
+    Future.delayed(Duration(milliseconds: 100), () {
       client.activate();
       state = client;
     });
@@ -111,12 +107,20 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
     ref.read(storeWaitingUserCallNotifierProvider.notifier).setClient(client);
   }
 
-  void reconnectCallback() {
+  void reconnect() {
     print("reconnected");
     // 재시도 시, 구독 로직을 다시 실행
+    if (ref
+        .read(errorStateNotifierProvider.notifier)
+        .state
+        .contains(Error.network)) {
+      return;
+    }
     state?.activate();
     ref.read(storeWaitingInfoNotifierProvider.notifier).reconnect();
     ref.read(storeWaitingRequestNotifierProvider.notifier).reconnect();
+    ref.read(storeWaitingUserCallNotifierProvider.notifier).reconnect();
+    ref.read(stompState.notifier).state = StompStatus.CONNECTED;
   }
 
   // Example method to disconnect from the STOMP server

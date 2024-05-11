@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/presenter/storeinfo/store_info_screen_waiting_button.dart';
 import 'package:orre/widget/text/text_widget.dart';
-import '../../provider/store_detail_info_state_notifier.dart';
+import '../../provider/network/https/store_detail_info_state_notifier.dart';
 
 class BottomButtonSelector extends ConsumerWidget {
   final int storeCode;
@@ -13,7 +13,7 @@ class BottomButtonSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nowWaitable =
-        ref.watch(storeDetailInfoProvider.notifier).isCanReserve();
+        ref.read(storeDetailInfoProvider.notifier).isCanReserve();
 
     if (nowWaitable) {
       return WaitingButton(storeCode: storeCode, waitingState: waitingState);
