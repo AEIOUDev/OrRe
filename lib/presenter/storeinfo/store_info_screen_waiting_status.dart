@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
 import 'package:orre/model/store_waiting_request_model.dart';
-import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import '../../provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import '../../provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';

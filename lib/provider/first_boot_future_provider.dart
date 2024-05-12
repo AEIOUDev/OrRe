@@ -1,7 +1,6 @@
 // 처음 부팅할 때 필요한 초기화 작업을 수행하는 Provider
 
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/location_model.dart';
@@ -18,8 +17,7 @@ final signInProvider = FutureProvider<void>((ref) async {
   Completer<void> completer = Completer();
 
   // networkStreamProvider를 구독하고, true가 되면 작업을 수행
-  final streamSubscription =
-      ref.listen<bool>(networkStateNotifier, (prevState, newState) {
+  ref.listen<bool>(networkStateNotifier, (prevState, newState) {
     print("Network status: $newState");
     if (newState) {
       print("Network is connected, attempting to sign in...");

@@ -22,7 +22,7 @@ class StoreWaitingRequestNotifier
   Map<int, void Function({Map<String, String>? unsubscribeHeaders})?>
       _subscribeWaiting = {}; // 구독 해제 함수를 저장할 변수 추가
   Map<int, void Function({Map<String, String>? unsubscribeHeaders})?>
-      _subscribeWaitingCancle = {}; // 구독 해제 함수를 저장할 변수 추가
+      _subscribeWaitingCancel = {}; // 구독 해제 함수를 저장할 변수 추가
 
   List<StoreWaitingRequest> _subscriptionInfo = [];
 
@@ -43,7 +43,7 @@ class StoreWaitingRequestNotifier
     print("startSubscribe : $storeCode, $userPhoneNumber, $personNumber");
     StreamController<bool> controller = StreamController<bool>();
     bool waitingSubscribeComplete = false;
-    bool waitingCancleSubcribeComplete = false;
+    bool waitingCancelSubcribeComplete = false;
     if (_client != null) {
       subscribeToStoreWaitingRequest(storeCode, userPhoneNumber, personNumber)
           .listen((event) {
@@ -55,19 +55,19 @@ class StoreWaitingRequestNotifier
           controller.add(false);
         }
       });
-      subscribeToStoreWaitingCancleRequest(storeCode, userPhoneNumber)
+      subscribeToStoreWaitingCancelRequest(storeCode, userPhoneNumber)
           .listen((event) {
         if (event) {
-          waitingCancleSubcribeComplete = true;
+          waitingCancelSubcribeComplete = true;
           print(
-              "WaitingRequest waitingCancleSubcribeComplete : $waitingCancleSubcribeComplete");
+              "WaitingRequest waitingCancelSubcribeComplete : $waitingCancelSubcribeComplete");
         } else {
           controller.add(false);
         }
       });
       print(
-          "both subscribe complete? : ${waitingSubscribeComplete} / ${waitingCancleSubcribeComplete}");
-      if (waitingSubscribeComplete && waitingCancleSubcribeComplete) {
+          "both subscribe complete? : ${waitingSubscribeComplete} / ${waitingCancelSubcribeComplete}");
+      if (waitingSubscribeComplete && waitingCancelSubcribeComplete) {
         controller.add(true);
       }
     } else {
@@ -121,29 +121,29 @@ class StoreWaitingRequestNotifier
     return controller.stream; // 생성된 스트림 반환
   }
 
-  Stream<bool> subscribeToStoreWaitingCancleRequest(
+  Stream<bool> subscribeToStoreWaitingCancelRequest(
     int storeCode,
     String userPhoneNumber,
   ) {
     StreamController<bool> controller = StreamController<bool>();
 
-    if (_subscribeWaitingCancle[storeCode] == null) {
+    if (_subscribeWaitingCancel[storeCode] == null) {
       print(
-          "_subscribeWaiting[$storeCode] : ${_subscribeWaitingCancle[storeCode].toString()}");
-      _subscribeWaitingCancle.forEach((key, value) {
+          "_subscribeWaiting[$storeCode] : ${_subscribeWaitingCancel[storeCode].toString()}");
+      _subscribeWaitingCancel.forEach((key, value) {
         print('key : $key, value : $value');
       });
-      _subscribeWaitingCancle[storeCode] = _client?.subscribe(
+      _subscribeWaitingCancel[storeCode] = _client?.subscribe(
         destination: '/topic/user/waiting/cancel/$storeCode/$userPhoneNumber',
         callback: (frame) {
           if (frame.body != null) {
-            print("subscribeToStoreWaitingCancleRequest : ${frame.body}");
+            print("subscribeToStoreWaitingCancelRequest : ${frame.body}");
             var decodedBody = json.decode(frame.body!); // JSON 문자열을 객체로 변환
             if (APIResponseStatus.success.isEqualTo(decodedBody['status'])) {
               print("웨이팅 취소 성공!!");
               waitingCancelProcess(true, storeCode, userPhoneNumber);
               return controller.add(true);
-            } else if (APIResponseStatus.waitingCancleByStore
+            } else if (APIResponseStatus.waitingCancelByStore
                 .isEqualTo(decodedBody['status'])) {
               print("가게에서 취소!!");
               waitingCancelProcess(true, storeCode, userPhoneNumber);
@@ -156,9 +156,9 @@ class StoreWaitingRequestNotifier
           }
         },
       );
-      print("StoreWaitingCancleRequestList/${storeCode} : subscribe!");
+      print("StoreWaitingCancelRequestList/${storeCode} : subscribe!");
     } else {
-      print("StoreWaitingCancleRequestList/${storeCode} : already subscribed!");
+      print("StoreWaitingCancelRequestList/${storeCode} : already subscribed!");
       controller.add(false); // 이미 구독중인 경우
     }
 
@@ -180,8 +180,8 @@ class StoreWaitingRequestNotifier
     );
   }
 
-  void sendWaitingCancleRequest(int storeCode, String userPhoneNumber) {
-    print("sendWaitingCancleRequest : {$storeCode}, {$userPhoneNumber}");
+  void sendWaitingCancelRequest(int storeCode, String userPhoneNumber) {
+    print("sendWaitingCancelRequest : {$storeCode}, {$userPhoneNumber}");
     _client?.send(
       destination: '/app/user/waiting/cancel/$storeCode/$userPhoneNumber',
       body: json.encode({
@@ -234,19 +234,19 @@ class StoreWaitingRequestNotifier
   }
 
   void unSubscribe(int storeCode) {
-    print("cancle waiting/make/$storeCode");
+    print("cancel waiting/make/$storeCode");
     if (_subscribeWaiting[storeCode] != null) {
       _subscribeWaiting[storeCode]!(unsubscribeHeaders: {}); // 구독 해제 함수 호출
       _subscribeWaiting[storeCode] == null;
       _subscribeWaiting.remove(storeCode); // 구독 해제 함수
     }
 
-    print("cancle waiting/cancle/$storeCode");
-    if (_subscribeWaitingCancle[storeCode] != null) {
-      _subscribeWaitingCancle[storeCode]!(
+    print("cancel waiting/cancel/$storeCode");
+    if (_subscribeWaitingCancel[storeCode] != null) {
+      _subscribeWaitingCancel[storeCode]!(
           unsubscribeHeaders: {}); // 구독 해제 함수 호출
-      _subscribeWaitingCancle[storeCode] == null;
-      _subscribeWaitingCancle.remove(storeCode); // 구독 해제 함수 삭제
+      _subscribeWaitingCancel[storeCode] == null;
+      _subscribeWaitingCancel.remove(storeCode); // 구독 해제 함수 삭제
     }
 
     _subscriptionInfo
@@ -280,7 +280,7 @@ class StoreWaitingRequestNotifier
   void clearWaitingRequestList() {
     state = [];
     _subscribeWaiting.clear();
-    _subscribeWaitingCancle.clear();
+    _subscribeWaitingCancel.clear();
     _subscriptionInfo.clear();
     saveWaitingRequestList();
   }
@@ -295,7 +295,7 @@ class StoreWaitingRequestNotifier
         element.token.phoneNumber,
         element.token.personNumber,
       );
-      subscribeToStoreWaitingCancleRequest(
+      subscribeToStoreWaitingCancelRequest(
         element.token.storeCode,
         element.token.phoneNumber,
       );

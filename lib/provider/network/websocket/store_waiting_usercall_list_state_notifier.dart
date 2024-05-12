@@ -71,6 +71,11 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
     int storeCode,
     int waitingNumber,
   ) {
+    print("subscribeToUserCall : $storeCode, $waitingNumber");
+    _subscribeUserCall.forEach((key, value) {
+      print("subscribeUserCall : $key");
+      print("subscribeUserCall : $value");
+    });
     if (_subscribeUserCall[storeCode] == null) {
       _subscribeUserCall[storeCode] = _client?.subscribe(
         destination: '/topic/user/userCall/$storeCode/$waitingNumber',
@@ -99,18 +104,13 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
         .setUserCallTime(userCall.entryTime);
   }
 
-  void unSubscribe(int storeCode, int waitingNumber) {
-    print("unSubscribe /user/userCall/$storeCode/$waitingNumber");
-    if (_subscribeUserCall[storeCode] == null) {
-      print("UserCallList/${storeCode} : not subscribed!");
-      return;
-    }
-    _subscribeUserCall[storeCode](unsubscribeHeaders: null); // 구독 해제 함수 호출
-    _subscribeUserCall[storeCode] = null; // 구독 해제 함수 초기화
-    print("_unsubscribeUserCall : ${_subscribeUserCall[storeCode]}");
-
+  void unSubscribe() {
+    _subscribeUserCall.forEach((key, value) {
+      value(unsubscribeHeaders: null); // 구독 해제 함수 호출
+    });
+    _subscribeUserCall.clear();
     state = null;
-
+    _ref.read(userCallAlertProvider.notifier).state = false;
     _ref.read(waitingUserCallTimeListProvider.notifier).deleteTimer();
 
     saveWaitingRequestList();
@@ -119,12 +119,14 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
   // 위치 정보 리스트를 안전한 저장소에 저장
   Future<void> saveWaitingRequestList() async {
     print("saveUserCallStatus");
+
     if (state == null) {
-      return;
+      await _storage.delete(key: 'userCallStatus');
+    } else {
+      final json_data_status = jsonEncode(state!.toJson());
+      print("saveUserCallStatus : $json_data_status");
+      await _storage.write(key: 'userCallStatus', value: json_data_status);
     }
-    final json_data_status = jsonEncode(state!.toJson());
-    print("saveUserCallStatus : $json_data_status");
-    await _storage.write(key: 'userCallStatus', value: json_data_status);
   }
 
   // 안전한 저장소에 저장된 위치 정보 리스트를 불러오는 메소드

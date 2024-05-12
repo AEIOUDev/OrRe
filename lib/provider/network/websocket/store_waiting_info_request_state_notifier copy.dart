@@ -21,7 +21,7 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
   // Map<int, Completer> completers = {};
 
   dynamic _subscribeRequest = {};
-  dynamic _subscribeCancle = {};
+  dynamic _subscribeCancel = {};
 
   StoreWaitingRequestNotifier(Ref ref) : super(null) {}
 
@@ -42,13 +42,13 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
         print("WaitingRequest waitingSubscribeComplete : Success");
 
         // 웨이팅 요청 성공 시, 웨이팅 취소도 구독 시도
-        if (await subscribeToStoreWaitingCancleRequest(
+        if (await subscribeToStoreWaitingCancelRequest(
             storeCode, userPhoneNumber)) {
-          print("WaitingRequest waitingCancleSubcribeComplete : Success");
+          print("WaitingRequest waitingCancelSubcribeComplete : Success");
           return true;
         } else {
           // TODO : 웨이팅 취소 요청 실패 시, 모든 구독을 해제하고 false 반환
-          print("WaitingRequest waitingCancleSubcribeComplete : Fail");
+          print("WaitingRequest waitingCancelSubcribeComplete : Fail");
           return false;
         }
       } else {
@@ -108,30 +108,30 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
     return completer.future;
   }
 
-  Future<bool> subscribeToStoreWaitingCancleRequest(
+  Future<bool> subscribeToStoreWaitingCancelRequest(
     int storeCode,
     String userPhoneNumber,
   ) async {
     Completer<bool> completer = Completer<bool>();
 
     // 이미 구독 중인 경우 이전 구독을 취소하고 새로 시작합니다.
-    if (_subscribeCancle != null) {
-      _subscribeCancle(unsubscribeHeaders: {}); // 구독 해제 함수 호출
+    if (_subscribeCancel != null) {
+      _subscribeCancel(unsubscribeHeaders: {}); // 구독 해제 함수 호출
       print(
           "StoreWaitingRequestList/${storeCode} : Unsubscribed previous subscription!");
     }
-    _subscribeCancle = _client?.subscribe(
+    _subscribeCancel = _client?.subscribe(
       destination: '/topic/user/waiting/cancel/$storeCode/$userPhoneNumber',
       callback: (frame) {
         if (frame.body != null) {
-          print("subscribeToStoreWaitingCancleRequest : ${frame.body}");
+          print("subscribeToStoreWaitingCancelRequest : ${frame.body}");
           try {
             var decodedBody = json.decode(frame.body!); // JSON 문자열을 객체로 변환
             if (APIResponseStatus.success.isEqualTo(decodedBody['status'])) {
               print("웨이팅 취소 성공!!");
               waitingCancelProcess(true, storeCode, userPhoneNumber);
               completer.complete(true);
-            } else if (APIResponseStatus.waitingCancleByStore
+            } else if (APIResponseStatus.waitingCancelByStore
                 .isEqualTo(decodedBody['status'])) {
               print("가게에서 취소!!");
               waitingCancelProcess(true, storeCode, userPhoneNumber);
@@ -169,8 +169,8 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
     );
   }
 
-  void sendWaitingCancleRequest(int storeCode, String userPhoneNumber) {
-    print("sendWaitingCancleRequest : {$storeCode}, {$userPhoneNumber}");
+  void sendWaitingCancelRequest(int storeCode, String userPhoneNumber) {
+    print("sendWaitingCancelRequest : {$storeCode}, {$userPhoneNumber}");
     _client?.send(
       destination: '/app/user/waiting/cancel/$storeCode/$userPhoneNumber',
       body: json.encode({
@@ -203,18 +203,18 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
   }
 
   void unSubscribe(int storeCode) {
-    print("cancle waiting/make/$storeCode");
+    print("cancel waiting/make/$storeCode");
     if (_subscribeRequest != null) {
       _subscribeRequest(unsubscribeHeaders: {}); // 구독 해제 함수 호출
       _subscribeRequest == null;
       _subscribeRequest.remove(storeCode); // 구독 해제 함수
     }
 
-    print("cancle waiting/cancle/$storeCode");
-    if (_subscribeCancle != null) {
-      _subscribeCancle!(unsubscribeHeaders: {}); // 구독 해제 함수 호출
-      _subscribeCancle == null;
-      _subscribeCancle.remove(storeCode); // 구독 해제 함수 삭제
+    print("cancel waiting/cancel/$storeCode");
+    if (_subscribeCancel != null) {
+      _subscribeCancel!(unsubscribeHeaders: {}); // 구독 해제 함수 호출
+      _subscribeCancel == null;
+      _subscribeCancel.remove(storeCode); // 구독 해제 함수 삭제
     }
     saveWaitingRequestList();
   }
@@ -222,7 +222,7 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
   // 위치 정보 리스트를 안전한 저장소에 저장
   Future<void> saveWaitingRequestList() async {
     print("saveWaitingRequestList");
-    final json_data_subscribe = jsonEncode(_subscribeCancle);
+    final json_data_subscribe = jsonEncode(_subscribeCancel);
     await _storage.write(
         key: 'subscriptionDetails', value: json_data_subscribe);
   }
@@ -232,13 +232,13 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
     print("loadWaitingRequestList");
     final json_data_subscribe = await _storage.read(key: 'subscriptionDetails');
     if (json_data_subscribe != null) {
-      _subscribeCancle = jsonDecode(json_data_subscribe);
+      _subscribeCancel = jsonDecode(json_data_subscribe);
     }
   }
 
   void clearWaitingRequestList() {
     state = null;
-    _subscribeCancle = null;
+    _subscribeCancel = null;
     _subscribeRequest = null;
     saveWaitingRequestList();
   }
@@ -249,7 +249,7 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
     loadWaitingRequestList();
     if (state != null) {
       print("reconnect : ${state!.token.storeCode}");
-      subscribeToStoreWaitingCancleRequest(
+      subscribeToStoreWaitingCancelRequest(
           state!.token.storeCode, state!.token.phoneNumber);
     }
   }
