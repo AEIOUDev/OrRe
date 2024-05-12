@@ -8,13 +8,13 @@ import 'package:orre/widget/text_field/text_input_widget.dart';
 
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 
-final waitingCancleFormKeyProvider = Provider((ref) => GlobalKey<FormState>());
+final waitingCancelFormKeyProvider = Provider((ref) => GlobalKey<FormState>());
 
-class WaitingCancleDialog extends ConsumerWidget {
+class WaitingCancelDialog extends ConsumerWidget {
   final int storeCode;
   final bool waitingState;
 
-  WaitingCancleDialog({required this.storeCode, required this.waitingState});
+  WaitingCancelDialog({required this.storeCode, required this.waitingState});
 
   // 웨이팅 취소를 위한 정보 입력 다이얼로그 표시
   @override
@@ -23,7 +23,7 @@ class WaitingCancleDialog extends ConsumerWidget {
     final waitingInfo = ref.watch(storeWaitingRequestNotifierProvider);
     final phoneNumberController = TextEditingController();
     phoneNumberController.text = waitingInfo?.token.phoneNumber ?? "";
-    final formKey = ref.watch(waitingCancleFormKeyProvider);
+    final formKey = ref.watch(waitingCancelFormKeyProvider);
 
     return AlertDialog(
       title: TextWidget("웨이팅 취소"),
@@ -65,10 +65,10 @@ class WaitingCancleDialog extends ConsumerWidget {
               print("웨이팅 취소");
               ref
                   .read(storeWaitingUserCallNotifierProvider.notifier)
-                  .unSubscribe(storeCode, waitingInfo!.token.waiting);
+                  .unSubscribe();
               ref
                   .read(storeWaitingRequestNotifierProvider.notifier)
-                  .sendWaitingCancleRequest(
+                  .sendWaitingCancelRequest(
                       storeCode, phoneNumberController.text);
             }
           },
