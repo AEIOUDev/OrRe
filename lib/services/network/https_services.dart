@@ -13,7 +13,7 @@ enum APIResponseStatus {
   returnCalculationResultFailure,
   waitingJoinFailure,
   waitingExitFailure,
-  waitingCancleByStore,
+  waitingCancelByStore,
   etc
 }
 
@@ -44,7 +44,7 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return '대기열 참가 실패';
       case APIResponseStatus.waitingExitFailure:
         return '대기열 나가기 실패';
-      case APIResponseStatus.waitingCancleByStore:
+      case APIResponseStatus.waitingCancelByStore:
         return '가게에 의한 대기열 취소';
 
       default:
@@ -78,7 +78,7 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return 'Waiting join failure';
       case APIResponseStatus.waitingExitFailure:
         return 'Waiting exit failure';
-      case APIResponseStatus.waitingCancleByStore:
+      case APIResponseStatus.waitingCancelByStore:
         return 'Waiting cancel by store';
 
       default:
@@ -110,7 +110,7 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return '1101';
       case APIResponseStatus.waitingExitFailure:
         return '1102';
-      case APIResponseStatus.waitingCancleByStore:
+      case APIResponseStatus.waitingCancelByStore:
         return '1103';
 
       case APIResponseStatus.success:
@@ -147,7 +147,7 @@ extension APIResponseStatusExtension on APIResponseStatus {
       case '1102':
         return APIResponseStatus.waitingExitFailure;
       case '1103':
-        return APIResponseStatus.waitingCancleByStore;
+        return APIResponseStatus.waitingCancelByStore;
 
       default:
         return APIResponseStatus.etc;

@@ -361,7 +361,7 @@
 //             context: context,
 //             builder: (BuildContext context) {
 //               return waitingState
-//                   ? WaitingCancleDialog(
+//                   ? WaitingCancelDialog(
 //                       storeCode: storeCode, waitingState: waitingState)
 //                   : WaitingDialog(
 //                       storeCode: storeCode,
@@ -495,11 +495,11 @@
 //   }
 // }
 
-// class WaitingCancleDialog extends ConsumerWidget {
+// class WaitingCancelDialog extends ConsumerWidget {
 //   final int storeCode;
 //   final bool waitingState;
 
-//   WaitingCancleDialog({required this.storeCode, required this.waitingState});
+//   WaitingCancelDialog({required this.storeCode, required this.waitingState});
 
 //   // 웨이팅 취소를 위한 정보 입력 다이얼로그 표시
 //   @override
@@ -553,7 +553,7 @@
 //               print("웨이팅 취소");
 //               ref
 //                   .read(storeWaitingRequestNotifierProvider.notifier)
-//                   .subscribeToStoreWaitingCancleRequest(
+//                   .subscribeToStoreWaitingCancelRequest(
 //                     storeCode,
 //                     phoneNumberController.text,
 //                   );

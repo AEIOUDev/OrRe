@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
-import 'store_info_screen_waiting_cancle_dialog.dart';
+import 'store_info_screen_waiting_cancel_dialog.dart';
 import 'store_info_screen_waiting_dialog.dart';
 
 class WaitingButton extends ConsumerWidget {
@@ -25,7 +25,7 @@ class WaitingButton extends ConsumerWidget {
             context: context,
             builder: (BuildContext context) {
               return waitingState
-                  ? WaitingCancleDialog(
+                  ? WaitingCancelDialog(
                       storeCode: storeCode, waitingState: waitingState)
                   : WaitingDialog(
                       storeCode: storeCode,

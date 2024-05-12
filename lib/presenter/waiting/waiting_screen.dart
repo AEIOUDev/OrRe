@@ -122,7 +122,7 @@ class WaitingStoreItem extends ConsumerWidget {
                       if (enteredCode == phoneNumber) {
                         ref
                             .read(storeWaitingRequestNotifierProvider.notifier)
-                            .sendWaitingCancleRequest(
+                            .sendWaitingCancelRequest(
                                 storeWaitingRequest.token.storeCode,
                                 storeWaitingRequest.token.phoneNumber);
                         Navigator.pop(context);

@@ -4,11 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
-import 'package:orre/provider/waiting_usercall_time_list_state_notifier.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:orre/widget/text_field/text_input_widget.dart';
-import 'package:sqflite/sqflite.dart';
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 
 final peopleNumberProvider = StateProvider<int>((ref) => 1);
@@ -153,7 +151,7 @@ class WaitingDialog extends ConsumerWidget {
           context: context,
           builder: (context) => AlertPopupWidget(
             title: '웨이팅 성공',
-            subtitle: '대기번호 ${myWaitingInfo?.token.waiting}번으로 웨이팅 되었습니다.',
+            subtitle: '대기번호 ${myWaitingInfo.token.waiting}번으로 웨이팅 되었습니다.',
             buttonText: 'OK',
           ),
         );

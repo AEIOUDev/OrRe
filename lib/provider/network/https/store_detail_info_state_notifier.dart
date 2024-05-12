@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/store_info_model.dart';
 
 import '../../../services/network/https_services.dart';
-import '../../../services/time/time_services.dart';
 
 class StoreInfoParams {
   int storeCode;

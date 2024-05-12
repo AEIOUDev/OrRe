@@ -1,11 +1,10 @@
 import 'dart:io';
 
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/presenter/error/error_screen.dart';
 import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/provider/first_boot_future_provider.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
@@ -13,12 +12,12 @@ import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
 import 'package:orre/provider/permission/location_permission_state_notifier.dart';
 import 'package:url_strategy/url_strategy.dart';
-import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_core/firebase_core.dart';
 
-import 'firebase_options.dart'; // Firebase 초기화 옵션을 포함한 파일
+// import 'firebase_options.dart'; // Firebase 초기화 옵션을 포함한 파일
 import 'presenter/storeinfo/store_info_screen.dart';
 import 'presenter/user/onboarding_screen.dart';
-import 'services/notifications_services.dart';
+// import 'services/notifications_services.dart';
 
 import 'presenter/main_screen.dart';
 
