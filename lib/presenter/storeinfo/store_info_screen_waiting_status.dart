@@ -26,10 +26,11 @@ class WaitingStatusWidget extends ConsumerWidget {
     final remainingTime = ref.watch(waitingUserCallTimeListProvider);
 
     return SliverToBoxAdapter(
-      child: myWaitingInfo != null
-          ? buildMyWaitingStatus(
-              myWaitingInfo!, storeWaitingInfo, myUserCall, remainingTime)
-          : buildGeneralWaitingStatus(storeWaitingInfo),
+      child:
+          (myWaitingInfo != null && myWaitingInfo?.token.storeCode == storeCode)
+              ? buildMyWaitingStatus(
+                  myWaitingInfo!, storeWaitingInfo, myUserCall, remainingTime)
+              : buildGeneralWaitingStatus(storeWaitingInfo),
     );
   }
 
