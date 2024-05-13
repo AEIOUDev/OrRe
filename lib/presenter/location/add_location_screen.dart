@@ -38,17 +38,18 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 // 데이터 로딩 중에는 로딩 인디케이터를 보여줍니다.
+                print("snapshot.connectionState: ${snapshot.connectionState}");
                 return Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 // 데이터 로딩 중 오류가 발생하면 오류 메시지를 보여줍니다.
+                print("snapshot.error: ${snapshot.error}");
                 return Center(child: TextWidget('위치 정보를 가져오는 데 실패했습니다.'));
               } else {
+                print("snapshot.data: ${snapshot.data}");
                 // 데이터 로딩이 성공하면 지도를 표시합니다.
                 final userLocationInfo = snapshot.data; // 사용자 위치 정보
-                final latitude =
-                    userLocationInfo.locationInfo?.latitude ?? 0; // 위도
-                final longitude =
-                    userLocationInfo.locationInfo?.longitude ?? 0; // 경도
+                final latitude = userLocationInfo.latitude ?? 0; // 위도
+                final longitude = userLocationInfo.longitude ?? 0; // 경도
 
                 return NaverMap(
                   options: NaverMapViewOptions(
