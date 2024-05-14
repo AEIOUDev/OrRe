@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:orre/model/store_info_model.dart';
 import 'package:stomp_dart_client/stomp.dart';
 
@@ -18,7 +18,7 @@ final storeDetailInfoProvider =
 class StoreDetailInfoStateNotifier extends StateNotifier<StoreDetailInfo?> {
   StoreDetailInfoStateNotifier() : super(null) {}
   StompClient? _client;
-  final _storage = FlutterSecureStorage();
+  // final _storage = FlutterSecureStorage();
 
   Map<dynamic, dynamic> _subscribeStoreInfo = {};
   int storeCodeForRequest = -1;

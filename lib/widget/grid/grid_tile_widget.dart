@@ -21,10 +21,13 @@ class CategoryItem extends ConsumerWidget {
             print("category : " +
                 ref.read(selectCategoryProvider.notifier).state.toKoKr());
           },
-          child: TextWidget(category.toKoKr()),
+          child: TextWidget(
+            category.toKoKr(),
+            color: selectedTitle == category ? Colors.white : Colors.black,
+          ),
           style: ElevatedButton.styleFrom(
             backgroundColor:
-                selectedTitle == category ? Colors.blue : Colors.grey,
+                selectedTitle == category ? Color(0xFFFFFFBF52) : Colors.white,
           ),
         ),
       ],

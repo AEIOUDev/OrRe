@@ -48,6 +48,8 @@ class MainScreen extends ConsumerWidget {
             label: '줄서기',
           ),
         ],
+        selectedItemColor: Color(0xFFFFFFBF52),
+        unselectedItemColor: Color(0xFFDFDFDF),
         currentIndex: selectedIndex, // 현재 선택된 인덱스
         onTap: (index) {
           // 사용자가 탭을 선택할 때 상태 업데이트

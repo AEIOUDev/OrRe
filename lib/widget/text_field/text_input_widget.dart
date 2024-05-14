@@ -29,7 +29,7 @@ class TextInputWidget extends ConsumerWidget {
     required this.controller,
     this.autofillHints,
     this.title,
-    this.subTitle,
+    this.subTitle = '',
     this.prefixIcon,
     this.suffixIcon,
     this.focusNode,
@@ -55,6 +55,16 @@ class TextInputWidget extends ConsumerWidget {
               textAlign: TextAlign.left,
             ),
           ),
+        if (subTitle != null)
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+            child: TextWidget(
+              subTitle!,
+              fontSize: 12,
+              color: Color(0xFF666666),
+            ),
+          ),
         TextFormField(
             autovalidateMode: AutovalidateMode.always,
             validator: (text) => errorTextWidget(
@@ -77,12 +87,6 @@ class TextInputWidget extends ConsumerWidget {
                 ),
                 border: OutlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFFDFDFDF)),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Color(0xFFFFBF52), // 입력을 받을 때의 테두리 색상
-                  ),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 contentPadding:
@@ -124,16 +128,6 @@ class TextInputWidget extends ConsumerWidget {
                   isPassword:
                       autofillHints?.contains(AutofillHints.password) == true));
             }),
-        if (subTitle != null)
-          Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.fromLTRB(8, 8, 0, 0),
-            child: TextWidget(
-              subTitle!,
-              fontSize: 12,
-              color: Color(0xFF666666),
-            ),
-          ),
       ],
     );
   }

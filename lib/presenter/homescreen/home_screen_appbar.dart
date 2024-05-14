@@ -73,19 +73,28 @@ class HomeScreenAppBar extends ConsumerWidget {
           ),
           actions: [
             IconButton(
-              icon: Icon(Icons.search),
+              icon: Icon(
+                Icons.search,
+                color: Colors.black,
+              ),
               onPressed: () {
                 // 위치 검색 로직
               },
             ),
             IconButton(
-              icon: Icon(Icons.star),
+              icon: Icon(
+                Icons.star,
+                color: Colors.black,
+              ),
               onPressed: () {
                 // 즐겨찾기 페이지로 이동
               },
             ),
             IconButton(
-              icon: Icon(Icons.settings),
+              icon: Icon(
+                Icons.settings,
+                color: Colors.black,
+              ),
               onPressed: () {
                 // 설정 페이지로 이동
                 Navigator.push(context,
@@ -98,7 +107,7 @@ class HomeScreenAppBar extends ConsumerWidget {
               bottom: Radius.circular(30),
             ),
           ),
-          backgroundColor: Colors.orange,
+          backgroundColor: Color(0xFFFFB74D),
         ));
   }
 

@@ -6,11 +6,15 @@ class TextButtonWidget extends ConsumerWidget {
   final String text;
   final Function onPressed;
   final Size maxSize;
+  final Color textColor;
+  final double fontSize;
 
   const TextButtonWidget({
     Key? key,
     required this.text,
     required this.onPressed,
+    this.textColor = Colors.black,
+    this.fontSize = 24,
     this.maxSize = const Size(double.infinity, 50),
   }) : super(key: key);
 
@@ -20,7 +24,11 @@ class TextButtonWidget extends ConsumerWidget {
       onPressed: () {
         onPressed();
       },
-      child: TextWidget(text),
+      child: TextWidget(
+        text,
+        color: textColor,
+        fontSize: fontSize,
+      ),
     );
   }
 }
