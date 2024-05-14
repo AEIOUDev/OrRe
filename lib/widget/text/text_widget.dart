@@ -14,6 +14,7 @@ class TextWidget extends ConsumerWidget {
   final List<Shadow> shadows;
   final double wordSpacing;
   final double letterSpacing;
+  final EdgeInsetsGeometry padding;
 
   const TextWidget(
     this.text, {
@@ -27,22 +28,26 @@ class TextWidget extends ConsumerWidget {
     this.shadows = const [],
     this.wordSpacing = 0,
     this.letterSpacing = 0,
+    this.padding = const EdgeInsets.all(0),
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Text(text,
-        style: TextStyle(
-          fontFamily: fontFamily,
-          fontSize: fontSize,
-          color: color,
-          fontWeight: fontWeight,
-          shadows: shadows,
-          wordSpacing: wordSpacing,
-          letterSpacing: letterSpacing,
-        ),
-        textAlign: textAlign,
-        softWrap: softWrap,
-        locale: Locale('ko', 'KR'));
+    return Padding(
+      padding: padding,
+      child: Text(text,
+          style: TextStyle(
+            fontFamily: fontFamily,
+            fontSize: fontSize,
+            color: color,
+            fontWeight: fontWeight,
+            shadows: shadows,
+            wordSpacing: wordSpacing,
+            letterSpacing: letterSpacing,
+          ),
+          textAlign: textAlign,
+          softWrap: softWrap,
+          locale: Locale('ko', 'KR')),
+    );
   }
 }
