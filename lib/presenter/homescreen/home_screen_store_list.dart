@@ -22,7 +22,12 @@ class StoreListWidget extends ConsumerWidget {
           return StoreItem(storeInfo: storeList[index]);
         },
         separatorBuilder: (context, index) {
-          return Divider();
+          return Divider(
+            color: Color(0xFFDFDFDF),
+            thickness: 2,
+            endIndent: 10,
+            indent: 10,
+          );
         });
   }
 }
