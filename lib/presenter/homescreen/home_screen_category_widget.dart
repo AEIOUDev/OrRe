@@ -16,28 +16,34 @@ class CategoryWidget extends ConsumerWidget {
     final nowCategory = ref.watch(selectCategoryProvider);
     return Column(
       children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CategoryItem(category: StoreCategory.all),
-            CategoryItem(category: StoreCategory.korean),
-            CategoryItem(category: StoreCategory.chinese),
-            CategoryItem(category: StoreCategory.japanese),
-          ],
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CategoryItem(category: StoreCategory.all),
+                  CategoryItem(category: StoreCategory.korean),
+                  CategoryItem(category: StoreCategory.chinese),
+                  CategoryItem(category: StoreCategory.japanese),
+                  CategoryItem(category: StoreCategory.western),
+                  CategoryItem(category: StoreCategory.snack),
+                  CategoryItem(category: StoreCategory.cafe),
+                  CategoryItem(category: StoreCategory.etc),
+                ],
+              ),
+            ),
+          ),
         ),
         Row(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            CategoryItem(category: StoreCategory.western),
-            CategoryItem(category: StoreCategory.snack),
-            CategoryItem(category: StoreCategory.cafe),
-            CategoryItem(category: StoreCategory.etc),
-          ],
-        ),
-        Row(
-          children: [
-            TextWidget(nowCategory.toKoKr(),
-                fontSize: 30, fontWeight: FontWeight.bold),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextWidget(nowCategory.toKoKr(),
+                  fontSize: 30, fontWeight: FontWeight.bold),
+            ),
             Spacer(),
             HomeScreenModalBottomSheet(location: location),
           ],

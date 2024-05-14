@@ -72,29 +72,52 @@ class StoreItem extends ConsumerWidget {
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          width: 60,
-          height: 60,
+          width: 50,
+          height: 50,
           placeholder: (context, url) => CircularProgressIndicator(),
           errorWidget: (context, url, error) => Icon(Icons.error),
         ),
-        title: TextWidget('가게 ${storeInfo.storeCode}: ${storeInfo.storeName}'),
+        //title: TextWidget('가게 ${storeInfo.storeCode}: ${storeInfo.storeName}'),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              children: [
+                TextWidget(
+                  '${storeInfo.storeName}',
+                  fontSize: 28,
+                ),
+                Spacer(),
+                TextWidget(
+                  '거리 ${storeInfo.distance.round()}m',
+                  fontSize: 18,
+                  color: Color(0xFF999999),
+                ),
+              ],
+            ),
             // TextWidget('주소: ${storeInfo.address}'),
-            TextWidget('거리: ${storeInfo.distance.round()}m'),
+            // TextWidget('거리: ${storeInfo.distance.round()}m'),
             // TextWidget('위도: ${storeInfo.latitude}'),
             // TextWidget('경도: ${storeInfo.longitude}'),
-            TextWidget('소개: ${storeInfo.storeShortIntroduce}'),
-            TextWidget("카테고리: ${storeInfo.storeCategory}"),
-          ],
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextWidget("대기팀 수: ${storeWaitingInfo.waitingTeamList.length}"),
             TextWidget(
-                "예상 대기 시간: ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam}분"),
+              '${storeInfo.storeShortIntroduce}',
+              fontSize: 18,
+              color: Color(0xFF999999),
+            ),
+            //TextWidget("카테고리: ${storeInfo.storeCategory}"),
+            Row(
+              children: [
+                Icon(
+                  Icons.person,
+                  color: Color(0xFFDD0000),
+                ),
+                TextWidget(
+                  "대기 팀 수 ${storeWaitingInfo.waitingTeamList.length} 팀\t(약 ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam}분)",
+                  color: Color(0xFFDD0000),
+                  fontSize: 18,
+                ),
+              ],
+            ),
           ],
         ),
       ),
