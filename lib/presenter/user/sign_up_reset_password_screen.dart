@@ -8,7 +8,7 @@ import 'package:orre/presenter/user/onboarding_screen.dart';
 import 'package:orre/services/network/https_services.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
-import 'package:orre/widget/button/small_button_widget.dart';
+import 'package:orre/widget/button/text_button_widget.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
 
 import 'package:orre/widget/text_field/text_input_widget.dart';
@@ -70,7 +70,6 @@ class SignUpResetPasswordScreen extends ConsumerWidget {
                           child: TextInputWidget(
                             prefixIcon: Icon(Icons.phone),
                             hintText: '전화번호를 입력해주세요.',
-                            subTitle: '비밀번호를 재설정할 전화번호를, 숫자만 입력해주세요.',
                             isObscure: false,
                             type: TextInputType.number,
                             ref: ref,
@@ -84,50 +83,51 @@ class SignUpResetPasswordScreen extends ConsumerWidget {
                             maxLength: 11,
                             focusNode: phoneNumberFocusNode,
                             nextFocusNode: authCodeFocusNode,
-                            suffixIcon: SmallButtonWidget(
-                              onPressed: () {
-                                if (!phoneNumberFormKey.currentState!
-                                    .validate()) {
-                                  return;
-                                }
-                                print("authRequestTimer: $timer");
-                                if (timer == 0) {
-                                  // 버튼 클릭시 phoneNumberController에서 전화번호를 읽어서 사용
-                                  String phoneNumber = phoneNumberController
-                                      .text
-                                      .replaceAll(RegExp(r'[^0-9]'), '');
-                                  requestAuthCodeForReset(phoneNumber)
-                                      .then((value) {
-                                    print("authCodeGen: $value");
-                                    if (value == APIResponseStatus.success) {
-                                      print("authCodeGenSuccess");
-                                      ref
-                                          .read(timerProvider.notifier)
-                                          .setAndStartTimer(300);
-                                      FocusScope.of(context)
-                                          .requestFocus(authCodeFocusNode);
-                                    } else if (value ==
-                                        APIResponseStatus
-                                            .resetPasswordPhoneNumberFailure) {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) => Builder(
-                                                builder:
-                                                    (BuildContext context) =>
-                                                        AlertPopupWidget(
-                                                  title: '인증번호 요청 실패',
-                                                  subtitle: '일치하는 전화번호가 없습니다.',
-                                                  buttonText: '확인',
-                                                ),
-                                              ));
-                                    }
-                                  });
-                                }
-                              },
-                              text: timer == 0
-                                  ? "인증 번호 받기"
-                                  : timer.toString() + "초 후 재시도",
-                            ),
+                            suffixIcon: TextButtonWidget(
+                                onPressed: () {
+                                  if (!phoneNumberFormKey.currentState!
+                                      .validate()) {
+                                    return;
+                                  }
+                                  print("authRequestTimer: $timer");
+                                  if (timer == 0) {
+                                    // 버튼 클릭시 phoneNumberController에서 전화번호를 읽어서 사용
+                                    String phoneNumber = phoneNumberController
+                                        .text
+                                        .replaceAll(RegExp(r'[^0-9]'), '');
+                                    requestAuthCodeForReset(phoneNumber)
+                                        .then((value) {
+                                      print("authCodeGen: $value");
+                                      if (value == APIResponseStatus.success) {
+                                        print("authCodeGenSuccess");
+                                        ref
+                                            .read(timerProvider.notifier)
+                                            .setAndStartTimer(300);
+                                        FocusScope.of(context)
+                                            .requestFocus(authCodeFocusNode);
+                                      } else if (value ==
+                                          APIResponseStatus
+                                              .resetPasswordPhoneNumberFailure) {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) => Builder(
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          AlertPopupWidget(
+                                                    title: '인증번호 요청 실패',
+                                                    subtitle:
+                                                        '일치하는 전화번호가 없습니다.',
+                                                    buttonText: '확인',
+                                                  ),
+                                                ));
+                                      }
+                                    });
+                                  }
+                                },
+                                text: timer == 0
+                                    ? "인증 번호 받기"
+                                    : timer.toString() + "초 후 재시도",
+                                fontSize: 16),
                           ),
                         );
                       },
@@ -185,6 +185,7 @@ class SignUpResetPasswordScreen extends ConsumerWidget {
                     // 하단 "회원 가입하기" 버튼
                     BigButtonWidget(
                       text: '비밀번호 재설정하기',
+                      textColor: Colors.white,
                       onPressed: () {
                         if (!formKey.currentState!.validate()) {
                           return;

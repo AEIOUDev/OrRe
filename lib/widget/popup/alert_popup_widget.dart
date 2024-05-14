@@ -7,7 +7,6 @@ class AlertPopupWidget extends StatelessWidget {
   final String? subtitle;
   final String buttonText;
   final Function()? onPressed;
-  final bool autoPop;
 
   const AlertPopupWidget({
     Key? key,
@@ -15,7 +14,6 @@ class AlertPopupWidget extends StatelessWidget {
     this.subtitle,
     required this.buttonText,
     this.onPressed,
-    this.autoPop = true,
   }) : super(key: key);
 
   @override
@@ -50,7 +48,7 @@ class AlertPopupWidget extends StatelessWidget {
               if (onPressed != null) {
                 onPressed!();
               }
-              if (autoPop) Navigator.of(context).pop();
+              Navigator.of(context).pop();
             },
           ),
         ),

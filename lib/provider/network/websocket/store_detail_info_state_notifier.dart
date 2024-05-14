@@ -50,9 +50,6 @@ class StoreDetailInfoStateNotifier extends StateNotifier<StoreDetailInfo?> {
               print("state : ${state?.storeCode}");
             }
           });
-    } else {
-      print(
-          "StoreDetailInfoStateNotifier subscribeStoreDetailInfo : already subscribed");
     }
     return Stream.value(state);
   }
@@ -67,11 +64,9 @@ class StoreDetailInfoStateNotifier extends StateNotifier<StoreDetailInfo?> {
   }
 
   void clearStoreDetailInfo() {
-    print("StoreDetailInfoStateNotifier clearStoreDetailInfo");
     _subscribeStoreInfo.forEach((key, value) {
       _subscribeStoreInfo[key](unsubscribeHeaders: <String, String>{});
     });
-    _subscribeStoreInfo.clear();
     state = null;
   }
 }

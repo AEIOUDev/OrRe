@@ -59,23 +59,22 @@ class HomeScreen extends ConsumerWidget {
         .toList();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFDFDFDF),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
         child: HomeScreenAppBar(location: location),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CategoryWidget(location: location),
-              StoreListWidget(storeList: storeList),
-              SizedBox(height: 10),
-            ],
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CategoryWidget(location: location),
+            Container(
+              color: Colors.white,
+              child: StoreListWidget(storeList: storeList),
+            ),
+          ],
         ),
       ),
     );

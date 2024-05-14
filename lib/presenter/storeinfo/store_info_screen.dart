@@ -32,16 +32,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
   void initState() {
     super.initState();
     print('storeCode: ${widget.storeCode}');
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(storeDetailInfoProvider.notifier).clearStoreDetailInfo();
-      ref
-          .read(storeDetailInfoProvider.notifier)
-          .subscribeStoreDetailInfo(widget.storeCode);
-      ref
-          .read(storeDetailInfoProvider.notifier)
-          .sendStoreDetailInfoRequest(widget.storeCode);
-    });
+    ref.read(storeDetailInfoProvider.notifier).clearStoreDetailInfo();
   }
 
   Shader _shaderCallback(Rect rect) {
@@ -122,8 +113,12 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
     print("asyncStoreDetailInfo: ${storeDetailInfo?.storeCode}");
 
     if (storeDetailInfo == null) {
-      print("storeDetailInfo is null");
-      print("subscribeStoreDetailInfo: ${widget.storeCode}");
+      ref
+          .read(storeDetailInfoProvider.notifier)
+          .subscribeStoreDetailInfo(widget.storeCode);
+      ref
+          .read(storeDetailInfoProvider.notifier)
+          .sendStoreDetailInfoRequest(widget.storeCode);
       return Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );

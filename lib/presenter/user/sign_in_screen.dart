@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/presenter/main_screen.dart';
 import 'package:orre/presenter/user/sign_up_reset_password_screen.dart';
+import 'package:orre/presenter/user/sign_up_screen.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
@@ -57,7 +58,6 @@ class SignInScreen extends ConsumerWidget {
                     TextInputWidget(
                       prefixIcon: Icon(Icons.phone),
                       hintText: '전화번호를 입력해주세요.',
-                      subTitle: '-를 제외한 010으로 시작하는 숫자만 입력해주세요.',
                       isObscure: false,
                       type: TextInputType.number,
                       ref: ref,
@@ -74,7 +74,6 @@ class SignInScreen extends ConsumerWidget {
                     SizedBox(height: 16),
                     // 비밀먼호 입력창
                     TextInputWidget(
-                      subTitle: '영문, 숫자, 특수문자를 모두 포함하여 8자 이상 20자 미만으로 입력해주세요',
                       hintText: '비밀번호를 입력해주세요.',
                       isObscure: isObscure,
                       type: TextInputType.emailAddress,
@@ -104,6 +103,7 @@ class SignInScreen extends ConsumerWidget {
                     // 하단 "회원 가입하기" 버튼
                     BigButtonWidget(
                         text: '로그인 하기',
+                        textColor: Colors.white,
                         onPressed: () {
                           if (!formKey.currentState!.validate()) {
                             return;
@@ -139,15 +139,40 @@ class SignInScreen extends ConsumerWidget {
                           });
                         }),
                     SizedBox(height: 8),
-                    // 하단 "비밀번호 찾기" 버튼
-                    TextButtonWidget(
-                      text: '비밀번호 찾기',
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return SignUpResetPasswordScreen();
-                        }));
-                      },
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // 하단 "비밀번호 찾기" 버튼
+                        TextButtonWidget(
+                          text: '비밀번호 찾기',
+                          fontSize: 16,
+                          textColor: Color(0xFFDFDFDF),
+                          onPressed: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return SignUpResetPasswordScreen();
+                            }));
+                          },
+                        ),
+                        SizedBox(width: 10), // 여기서 간격을 조절해요
+                        Container(
+                          width: 1,
+                          height: 18,
+                          color: Color(0xFFDFDFDF),
+                        ),
+                        SizedBox(width: 10), // 여기서 간격을 조절해요
+                        TextButtonWidget(
+                          text: '회원가입',
+                          fontSize: 16,
+                          textColor: Color(0xFFFFBF52),
+                          onPressed: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return SignUpScreen();
+                            }));
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),

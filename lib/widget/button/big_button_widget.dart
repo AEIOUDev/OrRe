@@ -6,6 +6,7 @@ class BigButtonWidget extends ConsumerWidget {
   final String text;
   final Function onPressed;
   final Color backgroundColor;
+  final Color textColor;
   final Size minimumSize;
   final OutlinedBorder shape;
 
@@ -14,6 +15,7 @@ class BigButtonWidget extends ConsumerWidget {
     required this.text,
     required this.onPressed,
     this.backgroundColor = const Color(0xFFFFB74D),
+    this.textColor = Colors.black,
     this.minimumSize = const Size(double.infinity, 50),
     this.shape = const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(15.0)),
@@ -26,7 +28,7 @@ class BigButtonWidget extends ConsumerWidget {
       onPressed: () {
         onPressed();
       },
-      child: TextWidget(text),
+      child: TextWidget(text, color: textColor),
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         minimumSize: minimumSize,
