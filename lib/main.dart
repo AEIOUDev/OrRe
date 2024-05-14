@@ -1,4 +1,4 @@
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
@@ -124,6 +124,7 @@ class MyApp extends ConsumerWidget {
     final locationPermission =
         ref.watch(locationPermissionStateNotifierProvider);
     final stomp = ref.watch(stompState);
+    // ignore: unused_local_variable
     final error = ref.watch(errorStateNotifierProvider);
 
     Future.delayed(Duration.zero, () {

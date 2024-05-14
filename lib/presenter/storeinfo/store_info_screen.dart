@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/presenter/permission/permission_request_phone.dart';
 import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_category_list_widget.dart';
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
-import 'package:orre/provider/waiting_usercall_time_list_state_notifier.dart';
 import 'package:orre/widget/custom_scroll_view/csv_divider_widget.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
@@ -136,7 +135,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
     final myWaitingInfo = ref.watch(storeWaitingRequestNotifierProvider);
     print('storeDetailInfo!!!!!: ${storeDetailInfo?.storeCode}');
     if (storeDetailInfo == null || storeDetailInfo.storeCode == 0) {
-      // TODO: Show error message
+      // TODO : Show error message
       return Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
