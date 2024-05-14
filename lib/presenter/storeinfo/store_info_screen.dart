@@ -61,6 +61,9 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
       Future.microtask(() {
         if (cancelState == 1103) {
           ref.read(storeWaitingUserCallNotifierProvider.notifier).unSubscribe();
+          ref
+              .read(storeWaitingRequestNotifierProvider.notifier)
+              .unSubscribe(widget.storeCode);
           ref.read(cancelDialogStatus.notifier).state = null;
           showDialog(
               context: context,
@@ -73,6 +76,9 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
               });
         } else if (cancelState == 200) {
           ref.read(storeWaitingUserCallNotifierProvider.notifier).unSubscribe();
+          ref
+              .read(storeWaitingRequestNotifierProvider.notifier)
+              .unSubscribe(widget.storeCode);
           ref.read(cancelDialogStatus.notifier).state = null;
           showDialog(
               context: context,

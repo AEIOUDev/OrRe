@@ -105,6 +105,7 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
   }
 
   void unSubscribe() {
+    print("unSubscribe UserCall");
     _subscribeUserCall.forEach((key, value) {
       value(unsubscribeHeaders: null); // 구독 해제 함수 호출
     });
