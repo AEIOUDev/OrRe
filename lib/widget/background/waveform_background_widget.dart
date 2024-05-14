@@ -6,9 +6,7 @@ class WaveformBackgroundWidget extends ConsumerWidget {
   final Widget child;
 
   const WaveformBackgroundWidget(
-      {Key? key,
-      required this.child,
-      this.backgroundColor = const Color(0xFFFFE0B2)})
+      {Key? key, required this.child, this.backgroundColor = Colors.white})
       : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
