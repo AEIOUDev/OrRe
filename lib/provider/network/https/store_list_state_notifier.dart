@@ -47,6 +47,7 @@ class StoreListNotifier extends StateNotifier<List<StoreLocationInfo>> {
         String sortType = params.sortType.toEn();
         double latitude = params.latitude;
         double longitude = params.longitude;
+        print("sortType: $sortType");
         print("latitude: $latitude, longitude: $longitude");
 
         final baseUrl = '/storeList/$sortType';
