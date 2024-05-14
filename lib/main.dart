@@ -112,7 +112,7 @@ class MyApp extends ConsumerWidget {
         onAnimationEnd: () => debugPrint("On Fade In End"),
         nextScreen: userInfo == null ? OnboardingScreen() : MainScreen(),
       ),
-      title: 'Flutter Demo',
+      title: '오리',
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
@@ -124,6 +124,7 @@ class MyApp extends ConsumerWidget {
     final locationPermission =
         ref.watch(locationPermissionStateNotifierProvider);
     final stomp = ref.watch(stompState);
+    final error = ref.watch(errorStateNotifierProvider);
 
     Future.delayed(Duration.zero, () {
       if (connectState) {
@@ -180,7 +181,7 @@ class MyApp extends ConsumerWidget {
           }
         },
       ),
-      title: 'Flutter Demo',
+      title: '오리',
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),

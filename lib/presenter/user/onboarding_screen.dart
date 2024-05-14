@@ -25,7 +25,7 @@ class OnboardingScreen extends ConsumerWidget {
                   '오리',
                   fontFamily: 'Dovemayo_gothic',
                   fontSize: 64,
-                  color: Color(0xFFFFFFBF52),
+                  color: Color.fromRGBO(255, 191, 82, 1),
                   letterSpacing: 50,
                 ),
                 SizedBox(
