@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/location_model.dart';
+import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/services/geocording/geocording_library_service.dart';
@@ -43,6 +44,11 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
               } else if (snapshot.hasError) {
                 // 데이터 로딩 중 오류가 발생하면 오류 메시지를 보여줍니다.
                 print("snapshot.error: ${snapshot.error}");
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  ref
+                      .read(errorStateNotifierProvider.notifier)
+                      .addError(Error.locationPermission);
+                });
                 return Center(child: TextWidget('위치 정보를 가져오는 데 실패했습니다.'));
               } else {
                 print("snapshot.data: ${snapshot.data}");
