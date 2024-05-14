@@ -13,7 +13,8 @@ class NetworkErrorScreen extends ConsumerWidget {
           children: [
             TextWidget('네트워크 정보를 불러오는데 실패했습니다.'),
             ElevatedButton(
-              onPressed: () => ref.refresh(networkStreamProvider),
+              // onPressed: () => ref.refresh(networkStreamProvider),
+              onPressed: () {},
               child: TextWidget('다시 시도하기'),
             ),
           ],
