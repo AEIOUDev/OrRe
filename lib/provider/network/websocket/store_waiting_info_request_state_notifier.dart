@@ -288,7 +288,7 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
           state?.token.storeCode != -1) {
         if (state != null) {
           print("state is not null");
-          if (state!.token != null) {
+          if (state!.token != StoreWaitingRequest.nullValue().token) {
             print("state.token is not null");
 
             subscribeToStoreWaitingCancelRequest(
