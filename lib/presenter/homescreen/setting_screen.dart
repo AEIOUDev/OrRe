@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:orre/presenter/user/onboarding_screen.dart';
@@ -34,72 +35,74 @@ class SettingScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         body: Stack(
           children: [
-            Center(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 100),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextWidget(
-                          '${nickname}님.',
-                          fontFamily: 'Dovemayo_gothic',
-                          fontSize: 36,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextWidget(
+                            '${nickname}님.',
+                            fontFamily: 'Dovemayo_gothic',
+                            fontSize: 36,
+                          ),
+                          TextWidget(
+                            '만나서 반가워요 :)',
+                            fontFamily: 'Dovemayo_gothic',
+                            fontSize: 36,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 60,
+                      ),
+                      BigButtonWidget(
+                        onPressed: () {},
+                        backgroundColor: Color(0xFFDFDFDF),
+                        minimumSize: Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
                         ),
-                        TextWidget(
-                          '만나서 반가워요 :)',
-                          fontFamily: 'Dovemayo_gothic',
-                          fontSize: 36,
+                        text: '테마 설정',
+                        textColor: Colors.black,
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      BigButtonWidget(
+                        onPressed: () {},
+                        backgroundColor: Color(0xFFDFDFDF),
+                        minimumSize: Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
                         ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 60,
-                    ),
-                    BigButtonWidget(
-                      onPressed: () {},
-                      backgroundColor: Color(0xFFDFDFDF),
-                      minimumSize: Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
+                        text: '알림 설정',
+                        textColor: Colors.black,
                       ),
-                      text: '테마 설정',
-                      textColor: Colors.black,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    BigButtonWidget(
-                      onPressed: () {},
-                      backgroundColor: Color(0xFFDFDFDF),
-                      minimumSize: Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
+                      SizedBox(
+                        height: 10,
                       ),
-                      text: '알림 설정',
-                      textColor: Colors.black,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    BigButtonWidget(
-                      onPressed: () {},
-                      backgroundColor: Color(0xFFDFDFDF),
-                      minimumSize: Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
+                      BigButtonWidget(
+                        onPressed: () {},
+                        backgroundColor: Color(0xFFDFDFDF),
+                        minimumSize: Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        text: '비밀번호 변경',
+                        textColor: Colors.black,
                       ),
-                      text: '비밀번호 변경',
-                      textColor: Colors.black,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Center(
-                      child: Row(
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           TextButtonWidget(
                             text: '로그아웃',
@@ -153,10 +156,10 @@ class SettingScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
             Positioned(
               left: 0,
