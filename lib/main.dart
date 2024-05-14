@@ -5,6 +5,8 @@ import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/presenter/error/network_error_screen.dart';
+import 'package:orre/presenter/homescreen/home_screen.dart';
 import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/provider/first_boot_future_provider.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
@@ -78,31 +80,28 @@ void main() async {
 
   setPathUrlStrategy(); // 해시(#) 없이 URL 사용
 
-  runApp(ProviderScope(child: MyApp()));
+  runApp(ProviderScope(child: OrreMain()));
 }
 
-class MyApp extends ConsumerWidget {
+class OrreMain extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userInfo = ref.watch(userInfoProvider);
-    print("MyApp build() called");
+    int initState = 0; // 기본값은 OnboardingScreen으로 이동
+    List<Widget> nextScreen = [
+      OnboardingScreen(),
+      MainScreen(),
+      NetworkErrorScreen(),
+      NetworkErrorScreen(),
+    ];
     return MaterialApp(
       home: FlutterSplashScreen.fadeIn(
         backgroundColor: Colors.white,
         onInit: () async {
           debugPrint("On Init");
-          await ref.watch(firstBootFutureProvider);
+          initState = await initializeApp(ref);
         },
         onEnd: () {
-          final first = ref.watch(firstBootState.notifier).state;
-          final error = ref.watch(errorStateNotifierProvider);
-          print("first: $first");
-          print("error: $error");
-          if (first && error.isEmpty) {
-            debugPrint("On End");
-            ref.read(locationListProvider.notifier).loadLocations();
-            ref.read(nowLocationProvider.notifier).updateNowLocation();
-          }
+          debugPrint("On End");
         },
         childWidget: SizedBox(
           height: 200,
@@ -110,7 +109,7 @@ class MyApp extends ConsumerWidget {
           child: Image.asset("assets/images/orre_logo.png"),
         ),
         onAnimationEnd: () => debugPrint("On Fade In End"),
-        nextScreen: userInfo == null ? OnboardingScreen() : MainScreen(),
+        nextScreen: nextScreen[initState],
       ),
       title: '오리',
       theme: ThemeData(
@@ -119,8 +118,39 @@ class MyApp extends ConsumerWidget {
     );
   }
 
-  Widget firstBootWidget(BuildContext context, WidgetRef ref) {
-    final connectState = ref.watch(networkStateNotifier);
+  Widget NetworkCheckWidget(BuildContext context, WidgetRef ref) {
+    return StreamBuilder(
+        stream: ref.watch(networkStateProvider),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else {
+            if (snapshot.hasError) {
+              print("Network 에러 발생, NetworkErrorScreen() 호출");
+              return NetworkErrorScreen();
+            } else {
+              print("Network 연결 성공, UserInfoCheckWidget() 호출");
+              return UserInfoCheckWidget(context, ref);
+            }
+          }
+        });
+  }
+
+  // TODO : 중간에 stomp 연결 상태 체크 추가
+
+  Widget UserInfoCheckWidget(BuildContext context, WidgetRef ref) {
+    final userInfo = ref.watch(userInfoProvider);
+    if (userInfo == null) {
+      print("userInfo == null. OnboardingScreen() 호출");
+      return OnboardingScreen();
+    } else {
+      print("userInfo != null. LocationStateCheckWidget() 호출");
+      return LocationStateCheckWidget(context, ref);
+    }
+  }
+
+  Widget LocationStateCheckWidget(BuildContext context, WidgetRef ref) {
+    // final connectState = ref.watch(networkStateNotifier);
     final locationPermission =
         ref.watch(locationPermissionStateNotifierProvider);
     final stomp = ref.watch(stompState);
@@ -128,13 +158,13 @@ class MyApp extends ConsumerWidget {
     final error = ref.watch(errorStateNotifierProvider);
 
     Future.delayed(Duration.zero, () {
-      if (connectState) {
-        ref
-            .read(errorStateNotifierProvider.notifier)
-            .deleteError(Error.network);
-      } else {
-        ref.read(errorStateNotifierProvider.notifier).addError(Error.network);
-      }
+      // if (connectState) {
+      //   ref
+      //       .read(errorStateNotifierProvider.notifier)
+      //       .deleteError(Error.network);
+      // } else {
+      //   ref.read(errorStateNotifierProvider.notifier).addError(Error.network);
+      // }
 
       if (locationPermission.isGranted) {
         ref
@@ -157,7 +187,7 @@ class MyApp extends ConsumerWidget {
 
     print(
         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    print(connectState);
+    // print(connectState);
     print(
         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
@@ -187,6 +217,10 @@ class MyApp extends ConsumerWidget {
         primarySwatch: Colors.orange,
       ),
       initialRoute: '/',
+      routes: {
+        '/': (context) => MainScreen(),
+        '/loginScreen': (context) => OnboardingScreen(),
+      },
       onGenerateRoute: (settings) {
         // 경로 이름 파싱
         Uri uri = Uri.parse(settings.name!);
