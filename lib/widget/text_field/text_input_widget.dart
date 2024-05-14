@@ -62,7 +62,7 @@ class TextInputWidget extends ConsumerWidget {
             child: TextWidget(
               subTitle!,
               fontSize: 12,
-              color: Color(0xFF666666),
+              color: Color(0xFFFFBF52),
             ),
           ),
         TextFormField(
@@ -84,6 +84,10 @@ class TextInputWidget extends ConsumerWidget {
                 hintText: hintText,
                 hintStyle: TextStyle(
                   fontFamily: 'Dovemayo_gothic',
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFFFFB74D)),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 border: OutlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFFDFDFDF)),
