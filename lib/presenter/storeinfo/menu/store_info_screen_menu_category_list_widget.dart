@@ -24,8 +24,15 @@ class StoreMenuCategoryListWidget extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.menu_book, size: 50),
-              TextWidget('메뉴 정보가 없습니다.'),
+              Icon(
+                Icons.menu_book,
+                size: 50,
+                color: Color(0xFFDFDFDF),
+              ),
+              TextWidget(
+                '메뉴 정보가 없습니다.',
+                color: Color(0xFFDFDFDF),
+              ),
             ],
           ),
         ),

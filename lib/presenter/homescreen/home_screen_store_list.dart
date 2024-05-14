@@ -22,7 +22,12 @@ class StoreListWidget extends ConsumerWidget {
           return StoreItem(storeInfo: storeList[index]);
         },
         separatorBuilder: (context, index) {
-          return Divider();
+          return Divider(
+            color: Color(0xFFDFDFDF),
+            thickness: 2,
+            endIndent: 10,
+            indent: 10,
+          );
         });
   }
 }
@@ -108,11 +113,13 @@ class StoreItem extends ConsumerWidget {
             Row(
               children: [
                 Icon(
-                  Icons.person,
+                  Icons.people_alt,
                   color: Color(0xFFDD0000),
+                  textDirection: TextDirection.rtl,
                 ),
+                SizedBox(width: 5),
                 TextWidget(
-                  "대기 팀 수 ${storeWaitingInfo.waitingTeamList.length} 팀\t(약 ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam}분)",
+                  "대기 팀 수 ${storeWaitingInfo.waitingTeamList.length} 팀\t(약 ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam} 분)",
                   color: Color(0xFFDD0000),
                   fontSize: 18,
                 ),
