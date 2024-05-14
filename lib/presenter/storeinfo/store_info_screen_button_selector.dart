@@ -25,25 +25,32 @@ class BottomButtonSelector extends ConsumerWidget {
       if (nowWaitable) {
         return WaitingButton(storeCode: storeCode, waitingState: waitingState);
       } else {
-        return FloatingActionButton.extended(
-            backgroundColor: Colors.grey,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50),
-            ),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertPopupWidget(
-                    title: "웨이팅 불가",
-                    subtitle: "현재 가게가 예약이 불가능한 상태 입니다.",
-                    buttonText: '확인',
-                  );
-                },
-              );
-            },
-            label: TextWidget('예약 불가'));
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          height: 70,
+          decoration: BoxDecoration(color: Colors.white),
+          child: Padding(
+              padding: EdgeInsets.only(bottom: 10),
+              child: FloatingActionButton.extended(
+                  backgroundColor: Colors.grey,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertPopupWidget(
+                          title: "웨이팅 불가",
+                          subtitle: "현재 가게가 예약이 불가능한 상태 입니다.",
+                          buttonText: '확인',
+                        );
+                      },
+                    );
+                  },
+                  label: TextWidget('예약 불가'))),
+        );
       }
     } else {
       // 현재 웨이팅 중임
@@ -54,36 +61,43 @@ class BottomButtonSelector extends ConsumerWidget {
         return WaitingButton(storeCode: storeCode, waitingState: waitingState);
       } else {
         // 다른 가게에서 웨이팅 중임
-        return FloatingActionButton.extended(
-            backgroundColor: Colors.grey,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50),
-            ),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertPopupWidget(
-                    title: "웨이팅 불가",
-                    subtitle: "현재 다른 매장에서 웨이팅 중 입니다.",
-                    autoPop: false,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => StoreDetailInfoWidget(
-                            storeCode: myWaitingInfo.token.storeCode,
-                          ),
-                        ),
-                      );
-                    },
-                    buttonText: '해당 매장으로 이동',
-                  );
-                },
-              );
-            },
-            label: TextWidget('중복 예약 불가'));
+        return Container(
+          width: MediaQuery.of(context).size.width,
+          height: 70,
+          decoration: BoxDecoration(color: Colors.white),
+          child: Padding(
+              padding: EdgeInsets.only(bottom: 10),
+              child: FloatingActionButton.extended(
+                  backgroundColor: Colors.grey,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertPopupWidget(
+                          title: "웨이팅 불가",
+                          subtitle: "현재 다른 매장에서 웨이팅 중 입니다.",
+                          autoPop: false,
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => StoreDetailInfoWidget(
+                                  storeCode: myWaitingInfo.token.storeCode,
+                                ),
+                              ),
+                            );
+                          },
+                          buttonText: '해당 매장으로 이동',
+                        );
+                      },
+                    );
+                  },
+                  label: TextWidget('중복 예약 불가'))),
+        );
       }
     }
   }
