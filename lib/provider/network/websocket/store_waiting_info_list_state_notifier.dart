@@ -45,21 +45,21 @@ class StoreWaitingInfoListNotifier
               if (existingIndex != -1) {
                 state[existingIndex] = firstResult;
                 state = List.from(state);
-                saveState();
+                // saveState();
               } else {
                 // 새로운 요소를 상태에 추가
                 state = [...state, firstResult];
-                saveState();
+                // saveState();
               }
             }
             // print("state : $state");
           }
         },
       );
-      print("StoreWaitingInfoList/${storeCode} : subscribe!");
+      // print("StoreWaitingInfoList/${storeCode} : subscribe!");
       sendStoreCode(storeCode);
     } else {
-      print("StoreWaitingInfoList/${storeCode} : already subscribed!");
+      // print("StoreWaitingInfoList/${storeCode} : already subscribed!");
     }
   }
 
@@ -98,14 +98,14 @@ class StoreWaitingInfoListNotifier
 
   void clearWaitingInfoList() {
     state = [];
-    saveState();
+    // saveState();
   }
 
   void saveState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<StoreWaitingInfo> storeWaitingInfoList = state;
     String encodedList = json.encode(storeWaitingInfoList);
-    print("waitingInfoList saveState encodedList : $encodedList");
+    // print("waitingInfoList saveState encodedList : $encodedList");
     prefs.setString('waitingInfoList', encodedList);
   }
 
@@ -118,7 +118,7 @@ class StoreWaitingInfoListNotifier
       state = decodedList
           .map((e) => StoreWaitingInfo.fromJson(e))
           .toList(); // JSON 문자열을 객체로 변환
-      saveState();
+      // saveState();
     }
   }
 

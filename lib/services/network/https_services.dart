@@ -14,6 +14,9 @@ enum APIResponseStatus {
   waitingJoinFailure,
   waitingExitFailure,
   waitingCancelByStore,
+  waitingEnteringSuccess,
+  serviceLogEmpty,
+  serviceLogPhoneNumberFailure,
   etc
 }
 
@@ -46,6 +49,12 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return '대기열 나가기 실패';
       case APIResponseStatus.waitingCancelByStore:
         return '가게에 의한 대기열 취소';
+      case APIResponseStatus.waitingEnteringSuccess:
+        return '대기열 입장 성공';
+      case APIResponseStatus.serviceLogEmpty:
+        return '서비스 로그 조회 결과 없음';
+      case APIResponseStatus.serviceLogPhoneNumberFailure:
+        return '서비스 로그 조회 실패: 일치하는 전화번호 없음';
 
       default:
         return '기타';
@@ -80,6 +89,12 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return 'Waiting exit failure';
       case APIResponseStatus.waitingCancelByStore:
         return 'Waiting cancel by store';
+      case APIResponseStatus.waitingEnteringSuccess:
+        return 'Waiting entering success';
+      case APIResponseStatus.serviceLogEmpty:
+        return 'Service log empty';
+      case APIResponseStatus.serviceLogPhoneNumberFailure:
+        return 'Service log failure: No matching phone number';
 
       default:
         return 'Etc';
@@ -112,6 +127,12 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return '1102';
       case APIResponseStatus.waitingCancelByStore:
         return '1103';
+      case APIResponseStatus.waitingEnteringSuccess:
+        return '1104';
+      case APIResponseStatus.serviceLogEmpty:
+        return '1201';
+      case APIResponseStatus.serviceLogPhoneNumberFailure:
+        return '1202';
 
       case APIResponseStatus.success:
         return '200';
@@ -148,6 +169,12 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return APIResponseStatus.waitingExitFailure;
       case '1103':
         return APIResponseStatus.waitingCancelByStore;
+      case '1104':
+        return APIResponseStatus.waitingEnteringSuccess;
+      case '1201':
+        return APIResponseStatus.serviceLogEmpty;
+      case '1202':
+        return APIResponseStatus.serviceLogPhoneNumberFailure;
 
       default:
         return APIResponseStatus.etc;

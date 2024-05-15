@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/main.dart';
 import 'package:orre/presenter/main_screen.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/services/network/https_services.dart';
@@ -238,11 +239,9 @@ class SignUpScreen extends ConsumerWidget {
                                     ),
                                   );
                             });
-                            Navigator.popUntil(
-                                context, (route) => route.isFirst);
                             Navigator.pushReplacement(context,
                                 MaterialPageRoute(builder: (context) {
-                              return MainScreen();
+                              return LocationStateCheckWidget();
                             }));
                           } else {
                             showDialog(

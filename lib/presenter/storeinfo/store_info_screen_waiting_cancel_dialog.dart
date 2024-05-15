@@ -64,12 +64,12 @@ class WaitingCancelDialog extends ConsumerWidget {
               print("가게 코드: $storeCode");
               print("웨이팅 취소");
               ref
-                  .read(storeWaitingUserCallNotifierProvider.notifier)
-                  .unSubscribe();
-              ref
                   .read(storeWaitingRequestNotifierProvider.notifier)
                   .sendWaitingCancelRequest(
                       storeCode, phoneNumberController.text);
+              ref
+                  .read(storeWaitingUserCallNotifierProvider.notifier)
+                  .unSubscribe();
             }
           },
         ),
