@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/menu_info_model.dart';
 import 'package:orre/provider/network/websocket/bak/store_waiting_info_request_state_notifier_bak.dart';
+import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import 'package:orre/provider/waiting_usercall_time_list_state_notifier.dart';
 import 'package:orre/services/network/https_services.dart';
@@ -251,38 +252,59 @@ class ServiceLogStateNotifier extends StateNotifier<ServiceLogResponse> {
         print("Log is fetched successfully!!!!!!!!!!!!!");
         final jsonBody = json.decode(utf8.decode(response.bodyBytes));
         print('jsonBody: $jsonBody');
-        final result = ServiceLogResponse.fromJson(jsonBody);
-        state = result;
-        print("state: $state");
-
-        // 연결성 보장을 위한 Websocket Provider들 재설정
-        if (result.userLogs.isNotEmpty) {
-          // 마지막 로그의 정보로 Websocket Provider 재설정
-          reconnectWebsocketProvider(result.userLogs.last);
-        } else {
-          print("로그 비어있음. storeWaitingRequestNotifierProvider 초기화");
-          ref
-              .read(storeWaitingRequestNotifierProvider.notifier)
-              .clearWaitingRequestList();
+        // 로그가 없을 때
+        if (jsonBody['status'] == APIResponseStatus.serviceLogEmpty.toCode()) {
+          state = ServiceLogResponse(
+              status: APIResponseStatus.serviceLogEmpty.toCode(), userLogs: []);
+          return state;
         }
+        // 해당하는 전화번호가 없을 때
+        else if (jsonBody['status'] ==
+            APIResponseStatus.serviceLogPhoneNumberFailure.toCode()) {
+          state = ServiceLogResponse(
+              status: APIResponseStatus.serviceLogPhoneNumberFailure.toCode(),
+              userLogs: []);
+          return state;
+        }
+        // 로그가 있을 때
+        else {
+          final result = ServiceLogResponse.fromJson(jsonBody);
+          state = result;
+          print("state: $state");
 
-        return result;
+          // 연결성 보장을 위한 Websocket Provider들 재설정
+          if (result.userLogs.isNotEmpty) {
+            // 마지막 로그의 정보로 Websocket Provider 재설정
+            reconnectWebsocketProvider(result.userLogs.last);
+          } else {
+            print("로그 비어있음. storeWaitingRequestNotifierProvider 초기화");
+            ref
+                .read(storeWaitingRequestNotifierProvider.notifier)
+                .clearWaitingRequestList();
+          }
+
+          return result;
+        }
       } else {
         print("Log is not fetched!!!!!!!!!!!!!");
         state = ServiceLogResponse(
-            status: APIResponseStatus.serviceLogFailure.toCode(), userLogs: []);
+            status: APIResponseStatus.serviceLogPhoneNumberFailure.toCode(),
+            userLogs: []);
         throw Exception('Failed to fetch Service Log');
       }
     } catch (error) {
       print("Log Fetch Error : $error");
       state = ServiceLogResponse(
-          status: APIResponseStatus.serviceLogFailure.toCode(), userLogs: []);
+          status: APIResponseStatus.serviceLogPhoneNumberFailure.toCode(),
+          userLogs: []);
       throw Exception('Failed to fetch Service Log');
     }
   }
 
   void reconnectWebsocketProvider(UserLogs lastUserLog) {
     print("reconnectWebsocketProvider");
+    ref.read(stompClientStateNotifierProvider.notifier).configureClient();
+    ref.read(stompClientStateNotifierProvider.notifier).state?.activate();
 
     if (lastUserLog.status == StoreWaitingStatus.WAITING) {
       // 현재 웨이팅 중이었다면

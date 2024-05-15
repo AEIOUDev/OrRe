@@ -7,11 +7,22 @@ import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 
 Future<int> initializeApp(WidgetRef ref) async {
   try {
-    final networkStatus = ref.read(networkStateNotifierProvider);
-    if (!networkStatus) {
-      print("네트워크 연결 실패");
-      return 3; // 네트워크 연결 실패 시 3 반환
-    }
+    final networkStatus = ref.read(networkStateProvider);
+
+    // 네트워크 연결 확인
+    final networkStatusSubscription = networkStatus.listen((isConnected) {
+      if (isConnected) {
+        ref.read(networkStateNotifierProvider.notifier).state = true;
+      } else {
+        ref.read(networkStateNotifierProvider.notifier).state = false;
+      }
+    });
+
+    // 10초 후에 타임아웃 처리
+    final networkTimeout = Future.delayed(const Duration(seconds: 10), () {
+      networkStatusSubscription.cancel();
+      ref.read(networkStateNotifierProvider.notifier).state = false;
+    });
 
     // 네트워크 연결이 되어 있을 때 STOMP 연결 확인
     print("네트워크 연결 성공");
@@ -31,7 +42,7 @@ Future<int> initializeApp(WidgetRef ref) async {
     });
 
     // 10초 후에 타임아웃 처리
-    final stompTimeout = Future.delayed(const Duration(seconds: 10), () {
+    final stompTimeout = Future.delayed(const Duration(seconds: 5), () {
       if (!stompCompleter.isCompleted) {
         stompSubscription?.cancel();
         stompCompleter.completeError('STOMP timeout');

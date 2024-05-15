@@ -6,6 +6,7 @@ import 'package:orre/provider/network/websocket/store_detail_info_state_notifier
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
+import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/services/network/websocket_services.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
@@ -46,14 +47,15 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
         config: StompConfig(
           url: WebSocketService.url,
           onConnect: (StompFrame frame) {
-            final stomp = ref.read(stompState);
-            if (stomp == StompStatus.ERROR) {
-              // reconnect();
+            final firstBoot = ref.read(firstStompSetup.notifier).state;
+            ref.read(stompState.notifier).state = StompStatus.CONNECTED;
+            streamController.add(StompStatus.CONNECTED);
+            if (firstBoot == true) {
+              ref.read(serviceLogProvider.notifier).fetchStoreServiceLog(
+                  ref.read(userInfoProvider)!.phoneNumber);
             } else {
               onConnectCallback(frame);
             }
-            ref.read(stompState.notifier).state = StompStatus.CONNECTED;
-            streamController.add(StompStatus.CONNECTED);
           },
           onWebSocketError: (dynamic error) {
             print("websocket error: $error");
