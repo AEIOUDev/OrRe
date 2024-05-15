@@ -13,31 +13,31 @@ class StoreDetailInfoTestScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final network = ref.watch(networkStreamProvider);
-    network.when(data: (value) {
-      if (value) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            // Add a return statement at the end of the builder function
-            return AlertPopupWidget(
-                title: "네트워크 연결 상태가 확인되었습니다.", buttonText: "확인");
-          },
-        );
-      } else {
-        showDialog(
-          context: context,
-          builder: (context) {
-            // Add a return statement at the end of the builder function
-            return AlertPopupWidget(title: "네트워크가 유실되었습니다.", buttonText: "확인");
-          },
-        );
-      }
-    }, loading: () {
-      print('loading');
-    }, error: (Object error, StackTrace stackTrace) {
-      print('error');
-    });
+    // final network = ref.watch(networkStreamProvider);
+    // network.when(data: (value) {
+    //   if (value) {
+    //     showDialog(
+    //       context: context,
+    //       builder: (context) {
+    //         // Add a return statement at the end of the builder function
+    //         return AlertPopupWidget(
+    //             title: "네트워크 연결 상태가 확인되었습니다.", buttonText: "확인");
+    //       },
+    //     );
+    //   } else {
+    //     showDialog(
+    //       context: context,
+    //       builder: (context) {
+    //         // Add a return statement at the end of the builder function
+    //         return AlertPopupWidget(title: "네트워크가 유실되었습니다.", buttonText: "확인");
+    //       },
+    //     );
+    //   }
+    // }, loading: () {
+    //   print('loading');
+    // }, error: (Object error, StackTrace stackTrace) {
+    //   print('error');
+    // });
 
     return Scaffold(
       body: TextWidget("test"),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:orre/model/user_info_model.dart';
 import 'package:orre/services/network/https_services.dart';
 import 'package:riverpod/riverpod.dart';
@@ -50,54 +51,69 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
 
   Future<String?> requestSignIn(SignInInfo? signInInfo) async {
     try {
-      print("requestSignIn: $signInInfo");
-      late SignInInfo info;
+      print("로그인 시도 : $signInInfo");
+      SignInInfo? info;
 
-      // storage에 저장된 정보로 로그인하는 경우
+      final fcmToken = await FirebaseMessaging.instance.getToken() ?? '';
+      print("fcmToken : " + fcmToken);
+
+      // 매개변수가 없다면 저장된 로그인 정보를 불러옴
       if (signInInfo == null) {
-        await loadUserInfo().then((value) {
-          print("loadUserInfo: $value");
-          if (value) {
-            info = SignInInfo(
-              phoneNumber: state!.phoneNumber,
-              password: state!.password,
-            );
-          } else {
-            return null;
-          }
-        });
+        final loaded = await loadUserInfo();
+        print("loadUserInfo: $loaded");
+        // 저장된 정보가 있다면
+        if (loaded) {
+          // 해당 정보로 로그인 시도
+          info = SignInInfo(
+            phoneNumber: state!.phoneNumber,
+            password: state!.password,
+          );
+        } else {
+          // 매개변수도 없고 저장된 정보도 없다면
+          return null; // null 반환하여 로그인 화면으로 이동
+        }
       } else {
+        // 매개변수가 있다면 해당 매개변수로 로그인 시도
         info = signInInfo;
       }
+
       final body = {
         'userPhoneNumber': info.phoneNumber,
         'userPassword': info.password,
+        'userFcmToken': fcmToken,
       };
+
       final jsonBody = json.encode(body);
+
       final response = await HttpsService.postRequest("/login", jsonBody);
+
+      // 로그인 요청 성공 시
       if (response.statusCode == 200) {
-        final jsonBody = json.decode(utf8.decode(response.bodyBytes));
-        print("requestSignIn(json 200): $jsonBody");
-        if (APIResponseStatus.success.isEqualTo(jsonBody['status'])) {
-          print("requestSignIn: success");
+        final jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+        print("로그인 시도(json 200): $jsonResponse");
+        if (APIResponseStatus.success.isEqualTo(jsonResponse['status'])) {
+          print("로그인 시도: success");
+          print("fcmToken : " + fcmToken);
           state = UserInfo(
             phoneNumber: info.phoneNumber,
             password: info.password,
-            name: jsonBody['token'],
-            fcmToken: '',
+            name: jsonResponse['token'],
+            fcmToken: fcmToken ?? '', // TODO : fcmToken 추가
           );
           saveUserInfo();
-          return jsonBody['token'];
+          return jsonResponse['token'];
         } else {
-          print("requestSignIn: failed");
-          return null;
+          print(
+              "로그인 시도: failed : Status Code ${APIResponseStatusExtension.fromCode(jsonResponse['status'])}");
         }
       } else {
-        throw Exception('Failed to request sign in');
+        print("로그인 시도: failed : response code ${response.statusCode}");
       }
     } catch (error) {
-      throw Exception('Failed to request sign in');
+      print("로그인 시도: error $error");
     }
+    // 로그인 성공 못했을 시 null 반환하여 로그인 화면으로 이동
+    return null;
   }
 
   UserInfo? getUserInfo() {
