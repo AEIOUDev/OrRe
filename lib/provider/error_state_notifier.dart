@@ -6,6 +6,7 @@ enum Error {
   websocket,
   locationPermission,
   callPermission,
+  server,
 }
 
 final errorStateNotifierProvider =

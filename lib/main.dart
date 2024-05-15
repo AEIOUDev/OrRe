@@ -1,12 +1,17 @@
 // import 'dart:io';
 
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/presenter/error/error_screen.dart';
 import 'package:orre/presenter/error/network_error_screen.dart';
+import 'package:orre/presenter/error/server_error_screen.dart';
+import 'package:orre/presenter/error/websocket_error_screen.dart';
 import 'package:orre/presenter/homescreen/home_screen.dart';
+import 'package:orre/presenter/location/location_manager_screen.dart';
 import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/provider/first_boot_future_provider.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
@@ -14,12 +19,12 @@ import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
 import 'package:orre/provider/permission/location_permission_state_notifier.dart';
 import 'package:url_strategy/url_strategy.dart';
-// import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-// import 'firebase_options.dart'; // Firebase 초기화 옵션을 포함한 파일
+import 'firebase_options.dart'; // Firebase 초기화 옵션을 포함한 파일
 import 'presenter/storeinfo/store_info_screen.dart';
 import 'presenter/user/onboarding_screen.dart';
-// import 'services/notifications_services.dart';
+import 'services/notifications_services.dart';
 
 import 'presenter/main_screen.dart';
 
@@ -31,40 +36,21 @@ import 'package:get/get.dart';
 
 import 'package:orre/provider/network/connectivity_state_notifier.dart';
 
-void main() async {
+import 'package:orre/provider/network/https/get_service_log_state_notifier.dart';
+
+import 'package:orre/services/network/https_services.dart';
+
+import 'package:orre/widget/text/text_widget.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutter 엔진과 위젯 바인딩을 초기화
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // ); // Firebase를 현재 플랫폼에 맞게 초기화
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  ); // Firebase를 현재 플랫폼에 맞게 초기화
 
-  // FirebaseMessaging messaging = FirebaseMessaging.instance;
+  initializeFirebaseMessaging(); // Firebase 메시징 초기화
 
-  // NotificationSettings settings = await messaging.requestPermission(
-  //   alert: true,
-  //   announcement: false,
-  //   badge: true,
-  //   carPlay: true,
-  //   criticalAlert: false,
-  //   provisional: false,
-  //   sound: true,
-  // );
-
-  // print('User granted permission: ${settings.authorizationStatus}');
-  // final fcmToken = await FirebaseMessaging.instance.getToken();
-  // print(fcmToken);
-
-  // FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
-  //   if (message != null) {
-  //     if (message.notification != null) {
-  //       print(message.notification!.title);
-  //       print(message.notification!.body);
-  //       print(message.data["click_action"]);
-  //     }
-  //   }
-  // });
-
-  // final notificationService = NotificationService();
-  // notificationService.listenNotifications();
+  requestPermission(); // 권한 요청
 
   // 네이버 지도 초기화
 
@@ -83,15 +69,18 @@ void main() async {
   runApp(ProviderScope(child: OrreMain()));
 }
 
+final initStateProvider = StateProvider<int>((ref) => 3);
+
 class OrreMain extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    int initState = 0; // 기본값은 OnboardingScreen으로 이동
+    int initState = ref.watch(initStateProvider);
     List<Widget> nextScreen = [
       OnboardingScreen(),
-      MainScreen(),
-      NetworkErrorScreen(),
-      NetworkErrorScreen(),
+      LocationStateCheckWidget(),
+      WebsocketErrorScreen(),
+      NetworkCheckScreen(),
+      ErrorScreen(),
     ];
     return MaterialApp(
       home: FlutterSplashScreen.fadeIn(
@@ -99,6 +88,7 @@ class OrreMain extends ConsumerWidget {
         onInit: () async {
           debugPrint("On Init");
           initState = await initializeApp(ref);
+          ref.read(initStateProvider.notifier).state = initState;
         },
         onEnd: () {
           debugPrint("On End");
@@ -118,72 +108,34 @@ class OrreMain extends ConsumerWidget {
     );
   }
 
-  Widget NetworkCheckWidget(BuildContext context, WidgetRef ref) {
-    return StreamBuilder(
-        stream: ref.watch(networkStateProvider),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          } else {
-            if (snapshot.hasError) {
-              print("Network 에러 발생, NetworkErrorScreen() 호출");
-              return NetworkErrorScreen();
-            } else {
-              print("Network 연결 성공, UserInfoCheckWidget() 호출");
-              return UserInfoCheckWidget(context, ref);
-            }
-          }
-        });
-  }
+  Widget TotalEnd(BuildContext context, WidgetRef ref) {
+    // Future.delayed(Duration.zero, () {
+    // if (connectState) {
+    //   ref
+    //       .read(errorStateNotifierProvider.notifier)
+    //       .deleteError(Error.network);
+    // } else {
+    //   ref.read(errorStateNotifierProvider.notifier).addError(Error.network);
+    // }
 
-  // TODO : 중간에 stomp 연결 상태 체크 추가
+    //   if (locationPermission.isGranted) {
+    //     ref
+    //         .read(errorStateNotifierProvider.notifier)
+    //         .deleteError(Error.locationPermission);
+    //   } else {
+    //     ref
+    //         .read(errorStateNotifierProvider.notifier)
+    //         .addError(Error.locationPermission);
+    //   }
 
-  Widget UserInfoCheckWidget(BuildContext context, WidgetRef ref) {
-    final userInfo = ref.watch(userInfoProvider);
-    if (userInfo == null) {
-      print("userInfo == null. OnboardingScreen() 호출");
-      return OnboardingScreen();
-    } else {
-      print("userInfo != null. LocationStateCheckWidget() 호출");
-      return LocationStateCheckWidget(context, ref);
-    }
-  }
-
-  Widget LocationStateCheckWidget(BuildContext context, WidgetRef ref) {
-    // final connectState = ref.watch(networkStateNotifier);
-    final locationPermission =
-        ref.watch(locationPermissionStateNotifierProvider);
-    final stomp = ref.watch(stompState);
-    // ignore: unused_local_variable
-    final error = ref.watch(errorStateNotifierProvider);
-
-    Future.delayed(Duration.zero, () {
-      // if (connectState) {
-      //   ref
-      //       .read(errorStateNotifierProvider.notifier)
-      //       .deleteError(Error.network);
-      // } else {
-      //   ref.read(errorStateNotifierProvider.notifier).addError(Error.network);
-      // }
-
-      if (locationPermission.isGranted) {
-        ref
-            .read(errorStateNotifierProvider.notifier)
-            .deleteError(Error.locationPermission);
-      } else {
-        ref
-            .read(errorStateNotifierProvider.notifier)
-            .addError(Error.locationPermission);
-      }
-
-      if (stomp == StompStatus.CONNECTED) {
-        ref
-            .read(errorStateNotifierProvider.notifier)
-            .deleteError(Error.websocket);
-      } else {
-        ref.read(errorStateNotifierProvider.notifier).addError(Error.websocket);
-      }
-    });
+    //   if (stomp == StompStatus.CONNECTED) {
+    //     ref
+    //         .read(errorStateNotifierProvider.notifier)
+    //         .deleteError(Error.websocket);
+    //   } else {
+    //     ref.read(errorStateNotifierProvider.notifier).addError(Error.websocket);
+    //   }
+    // });
 
     print(
         "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -237,5 +189,219 @@ class OrreMain extends ConsumerWidget {
         return null;
       },
     );
+  }
+}
+
+class NetworkCheckScreen extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isConnected = ref.watch(networkStateNotifierProvider);
+
+    return isConnected ? StompCheckScreen() : NetworkErrorScreen();
+  }
+}
+
+class StompCheckScreen extends ConsumerWidget {
+  Widget build(BuildContext context, WidgetRef ref) {
+    return StreamBuilder(
+        stream: ref
+            .watch(stompClientStateNotifierProvider.notifier)
+            .configureClient(),
+        builder: (context, snapshot) {
+          print("StompCheckScreen() 호출 : ${snapshot.data}");
+          if (snapshot.data != StompStatus.CONNECTED) {
+            print("Stomp 에러 발생, WebsocketErrorScreen() 호출");
+            return WebsocketErrorScreen();
+          } else {
+            print("Stomp 연결 성공, UserInfoCheckWidget() 호출");
+            return UserInfoCheckWidget();
+          }
+        });
+  }
+}
+
+class UserInfoCheckWidget extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return FutureBuilder(
+        future: ref.watch(userInfoProvider.notifier).requestSignIn(null),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.data != null) {
+              print("유저 정보 존재 : ${snapshot.data}");
+              print("LocationStateCheckWidget() 호출");
+              return LocationStateCheckWidget();
+            } else {
+              print("OnboardingScreen() 호출");
+              return OnboardingScreen();
+            }
+          } else {
+            print("유저 정보 로딩 중");
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+        });
+  }
+}
+
+class LocationStateCheckWidget extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // final connectState = ref.watch(networkStateNotifier);
+    final location =
+        ref.watch(nowLocationProvider.notifier).updateNowLocation();
+
+    //
+    return FutureBuilder(
+        future: location,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.data != null) {
+              print("위치 정보 존재 : ${snapshot.data}");
+              print("LoadServiceLogWidget() 호출");
+              return LoadServiceLogWidget();
+            } else {
+              print("위치 정보 없음, LocationManagementScreen() 호출");
+              return LocationManagementScreen();
+            }
+          } else {
+            print("위치 정보 로딩 중");
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+        });
+  }
+}
+
+class LoadServiceLogWidget extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userInfo = ref.watch(userInfoProvider);
+    if (userInfo == null) {
+      // 유저 정보 없음
+      print("유저 정보 없음, UserInfoCheckWidget() 호출");
+      return UserInfoCheckWidget();
+    } else {
+      // 유저 정보 있음
+      print("유저 정보 존재 : ${userInfo.phoneNumber}");
+      print("ServiceLogWidget() 호출");
+      return FutureBuilder(
+          future: ref
+              .watch(serviceLogProvider.notifier)
+              .fetchStoreServiceLog(userInfo.phoneNumber),
+          builder: (context, snapshot) {
+            if (snapshot.data != null) {
+              if (APIResponseStatus.serviceLogFailure
+                  .isEqualTo(snapshot.data!.status)) {
+                // 서비스 로그 불러오기 실패
+                print("서비스 로그 불러오기 실패, 재로그인 필요 : OnboardingScreen() 호출");
+                return OnboardingScreen();
+              } else {
+                // 서비스 로그 불러오기 성공. 나열 시작
+                print("서비스 로그 불러오기 성공 : ${snapshot.data!.userLogs.length}");
+
+                return MainScreen();
+              }
+            } else {
+              print("서비스 정보 로딩 중");
+              return Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+          });
+    }
+  }
+}
+
+Future<void> initializeFirebaseMessaging() async {
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'high_importance_channel', // id
+    'High Importance Notifications', // title
+    description: 'This channel is used for important notifications.',
+    importance: Importance.max,
+    playSound: true,
+    sound: RawResourceAndroidNotificationSound('orre'),
+  );
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const DarwinInitializationSettings initializationSettingsIOS =
+      DarwinInitializationSettings();
+
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsIOS,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    RemoteNotification? notification = message.notification;
+    AndroidNotification? android = message.notification?.android;
+
+    if (notification != null && android != null) {
+      flutterLocalNotificationsPlugin.show(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            channel.id,
+            channel.name,
+            channelDescription: channel.description,
+            icon: android.smallIcon,
+            playSound: true,
+            sound: RawResourceAndroidNotificationSound('orre'),
+          ),
+          iOS: DarwinNotificationDetails(),
+        ),
+      );
+    }
+  });
+
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+}
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print('Handling a background message ${message.messageId}');
+}
+
+void requestPermission() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    print('User granted permission');
+  } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+    print('User granted provisional permission');
+  } else {
+    print('User declined or has not accepted permission');
   }
 }

@@ -17,7 +17,7 @@ class StoreMenuListWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print("category: $category");
+    // print("category: $category");
     // storeDetailInfo.menuInfo.forEach((element) {
     //   print("element: ${element.menuCode}");
     // });

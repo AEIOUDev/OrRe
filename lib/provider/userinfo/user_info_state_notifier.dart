@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:orre/model/user_info_model.dart';
 import 'package:orre/services/network/https_services.dart';
 import 'package:riverpod/riverpod.dart';
@@ -53,6 +54,9 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
       print("로그인 시도 : $signInInfo");
       SignInInfo? info;
 
+      final fcmToken = await FirebaseMessaging.instance.getToken() ?? '';
+      print("fcmToken : " + fcmToken);
+
       // 매개변수가 없다면 저장된 로그인 정보를 불러옴
       if (signInInfo == null) {
         final loaded = await loadUserInfo();
@@ -76,6 +80,7 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
       final body = {
         'userPhoneNumber': info.phoneNumber,
         'userPassword': info.password,
+        'userFcmToken': fcmToken,
       };
 
       final jsonBody = json.encode(body);
@@ -88,11 +93,12 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
         print("로그인 시도(json 200): $jsonResponse");
         if (APIResponseStatus.success.isEqualTo(jsonResponse['status'])) {
           print("로그인 시도: success");
+          print("fcmToken : " + fcmToken);
           state = UserInfo(
             phoneNumber: info.phoneNumber,
             password: info.password,
             name: jsonResponse['token'],
-            fcmToken: '', // TODO : fcmToken 추가
+            fcmToken: fcmToken ?? '', // TODO : fcmToken 추가
           );
           saveUserInfo();
           return jsonResponse['token'];

@@ -123,7 +123,14 @@ class HomeScreenAppBar extends ConsumerWidget {
         // 결과를 출력합니다.
         print("updateNowLocation value : $value");
         // 성공적으로 위치 정보를 받았으면, 이를 LocationListProvider에 업데이트합니다.
-        ref.read(locationListProvider.notifier).updateNowLocation(value);
+        if (value != null) {
+          ref.read(locationListProvider.notifier).updateNowLocation(value);
+        } else {
+          // 에러 처리...
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: TextWidget('현재 위치를 불러오는데 실패했습니다.')),
+          );
+        }
       });
     } catch (error) {
       // 에러 처리...

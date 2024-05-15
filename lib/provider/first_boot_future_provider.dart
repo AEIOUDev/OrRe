@@ -2,40 +2,49 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/provider/network/connectivity_state_notifier.dart';
+import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 
 Future<int> initializeApp(WidgetRef ref) async {
   try {
-    final networkStatusStream = ref.watch(networkStateProvider);
-    bool isConnected = false;
-    StreamSubscription<bool>? subscription;
+    final networkStatus = ref.read(networkStateNotifierProvider);
+    if (!networkStatus) {
+      print("네트워크 연결 실패");
+      return 3; // 네트워크 연결 실패 시 3 반환
+    }
 
-    final completer = Completer<void>();
+    // 네트워크 연결이 되어 있을 때 STOMP 연결 확인
+    print("네트워크 연결 성공");
+    final stompStatusStream =
+        ref.read(stompClientStateNotifierProvider.notifier).configureClient();
+    bool isStompConnected = false;
+    StreamSubscription<StompStatus>? stompSubscription;
 
-    subscription = networkStatusStream.listen((status) {
-      if (status) {
-        isConnected = true;
-        subscription?.cancel();
-        completer.complete();
+    final stompCompleter = Completer<void>();
+
+    stompSubscription = stompStatusStream.listen((status) {
+      if (status == StompStatus.CONNECTED) {
+        isStompConnected = true;
+        stompSubscription?.cancel();
+        stompCompleter.complete();
       }
     });
 
     // 10초 후에 타임아웃 처리
-    Future.delayed(const Duration(seconds: 10)).then((_) {
-      if (!completer.isCompleted) {
-        subscription?.cancel();
-        completer.completeError('Timeout');
+    final stompTimeout = Future.delayed(const Duration(seconds: 10), () {
+      if (!stompCompleter.isCompleted) {
+        stompSubscription?.cancel();
+        stompCompleter.completeError('STOMP timeout');
       }
     });
 
-    await completer.future;
+    await Future.any([stompCompleter.future, stompTimeout]);
 
-    if (isConnected) {
-      // 네트워크 연결이 되어 있을 때 자동 로그인 시도
-      print("네트워크 연결 성공");
+    if (isStompConnected) {
+      // STOMP 연결이 성공했을 때 자동 로그인 시도
+      print("STOMP 연결 성공");
       final result =
           await ref.read(userInfoProvider.notifier).requestSignIn(null);
-      ref.read(userInfoProvider.notifier).clearUserInfo();
       if (result == null) {
         print("로그인 정보 없음");
         return 0; // 로그인 정보 없음
@@ -44,11 +53,11 @@ Future<int> initializeApp(WidgetRef ref) async {
         return 1; // 로그인 성공
       }
     } else {
-      print("네트워크 연결 실패");
-      return 2; // 네트워크 연결 실패 시 false 반환
+      print("STOMP 연결 실패");
+      return 2; // STOMP 연결 실패
     }
   } catch (e) {
     print("에러 발생 : $e");
-    return 3; // 에러 발생 시 false 반환
+    return 4; // 에러 발생 시 4 반환
   }
 }
