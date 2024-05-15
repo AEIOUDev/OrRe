@@ -98,7 +98,7 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
             phoneNumber: info.phoneNumber,
             password: info.password,
             name: jsonResponse['token'],
-            fcmToken: fcmToken ?? '', // TODO : fcmToken 추가
+            fcmToken: fcmToken, // fcmToken이 null이면 빈 문자열로 저장
           );
           saveUserInfo();
           return jsonResponse['token'];
@@ -159,5 +159,9 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
     _storage.delete(key: 'fcmToken');
     _storage.readAll().then((value) => print(value));
     _storage.read(key: 'userPhoneNumber').then((value) => print(value));
+  }
+
+  String? getNickname() {
+    return state?.name ?? "사용자";
   }
 }

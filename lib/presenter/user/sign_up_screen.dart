@@ -224,9 +224,9 @@ class SignUpScreen extends ConsumerWidget {
                         print(signUpUserInfo.password);
                         print(signUpUserInfo.phoneNumber);
                         print(signUpUserInfo.authCode);
-                        requestSignUp(signUpUserInfo).then((value) {
+                        requestSignUp(signUpUserInfo).then((value) async {
                           if (value == true) {
-                            Future.delayed(Duration.zero, () {
+                            await Future.delayed(Duration.zero, () async {
                               ref.read(timerProvider.notifier).cancelTimer();
                               ref
                                   .read(userInfoProvider.notifier)
@@ -239,20 +239,31 @@ class SignUpScreen extends ConsumerWidget {
                                     ),
                                   );
                             });
-                            Navigator.pushReplacement(context,
+
+                            await Navigator.pushReplacement(context,
                                 MaterialPageRoute(builder: (context) {
                               return LocationStateCheckWidget();
                             }));
+
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertPopupWidget(
+                                  title: '회원가입 성공',
+                                  subtitle:
+                                      '${signUpUserInfo.nickname}님, 환영합니다!',
+                                  buttonText: '확인',
+                                );
+                              },
+                            );
                           } else {
                             showDialog(
-                                context: context,
-                                builder: (context) => Builder(
-                                      builder: (BuildContext context) =>
-                                          AlertPopupWidget(
-                                        title: '회원가입 실패',
-                                        buttonText: '확인',
-                                      ),
-                                    ));
+                              context: context,
+                              builder: (context) => AlertPopupWidget(
+                                title: '회원가입 실패',
+                                buttonText: '확인',
+                              ),
+                            );
                           }
                         });
                       },
