@@ -203,20 +203,18 @@ class NetworkCheckScreen extends ConsumerWidget {
 
 class StompCheckScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
-    return StreamBuilder(
-        stream: ref
-            .watch(stompClientStateNotifierProvider.notifier)
-            .configureClient(),
-        builder: (context, snapshot) {
-          print("StompCheckScreen() 호출 : ${snapshot.data}");
-          if (snapshot.data != StompStatus.CONNECTED) {
-            print("Stomp 에러 발생, WebsocketErrorScreen() 호출");
-            return WebsocketErrorScreen();
-          } else {
-            print("Stomp 연결 성공, UserInfoCheckWidget() 호출");
-            return UserInfoCheckWidget();
-          }
-        });
+    final stomp = ref.watch(stompClientStateNotifierProvider);
+    final stompS = ref.watch(stompState);
+
+    if (stompS == StompStatus.CONNECTED) {
+      // STOMP 연결 성공
+      print("STOMP 연결 성공");
+      return UserInfoCheckWidget();
+    } else {
+      // STOMP 연결 실패
+      print("STOMP 연결 실패, WebsocketErrorScreen() 호출");
+      return WebsocketErrorScreen();
+    }
   }
 }
 
@@ -297,7 +295,7 @@ class LoadServiceLogWidget extends ConsumerWidget {
               .fetchStoreServiceLog(userInfo.phoneNumber),
           builder: (context, snapshot) {
             if (snapshot.data != null) {
-              if (APIResponseStatus.serviceLogFailure
+              if (APIResponseStatus.serviceLogPhoneNumberFailure
                   .isEqualTo(snapshot.data!.status)) {
                 // 서비스 로그 불러오기 실패
                 print("서비스 로그 불러오기 실패, 재로그인 필요 : OnboardingScreen() 호출");
