@@ -43,86 +43,13 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
     });
   }
 
-  Shader _shaderCallback(Rect rect) {
-    return const LinearGradient(
-      begin: Alignment.bottomCenter,
-      end: Alignment.topCenter,
-      colors: [Colors.black, Colors.transparent],
-      stops: [0.6, 1],
-    ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
-  }
-
   @override
   Widget build(BuildContext context) {
     final storeDetailInfo = ref.watch(storeDetailInfoProvider);
-    final cancelState = ref.watch(cancelDialogStatus);
-    if (cancelState != null) {
-      print("!!!!!!!!!!cancel state: $cancelState");
-      Future.microtask(() {
-        if (cancelState == 1103) {
-          ref.read(storeWaitingUserCallNotifierProvider.notifier).unSubscribe();
-          ref.read(cancelDialogStatus.notifier).state = null;
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertPopupWidget(
-                  title: '웨이팅 취소',
-                  subtitle: '웨이팅이 가게에 의해 취소되었습니다.',
-                  buttonText: '확인',
-                );
-              });
-        } else if (cancelState == 200) {
-          ref.read(storeWaitingUserCallNotifierProvider.notifier).unSubscribe();
-          ref.read(cancelDialogStatus.notifier).state = null;
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertPopupWidget(
-                  title: '웨이팅 취소',
-                  subtitle: '웨이팅을 취소했습니다.',
-                  buttonText: '확인',
-                );
-              });
-        } else if (cancelState == 1102) {
-          ref.read(cancelDialogStatus.notifier).state = null;
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertPopupWidget(
-                  title: '웨이팅 취소 실패',
-                  subtitle: '가게에 문의해주세요.',
-                  buttonText: '확인',
-                );
-              });
-        }
-      }).catchError((e) {
-        print("error: $e");
-      });
-    }
-
-    final userCallAlert = ref.watch(userCallAlertProvider);
-
-    if (userCallAlert) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(userCallAlertProvider.notifier).state = false;
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertPopupWidget(
-                title: '입장 알림',
-                subtitle:
-                    "제한 시간 이내에 매장에 입장해주세요!\n입장 시간이 지나면 다음 대기자에게 넘어갈 수 있습니다.",
-                buttonText: '빨리 갈게요!',
-              );
-            });
-      });
-    }
-
-    print("asyncStoreDetailInfo: ${storeDetailInfo?.storeCode}");
+    _handleCancelState();
+    _handleUserCallAlert();
 
     if (storeDetailInfo == null) {
-      print("storeDetailInfo is null");
-      print("subscribeStoreDetailInfo: ${widget.storeCode}");
       return Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -131,17 +58,74 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
     }
   }
 
+  void _handleCancelState() {
+    final cancelState = ref.watch(cancelDialogStatus);
+    if (cancelState != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (cancelState == 1103 || cancelState == 200) {
+          ref.read(storeWaitingUserCallNotifierProvider.notifier).unSubscribe();
+          ref
+              .read(storeWaitingRequestNotifierProvider.notifier)
+              .unSubscribe(widget.storeCode);
+          ref.read(cancelDialogStatus.notifier).state = null;
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertPopupWidget(
+                title: '웨이팅 취소',
+                subtitle: cancelState == 1103
+                    ? '웨이팅이 가게에 의해 취소되었습니다.'
+                    : '웨이팅을 취소했습니다.',
+                buttonText: '확인',
+              );
+            },
+          );
+        } else if (cancelState == 1102) {
+          ref.read(cancelDialogStatus.notifier).state = null;
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertPopupWidget(
+                title: '웨이팅 취소 실패',
+                subtitle: '가게에 문의해주세요.',
+                buttonText: '확인',
+              );
+            },
+          );
+        }
+      });
+    }
+  }
+
+  void _handleUserCallAlert() {
+    final userCallAlert = ref.watch(userCallAlertProvider);
+    if (userCallAlert) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(userCallAlertProvider.notifier).state = false;
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertPopupWidget(
+              title: '입장 알림',
+              subtitle:
+                  "제한 시간 이내에 매장에 입장해주세요!\n입장 시간이 지나면 다음 대기자에게 넘어갈 수 있습니다.",
+              buttonText: '빨리 갈게요!',
+            );
+          },
+        );
+      });
+    }
+  }
+
   Widget buildScaffold(BuildContext context, StoreDetailInfo? storeDetailInfo) {
     final myWaitingInfo = ref.watch(storeWaitingRequestNotifierProvider);
-    print('storeDetailInfo!!!!!: ${storeDetailInfo?.storeCode}');
     if (storeDetailInfo == null || storeDetailInfo.storeCode == 0) {
-      // TODO : Show error message
       return Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     } else {
       return Scaffold(
-        body: new Container(
+        body: Container(
           color: Colors.white,
           child: CustomScrollView(
             slivers: [
@@ -234,7 +218,10 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                 snap: true, // 스크롤을 빨리 움직일 때 자동으로 확장/축소될지 여부
               ),
               WaitingStatusWidget(
-                  storeCode: widget.storeCode, myWaitingInfo: myWaitingInfo),
+                storeCode: widget.storeCode,
+                myWaitingInfo: myWaitingInfo,
+              ),
+              CSVDividerWidget(),
               StoreMenuCategoryListWidget(storeDetailInfo: storeDetailInfo),
               PopScope(
                 child: SliverToBoxAdapter(
@@ -265,5 +252,14 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
             : null,
       );
     }
+  }
+
+  Shader _shaderCallback(Rect rect) {
+    return const LinearGradient(
+      begin: Alignment.bottomCenter,
+      end: Alignment.topCenter,
+      colors: [Colors.black, Colors.transparent],
+      stops: [0.6, 1],
+    ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
   }
 }

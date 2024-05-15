@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/presenter/homescreen/service_log_screen.dart';
 
 import 'package:orre/presenter/user/onboarding_screen.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
@@ -82,8 +83,35 @@ class SettingScreen extends ConsumerWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15.0),
                         ),
-                        text: '알림 설정',
-                        textColor: Colors.black,
+                      ],
+                    ),
+                    SizedBox(
+                      height: 60,
+                    ),
+                    BigButtonWidget(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ServiceLogScreen()));
+                      },
+                      backgroundColor: Color(0xFFDFDFDF),
+                      minimumSize: Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      text: '이용내역 확인',
+                      textColor: Colors.black,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    BigButtonWidget(
+                      onPressed: () {},
+                      backgroundColor: Color(0xFFDFDFDF),
+                      minimumSize: Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
                       ),
                       SizedBox(
                         height: 10,
