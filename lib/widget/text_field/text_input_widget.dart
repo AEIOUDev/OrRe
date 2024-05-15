@@ -58,7 +58,7 @@ class TextInputWidget extends ConsumerWidget {
         if (subTitle != null)
           Container(
             alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+            padding: const EdgeInsets.fromLTRB(16, 8, 0, 4),
             child: TextWidget(
               subTitle!,
               fontSize: 12,

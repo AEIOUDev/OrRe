@@ -17,7 +17,7 @@ class StaticAppBarWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
-      padding: EdgeInsets.only(top: 40, left: 20),
+      padding: EdgeInsets.only(top: 60, left: 5),
       child: Row(
         children: [
           leading ?? SizedBox(width: 20),

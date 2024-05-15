@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/model/location_model.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
 import 'package:orre/model/store_waiting_request_model.dart';
+import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import '../../provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import '../../provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
@@ -10,8 +12,12 @@ import '../../provider/waiting_usercall_time_list_state_notifier.dart';
 class WaitingStatusWidget extends ConsumerWidget {
   final int storeCode;
   final StoreWaitingRequest? myWaitingInfo;
+  final LocationInfo locationInfo;
 
-  WaitingStatusWidget({required this.storeCode, this.myWaitingInfo});
+  WaitingStatusWidget(
+      {required this.storeCode,
+      this.myWaitingInfo,
+      required this.locationInfo});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,15 +28,15 @@ class WaitingStatusWidget extends ConsumerWidget {
     storeWaitingInfo.waitingTeamList.forEach((element) {
       print("waitingTeamList: $element");
     });
+
     final myUserCall = ref.watch(storeWaitingUserCallNotifierProvider);
     final remainingTime = ref.watch(waitingUserCallTimeListProvider);
-
     return SliverToBoxAdapter(
       child:
           (myWaitingInfo != null && myWaitingInfo?.token.storeCode == storeCode)
               ? buildMyWaitingStatus(
                   myWaitingInfo!, storeWaitingInfo, myUserCall, remainingTime)
-              : buildGeneralWaitingStatus(storeWaitingInfo),
+              : buildGeneralWaitingStatus(storeWaitingInfo, ref),
     );
   }
 
@@ -154,7 +160,16 @@ class WaitingStatusWidget extends ConsumerWidget {
     );
   }
 
-  Widget buildGeneralWaitingStatus(StoreWaitingInfo storeWaitingInfo) {
+  Widget buildGeneralWaitingStatus(
+      StoreWaitingInfo storeWaitingInfo, WidgetRef ref) {
+    final nowLocation = ref.watch(nowLocationProvider);
+    String distance;
+    if (nowLocation == null) {
+      distance = '위치 정보를 불러오는 중입니다.';
+    } else {
+      distance = '${nowLocation - locationInfo}m';
+    }
+
     return Column(
       children: [
         SizedBox(
@@ -211,7 +226,7 @@ class WaitingStatusWidget extends ConsumerWidget {
             Expanded(
               flex: 3,
               child: TextWidget(
-                ':  350 m', // TODO : 엄마 여기 나와의 거리 출력 해줘.
+                ':  ${distance}',
                 textAlign: TextAlign.start,
               ),
             )

@@ -68,7 +68,6 @@ class StoreMenuTileWidget extends ConsumerWidget {
             ),
           ],
         ),
-        // TODO : 엄마 메뉴 정보 팝업으로 수정했어. 내용보고 알아서 수정하세요~
         onTap: () {
           PopupDialog.show(
               context,
