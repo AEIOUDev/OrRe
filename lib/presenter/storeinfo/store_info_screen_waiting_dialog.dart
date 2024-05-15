@@ -142,19 +142,22 @@ class WaitingDialog extends ConsumerWidget {
     stream.then((result) {
       print("result: $result");
       if (result) {
-        final myWaitingInfo = ref.read(storeWaitingRequestNotifierProvider);
-        ref
-            .read(storeWaitingUserCallNotifierProvider.notifier)
-            .subscribeToUserCall(storeCode, myWaitingInfo!.token.waiting);
-        // 결과가 true 일 때의 대화 상자
-        showDialog(
-          context: context,
-          builder: (context) => AlertPopupWidget(
-            title: '웨이팅 성공',
-            subtitle: '대기번호 ${myWaitingInfo.token.waiting}번으로 웨이팅 되었습니다.',
-            buttonText: 'OK',
-          ),
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final myWaitingInfo = ref.read(storeWaitingRequestNotifierProvider);
+          ref
+              .read(storeWaitingUserCallNotifierProvider.notifier)
+              .subscribeToUserCall(storeCode, myWaitingInfo!.token.waiting);
+
+          // 결과가 true 일 때의 대화 상자
+          showDialog(
+            context: context,
+            builder: (context) => AlertPopupWidget(
+              title: '웨이팅 성공',
+              subtitle: '대기번호 ${myWaitingInfo.token.waiting}번으로 웨이팅 되었습니다.',
+              buttonText: 'OK',
+            ),
+          );
+        });
       } else {
         // 결과가 false 일 때의 대화 상자
         showDialog(

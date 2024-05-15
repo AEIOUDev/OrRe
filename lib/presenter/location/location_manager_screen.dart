@@ -41,9 +41,8 @@ class _LocationManagementScreenState
 
   @override
   Widget build(BuildContext context) {
-    final myLocation = ref.watch(nowLocationProvider);
-    final customLocations = ref.watch(locationListProvider);
-    final selectedLocation = customLocations.selectedLocation;
+    final userLocations = ref.watch(locationListProvider);
+    final selectedLocation = userLocations.selectedLocation;
 
     return Scaffold(
       appBar: AppBar(
@@ -52,21 +51,6 @@ class _LocationManagementScreenState
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () async {
-              // 위치 추가 로직
-              // final newLocationName = await showDialog<String>(
-              //   context: context,
-              //   builder: (context) => NewLocationDialog(),
-              // );
-              // if (newLocationName != null && newLocationName.isNotEmpty) {
-              //   ref.read(locationListProvider.notifier).addLocation(
-              //         LocationInfo(
-              //           locationName: newLocationName,
-              //           latitude: 0.0, // 새 위치의 위도
-              //           longitude: 0.0, // 새 위치의 경도
-              //           address: "새 위치의 주소", // 새 위치의 주소
-              //         ),
-              //       );
-              // }
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => AddLocationScreen()),
               );
@@ -74,19 +58,23 @@ class _LocationManagementScreenState
           ),
         ],
       ),
-      body: ListTile(
-        title: TextWidget(myLocation.locationName),
-        subtitle: TextWidget('${myLocation.address}'),
-        onTap: () {
-          ref.read(locationListProvider.notifier).selectLocation(myLocation);
-          Navigator.pop(context);
+      body: ListView.builder(
+        itemCount: userLocations.customLocations.length,
+        itemBuilder: (context, index) {
+          final location = userLocations.customLocations[index];
+          return ListTile(
+            title: TextWidget(location.locationName),
+            subtitle: TextWidget(location.address),
+            onTap: () {
+              ref.read(locationListProvider.notifier).selectLocation(location);
+              Navigator.of(context).pop();
+            },
+            trailing: IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () => _deleteLocation(location.locationName, ref),
+            ),
+          );
         },
-        trailing: myLocation.locationName != 'nowLocation'
-            ? IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () => _deleteLocation(myLocation.locationName, ref),
-              )
-            : null, // "nowLocation" 항목에는 삭제 버튼이 없음
       ),
     );
   }

@@ -64,7 +64,7 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
   void setClient(StompClient client) {
     print("UserCall : setClient");
     _client = client; // 내부 변수에 StompClient 인스턴스 저장
-    loadWaitingRequestList();
+    // loadWaitingRequestList();
   }
 
   void subscribeToUserCall(
@@ -122,7 +122,9 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
     print("saveUserCallStatus");
 
     if (state == null) {
-      await _storage.delete(key: 'userCallStatus');
+      if (await _storage.containsKey(key: 'userCallStatus')) {
+        await _storage.delete(key: 'userCallStatus');
+      }
     } else {
       final json_data_status = jsonEncode(state!.toJson());
       print("saveUserCallStatus : $json_data_status");
@@ -133,16 +135,31 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
   // 안전한 저장소에 저장된 위치 정보 리스트를 불러오는 메소드
   Future<void> loadWaitingRequestList() async {
     print("loadUserCallStatus");
-    final json_data_status = await _storage.read(key: 'userCallStatus');
-    if (json_data_status != null) {
-      print("loadUserCallStatus : $json_data_status");
-      final UserCall userCall = UserCall.fromJson(jsonDecode(json_data_status));
-      state = userCall;
-      subscribeToUserCall(userCall.storeCode, userCall.waitingNumber);
-      _ref
-          .read(waitingUserCallTimeListProvider.notifier)
-          .setUserCallTime(userCall.entryTime);
-    } else {
+    try {
+      bool keyExists = await _storage.containsKey(key: 'userCallStatus');
+      if (!keyExists) {
+        print("키체인에 'userCallStatus' 키가 존재하지 않습니다.");
+        state = null;
+        return;
+      }
+
+      final jsonDataStatus = await _storage.read(key: 'userCallStatus');
+      if (jsonDataStatus != null) {
+        print("loadUserCallStatus : $jsonDataStatus");
+        final UserCall userCall = UserCall.fromJson(jsonDecode(jsonDataStatus));
+        state = userCall;
+        subscribeToUserCall(userCall.storeCode, userCall.waitingNumber);
+        _ref
+            .read(waitingUserCallTimeListProvider.notifier)
+            .setUserCallTime(userCall.entryTime);
+      } else {
+        state = null;
+      }
+    } on Error catch (e) {
+      print('키체인 오류: ${e}');
+      state = null;
+    } catch (e) {
+      print('예상치 못한 오류: $e');
       state = null;
     }
   }
