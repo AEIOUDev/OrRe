@@ -10,6 +10,7 @@ import 'package:orre/services/network/https_services.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/small_button_widget.dart';
+import 'package:orre/widget/button/text_button_widget.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
 
 import 'package:orre/widget/text_field/text_input_widget.dart';
@@ -42,18 +43,19 @@ class SignUpScreen extends ConsumerWidget {
     return WaveformBackgroundWidget(
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(kToolbarHeight),
+          preferredSize:
+              Size.fromHeight(MediaQuery.of(context).size.height * 0.25),
           child: StaticAppBarWidget(
             title: '회원 가입',
             leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+              icon: Icon(Icons.arrow_back_ios),
               onPressed: () {
                 Navigator.pop(context);
               },
             ),
           ),
         ),
-        backgroundColor: Color(0xFFFFE0B2),
+        backgroundColor: Colors.transparent,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -62,6 +64,9 @@ class SignUpScreen extends ConsumerWidget {
                 key: formKey,
                 child: Column(
                   children: [
+                    SizedBox(
+                      height: 60,
+                    ),
                     // 닉네임 입력창
                     TextInputWidget(
                       prefixIcon: Icon(Icons.person),
@@ -138,7 +143,7 @@ class SignUpScreen extends ConsumerWidget {
                             maxLength: 11,
                             focusNode: phoneNumberFocusNode,
                             nextFocusNode: authCodeFocusNode,
-                            suffixIcon: SmallButtonWidget(
+                            suffixIcon: TextButtonWidget(
                               onPressed: () {
                                 if (!phoneFormKey.currentState!.validate()) {
                                   return;
@@ -177,6 +182,7 @@ class SignUpScreen extends ConsumerWidget {
                               text: timer == 0
                                   ? "인증 번호 받기"
                                   : timer.toString() + "초 후 재시도",
+                              fontSize: 16,
                             ),
                           ),
                         );
@@ -204,6 +210,7 @@ class SignUpScreen extends ConsumerWidget {
                     // 하단 "회원 가입하기" 버튼
                     BigButtonWidget(
                       text: '회원 가입하기',
+                      textColor: Colors.white,
                       onPressed: () {
                         final signUpUserInfo = SignUpInfo(
                           nickname: nicknameController.text,
