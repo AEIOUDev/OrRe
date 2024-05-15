@@ -129,118 +129,94 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
           color: Colors.white,
           child: CustomScrollView(
             slivers: [
-              SliverAppBarBuilder(
-                backgroundColorAll: Colors.orange,
-                backgroundColorBar: Colors.transparent,
-                debug: false,
-                barHeight: 40,
-                initialBarHeight: 40,
-                pinned: true,
-                leadingActions: [
-                  (context, expandRatio, barHeight, overlapsContent) {
-                    return SizedBox(
-                      height: barHeight,
-                      child: const BackButton(color: Colors.white),
-                    );
-                  }
-                ],
-                trailingActions: [
-                  (context, expandRatio, barHeight, overlapsContent) {
-                    return SizedBox(
-                      height: barHeight,
-                      child: IconButton(
-                        color: Colors.white,
-                        onPressed: () async {
-                          final status = await Permission.phone.request();
-                          if (status.isGranted) {
-                            await FlutterPhoneDirectCaller.callNumber(
-                                storeDetailInfo.storePhoneNumber);
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    PermissionRequestPhoneScreen(),
-                              ),
-                            );
-                          }
-                        },
-                        icon: Icon(Icons.phone),
-                      ),
-                    );
+              SliverAppBar(
+                backgroundColor: Color(0xFFFFB74D), // 배경색 설정
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(25), // 아래쪽 모서리 둥글게
+                    bottomRight: Radius.circular(25),
+                  ),
+                ),
+                leading: IconButton(
+                  // 왼쪽 상단 뒤로가기 아이콘
+                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    Navigator.pop(context);
                   },
-                  (context, expandRatio, barHeight, overlapsContent) {
-                    return SizedBox(
-                      height: barHeight,
-                      child: IconButton(
-                        color: Colors.white,
-                        icon: Icon(Icons.info),
-                        onPressed: () {
-                          // 상세 정보 페이지로 이동하는 코드
-                        },
-                      ),
-                    );
-                  }
+                ),
+                actions: [
+                  IconButton(
+                    // 오른쪽 상단 전화 아이콘
+                    icon: Icon(Icons.phone, color: Colors.white),
+                    onPressed: () async {
+                      // Call the store
+                      final status = await Permission.phone.request();
+                      print("status: $status");
+                      if (status.isGranted) {
+                        print('Permission granted');
+                        print(
+                            'Call the store: ${storeDetailInfo.storePhoneNumber}');
+                        await FlutterPhoneDirectCaller.callNumber(
+                            storeDetailInfo.storePhoneNumber);
+                      } else {
+                        print('Permission denied');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                PermissionRequestPhoneScreen(),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.info_outline, color: Colors.white),
+                    onPressed: () {
+                      // Navigate to the store detail info page
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => StoreDetailInfoScreen(
+                      //         storeDetailInfo: storeDetailInfo),
+                      //   ),
+                      // );
+                    },
+                  ),
                 ],
-                initialContentHeight: 400,
-                contentBuilder: (
-                  context,
-                  expandRatio,
-                  contentHeight,
-                  centerPadding,
-                  overlapsContent,
-                ) {
-                  return Stack(
-                    children: [
-                      Opacity(
-                        opacity: expandRatio,
-                        child: ShaderMask(
-                          shaderCallback: _shaderCallback,
-                          blendMode: BlendMode.dstIn,
-                          child: Image(
-                            height: contentHeight,
-                            width: double.infinity,
-                            fit: BoxFit.fill,
-                            alignment: Alignment.topCenter,
-                            image: CachedNetworkImageProvider(
-                              storeDetailInfo.storeImageMain,
-                            ),
-                          ),
-                        ),
+                expandedHeight: 240, // 높이 설정
+                flexibleSpace: FlexibleSpaceBar(
+                  centerTitle: true,
+                  title: TextWidget(
+                    storeDetailInfo.storeName,
+                    color: Colors.white,
+                    fontSize: 32,
+                    textAlign: TextAlign.center,
+                  ),
+                  background: Container(
+                    width: 130,
+                    height: 130,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFFFFB74D), // 원모양 배경색
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: Image(
+                        image: CachedNetworkImageProvider(
+                            storeDetailInfo.storeImageMain),
+                        fit: BoxFit.cover,
+                        width: 130,
+                        height: 130,
                       ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        height: contentHeight,
-                        padding: centerPadding.copyWith(
-                          left: 10 + (1 - expandRatio) * 40,
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: TextWidget(
-                            storeDetailInfo.storeName,
-                            fontSize: 24 + expandRatio * 10,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            shadows: [
-                              Shadow(
-                                color: Color.lerp(
-                                      Colors.black,
-                                      Colors.transparent,
-                                      1 - expandRatio,
-                                    ) ??
-                                    Colors.transparent,
-                                blurRadius: 10,
-                                offset: const Offset(4, 2),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
+                    ),
+                  ),
+                ),
+                pinned: true, // 스크롤시 고정
+                floating: true, // 스크롤 올릴 때 축소될지 여부
+                snap: true, // 스크롤을 빨리 움직일 때 자동으로 확장/축소될지 여부
               ),
-              CSVDividerWidget(),
               WaitingStatusWidget(
                 storeCode: widget.storeCode,
                 myWaitingInfo: myWaitingInfo,

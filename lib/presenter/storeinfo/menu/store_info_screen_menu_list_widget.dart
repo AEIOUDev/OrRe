@@ -24,13 +24,15 @@ class StoreMenuListWidget extends ConsumerWidget {
     final menuList =
         MenuInfo.getMenuByCategory(storeDetailInfo.menuInfo, category);
     if (menuList.length < 1) {
-      return Container(
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+      return Padding(
+        padding: EdgeInsets.only(left: 15),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            TextWidget('메뉴 정보가 없습니다.'),
+            TextWidget(
+              '메뉴 정보가 없습니다.',
+              textAlign: TextAlign.start,
+            )
           ],
         ),
       );
@@ -43,7 +45,12 @@ class StoreMenuListWidget extends ConsumerWidget {
           final menu = menuList[index];
           return StoreMenuTileWidget(menu: menu);
         },
-        separatorBuilder: (context, index) => Divider(),
+        separatorBuilder: (context, index) => Divider(
+          color: Color(0xFFDFDFDF),
+          thickness: 2,
+          endIndent: 10,
+          indent: 10,
+        ),
       );
     }
   }
