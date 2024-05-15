@@ -71,6 +71,7 @@ class HomeScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CategoryWidget(location: location),
+            SizedBox(height: 20),
             Container(
               color: Colors.white,
               child: StoreListWidget(storeList: storeList),
