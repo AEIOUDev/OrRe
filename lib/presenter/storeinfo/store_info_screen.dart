@@ -43,92 +43,13 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
     });
   }
 
-  Shader _shaderCallback(Rect rect) {
-    return const LinearGradient(
-      begin: Alignment.bottomCenter,
-      end: Alignment.topCenter,
-      colors: [Colors.black, Colors.transparent],
-      stops: [0.6, 1],
-    ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
-  }
-
   @override
   Widget build(BuildContext context) {
     final storeDetailInfo = ref.watch(storeDetailInfoProvider);
-    final cancelState = ref.watch(cancelDialogStatus);
-    if (cancelState != null) {
-      print("!!!!!!!!!!cancel state: $cancelState");
-      Future.microtask(() {
-        if (cancelState == 1103) {
-          ref.read(storeWaitingUserCallNotifierProvider.notifier).unSubscribe();
-          ref
-              .read(storeWaitingRequestNotifierProvider.notifier)
-              .unSubscribe(widget.storeCode);
-          ref.read(cancelDialogStatus.notifier).state = null;
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertPopupWidget(
-                  title: '웨이팅 취소',
-                  subtitle: '웨이팅이 가게에 의해 취소되었습니다.',
-                  buttonText: '확인',
-                );
-              });
-        } else if (cancelState == 200) {
-          ref.read(storeWaitingUserCallNotifierProvider.notifier).unSubscribe();
-          ref
-              .read(storeWaitingRequestNotifierProvider.notifier)
-              .unSubscribe(widget.storeCode);
-          ref.read(cancelDialogStatus.notifier).state = null;
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertPopupWidget(
-                  title: '웨이팅 취소',
-                  subtitle: '웨이팅을 취소했습니다.',
-                  buttonText: '확인',
-                );
-              });
-        } else if (cancelState == 1102) {
-          ref.read(cancelDialogStatus.notifier).state = null;
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertPopupWidget(
-                  title: '웨이팅 취소 실패',
-                  subtitle: '가게에 문의해주세요.',
-                  buttonText: '확인',
-                );
-              });
-        }
-      }).catchError((e) {
-        print("error: $e");
-      });
-    }
-
-    final userCallAlert = ref.watch(userCallAlertProvider);
-
-    if (userCallAlert) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(userCallAlertProvider.notifier).state = false;
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertPopupWidget(
-                title: '입장 알림',
-                subtitle:
-                    "제한 시간 이내에 매장에 입장해주세요!\n입장 시간이 지나면 다음 대기자에게 넘어갈 수 있습니다.",
-                buttonText: '빨리 갈게요!',
-              );
-            });
-      });
-    }
-
-    print("asyncStoreDetailInfo: ${storeDetailInfo?.storeCode}");
+    _handleCancelState();
+    _handleUserCallAlert();
 
     if (storeDetailInfo == null) {
-      print("storeDetailInfo is null");
-      print("subscribeStoreDetailInfo: ${widget.storeCode}");
       return Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -137,17 +58,74 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
     }
   }
 
+  void _handleCancelState() {
+    final cancelState = ref.watch(cancelDialogStatus);
+    if (cancelState != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (cancelState == 1103 || cancelState == 200) {
+          ref.read(storeWaitingUserCallNotifierProvider.notifier).unSubscribe();
+          ref
+              .read(storeWaitingRequestNotifierProvider.notifier)
+              .unSubscribe(widget.storeCode);
+          ref.read(cancelDialogStatus.notifier).state = null;
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertPopupWidget(
+                title: '웨이팅 취소',
+                subtitle: cancelState == 1103
+                    ? '웨이팅이 가게에 의해 취소되었습니다.'
+                    : '웨이팅을 취소했습니다.',
+                buttonText: '확인',
+              );
+            },
+          );
+        } else if (cancelState == 1102) {
+          ref.read(cancelDialogStatus.notifier).state = null;
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertPopupWidget(
+                title: '웨이팅 취소 실패',
+                subtitle: '가게에 문의해주세요.',
+                buttonText: '확인',
+              );
+            },
+          );
+        }
+      });
+    }
+  }
+
+  void _handleUserCallAlert() {
+    final userCallAlert = ref.watch(userCallAlertProvider);
+    if (userCallAlert) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(userCallAlertProvider.notifier).state = false;
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertPopupWidget(
+              title: '입장 알림',
+              subtitle:
+                  "제한 시간 이내에 매장에 입장해주세요!\n입장 시간이 지나면 다음 대기자에게 넘어갈 수 있습니다.",
+              buttonText: '빨리 갈게요!',
+            );
+          },
+        );
+      });
+    }
+  }
+
   Widget buildScaffold(BuildContext context, StoreDetailInfo? storeDetailInfo) {
     final myWaitingInfo = ref.watch(storeWaitingRequestNotifierProvider);
-    print('storeDetailInfo!!!!!: ${storeDetailInfo?.storeCode}');
     if (storeDetailInfo == null || storeDetailInfo.storeCode == 0) {
-      // TODO : Show error message
       return Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     } else {
       return Scaffold(
-        body: new Container(
+        body: Container(
           color: Colors.white,
           child: CustomScrollView(
             slivers: [
@@ -169,50 +147,39 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                 trailingActions: [
                   (context, expandRatio, barHeight, overlapsContent) {
                     return SizedBox(
-                        height: barHeight,
-                        child: IconButton(
-                          color: Colors.white,
-                          onPressed: () async {
-                            // Call the store
-                            final status = await Permission.phone.request();
-                            print("status: $status");
-                            if (status.isGranted) {
-                              print('Permission granted');
-                              print(
-                                  'Call the store: ${storeDetailInfo.storePhoneNumber}');
-                              await FlutterPhoneDirectCaller.callNumber(
-                                  storeDetailInfo.storePhoneNumber);
-                            } else {
-                              print('Permission denied');
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      PermissionRequestPhoneScreen(),
-                                ),
-                              );
-                            }
-                          },
-                          icon: Icon(Icons.phone),
-                        ));
+                      height: barHeight,
+                      child: IconButton(
+                        color: Colors.white,
+                        onPressed: () async {
+                          final status = await Permission.phone.request();
+                          if (status.isGranted) {
+                            await FlutterPhoneDirectCaller.callNumber(
+                                storeDetailInfo.storePhoneNumber);
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PermissionRequestPhoneScreen(),
+                              ),
+                            );
+                          }
+                        },
+                        icon: Icon(Icons.phone),
+                      ),
+                    );
                   },
                   (context, expandRatio, barHeight, overlapsContent) {
                     return SizedBox(
-                        height: barHeight,
-                        child: IconButton(
-                          color: Colors.white,
-                          icon: Icon(Icons.info),
-                          onPressed: () {
-                            // Navigate to the store detail info page
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => StoreDetailInfoScreen(
-                            //         storeDetailInfo: storeDetailInfo),
-                            //   ),
-                            // );
-                          },
-                        ));
+                      height: barHeight,
+                      child: IconButton(
+                        color: Colors.white,
+                        icon: Icon(Icons.info),
+                        onPressed: () {
+                          // 상세 정보 페이지로 이동하는 코드
+                        },
+                      ),
+                    );
                   }
                 ],
                 initialContentHeight: 400,
@@ -225,24 +192,22 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                 ) {
                   return Stack(
                     children: [
-                      // All height image that fades away on scroll.
                       Opacity(
                         opacity: expandRatio,
                         child: ShaderMask(
                           shaderCallback: _shaderCallback,
                           blendMode: BlendMode.dstIn,
                           child: Image(
-                              height: contentHeight,
-                              width: double.infinity,
-                              fit: BoxFit.fill,
-                              alignment: Alignment.topCenter,
-                              image: CachedNetworkImageProvider(
-                                storeDetailInfo.storeImageMain,
-                              )),
+                            height: contentHeight,
+                            width: double.infinity,
+                            fit: BoxFit.fill,
+                            alignment: Alignment.topCenter,
+                            image: CachedNetworkImageProvider(
+                              storeDetailInfo.storeImageMain,
+                            ),
+                          ),
                         ),
                       ),
-
-                      // Using alignment and padding, centers text to center of bar.
                       Container(
                         alignment: Alignment.centerLeft,
                         height: contentHeight,
@@ -277,7 +242,9 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
               ),
               CSVDividerWidget(),
               WaitingStatusWidget(
-                  storeCode: widget.storeCode, myWaitingInfo: myWaitingInfo),
+                storeCode: widget.storeCode,
+                myWaitingInfo: myWaitingInfo,
+              ),
               CSVDividerWidget(),
               StoreMenuCategoryListWidget(storeDetailInfo: storeDetailInfo),
               PopScope(
@@ -309,5 +276,14 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
             : null,
       );
     }
+  }
+
+  Shader _shaderCallback(Rect rect) {
+    return const LinearGradient(
+      begin: Alignment.bottomCenter,
+      end: Alignment.topCenter,
+      colors: [Colors.black, Colors.transparent],
+      stops: [0.6, 1],
+    ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
   }
 }
