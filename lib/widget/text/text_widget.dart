@@ -15,6 +15,8 @@ class TextWidget extends ConsumerWidget {
   final double wordSpacing;
   final double letterSpacing;
   final EdgeInsetsGeometry padding;
+  final TextOverflow overflow;
+  final int maxLines;
 
   const TextWidget(
     this.text, {
@@ -29,6 +31,8 @@ class TextWidget extends ConsumerWidget {
     this.wordSpacing = 0,
     this.letterSpacing = 0,
     this.padding = const EdgeInsets.all(0),
+    this.overflow = TextOverflow.clip,
+    this.maxLines = 1,
   }) : super(key: key);
 
   @override
@@ -47,6 +51,8 @@ class TextWidget extends ConsumerWidget {
           ),
           textAlign: textAlign,
           softWrap: softWrap,
+          overflow: overflow,
+          maxLines: maxLines,
           locale: Locale('ko', 'KR')),
     );
   }

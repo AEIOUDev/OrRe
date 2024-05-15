@@ -34,6 +34,10 @@ class WaitingDialog extends ConsumerWidget {
     final formKey = ref.watch(waitingFormKeyProvider);
 
     return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10), // 모서리를 직각으로 설정
+      ),
+      backgroundColor: Colors.white,
       title: TextWidget("웨이팅 시작"),
       content: Form(
         key: formKey,
@@ -57,7 +61,10 @@ class WaitingDialog extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   IconButton(
-                    icon: Icon(Icons.remove),
+                    icon: Icon(
+                      Icons.remove,
+                      color: Color(0xFFFFB74D),
+                    ),
                     onPressed: () {
                       if (numberOfPersonControlloer > 1) {
                         ref.read(peopleNumberProvider.notifier).state--;
@@ -66,20 +73,26 @@ class WaitingDialog extends ConsumerWidget {
                   ),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    width: 75,
+                    height: 75,
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.orange, width: 2),
+                      border: Border.all(color: Color(0xFFFFB74D), width: 2),
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: AnimatedFlipCounter(
                       value: numberOfPersonControlloer,
                       suffix: "명",
                       textStyle: TextStyle(
-                        fontSize: 40,
+                        fontFamily: 'Dovemayo_gothic',
+                        fontSize: 36,
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.add),
+                    icon: Icon(
+                      Icons.add,
+                      color: Color(0xFFFFB74D),
+                    ),
                     onPressed: () {
                       ref.read(peopleNumberProvider.notifier).state++;
                     },

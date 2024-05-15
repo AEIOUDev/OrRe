@@ -44,20 +44,107 @@ class WaitingStatusWidget extends ConsumerWidget {
         storeWaitingInfo.waitingTeamList.indexOf(myWaitingNumber);
 
     List<Widget> children = [
-      TextWidget('내 웨이팅 번호: $myWaitingNumber'),
-      TextWidget("내 웨이팅 인원: ${myWaitingInfo.token.personNumber}명"),
-      TextWidget('내 웨이팅 전화번호: ${myWaitingInfo.token.phoneNumber}'),
-      TextWidget('남은 팀 수 : $myWaitingIndex'),
+      SizedBox(
+        height: 10,
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(flex: 1, child: Icon(Icons.person)),
+          Expanded(
+              flex: 3,
+              child: TextWidget(
+                '현재 대기 팀 수',
+                textAlign: TextAlign.start,
+              )),
+          Expanded(
+            flex: 3,
+            child: TextWidget(
+              ': $myWaitingIndex 팀',
+              textAlign: TextAlign.start,
+            ),
+          )
+        ],
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(flex: 1, child: Icon(Icons.info_outline)),
+          Expanded(
+              flex: 3,
+              child: TextWidget(
+                '웨이팅 번호',
+                textAlign: TextAlign.start,
+              )),
+          Expanded(
+            flex: 3,
+            child: TextWidget(
+              ': $myWaitingNumber 번',
+              textAlign: TextAlign.start,
+            ),
+          )
+        ],
+      ),
+      // TextWidget('내 웨이팅 번호: $myWaitingNumber'),
+      // TextWidget("내 웨이팅 인원: ${myWaitingInfo.token.personNumber}명"),
+      // TextWidget('내 웨이팅 전화번호: ${myWaitingInfo.token.phoneNumber}'),
+      // TextWidget('남은 팀 수 : $myWaitingIndex'),
     ];
 
     print("myUserCall: $myUserCall");
     if (myUserCall != null &&
         remainingTime != null &&
         remainingTime.inSeconds > 0) {
-      children.add(TextWidget('남은 입장 시간: ${remainingTime.inSeconds}초'));
+      children.add(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+                flex: 1,
+                child: Icon(
+                  Icons.watch_later,
+                  color: Color(0xFFFFB74D),
+                )),
+            Expanded(
+                flex: 3,
+                child: TextWidget(
+                  '남은 입장 시간',
+                  textAlign: TextAlign.start,
+                  color: Color(0xFFFFB74D),
+                )),
+            Expanded(
+              flex: 3,
+              child: TextWidget(
+                ': ${remainingTime.inSeconds} 초',
+                textAlign: TextAlign.start,
+                color: Color(0xFFFFB74D),
+              ),
+            )
+          ],
+        ),
+      );
     } else {
-      children.add(TextWidget(
-          '예상 대기 시간: ${myWaitingIndex * storeWaitingInfo.estimatedWaitingTimePerTeam}분'));
+      children.add(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(flex: 1, child: Icon(Icons.watch_later)),
+            Expanded(
+                flex: 3,
+                child: TextWidget(
+                  '예상 대기 시간',
+                  textAlign: TextAlign.start,
+                )),
+            Expanded(
+              flex: 3,
+              child: TextWidget(
+                ': ${myWaitingIndex * storeWaitingInfo.estimatedWaitingTimePerTeam} 분',
+                textAlign: TextAlign.start,
+              ),
+            )
+          ],
+        ),
+      );
     }
 
     return Column(
@@ -70,10 +157,72 @@ class WaitingStatusWidget extends ConsumerWidget {
   Widget buildGeneralWaitingStatus(StoreWaitingInfo storeWaitingInfo) {
     return Column(
       children: [
-        TextWidget('대기중인 팀 수: ${storeWaitingInfo.waitingTeamList.length}'),
-        TextWidget(
-            '예상 대기 시간: ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam}분'),
-        Divider(),
+        SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(flex: 1, child: Icon(Icons.person)),
+            Expanded(
+                flex: 3,
+                child: TextWidget(
+                  '현재 대기 팀 수',
+                  textAlign: TextAlign.start,
+                )),
+            Expanded(
+              flex: 3,
+              child: TextWidget(
+                ':  ${storeWaitingInfo.waitingTeamList.length} 팀',
+                textAlign: TextAlign.start,
+              ),
+            )
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(flex: 1, child: Icon(Icons.watch_later)),
+            Expanded(
+                flex: 3,
+                child: TextWidget(
+                  '예상 대기 시간',
+                  textAlign: TextAlign.start,
+                )),
+            Expanded(
+              flex: 3,
+              child: TextWidget(
+                ':  ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam} 분',
+                textAlign: TextAlign.start,
+              ),
+            )
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(flex: 1, child: Icon(Icons.room)),
+            Expanded(
+                flex: 3,
+                child: TextWidget(
+                  '나와의 거리',
+                  textAlign: TextAlign.start,
+                )),
+            Expanded(
+              flex: 3,
+              child: TextWidget(
+                ':  350 m', // TODO : 엄마 여기 나와의 거리 출력 해줘.
+                textAlign: TextAlign.start,
+              ),
+            )
+          ],
+        ),
+        Divider(
+          color: Color(0xFFDFDFDF),
+          thickness: 2,
+          endIndent: 10,
+          indent: 10,
+        ),
       ],
     );
   }
