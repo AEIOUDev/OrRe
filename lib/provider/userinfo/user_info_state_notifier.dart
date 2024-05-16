@@ -5,6 +5,7 @@ import 'package:orre/model/user_info_model.dart';
 import 'package:orre/services/network/https_services.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final userInfoProvider =
     StateNotifierProvider<UserInfoProvider, UserInfo?>((ref) {
@@ -93,12 +94,17 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
         print("로그인 시도(json 200): $jsonResponse");
         if (APIResponseStatus.success.isEqualTo(jsonResponse['status'])) {
           print("로그인 시도: success");
+          // 기존 저장된 유저의 전화번호와 현재 로그인된 유저의 전화번호가 다르다면
+          if (state?.phoneNumber != info.phoneNumber) {
+            // 기존 유저 정보의 모든 정보 삭제
+            clearAllInfo();
+          }
           print("fcmToken : " + fcmToken);
           state = UserInfo(
             phoneNumber: info.phoneNumber,
             password: info.password,
             name: jsonResponse['token'],
-            fcmToken: fcmToken ?? '', // TODO : fcmToken 추가
+            fcmToken: fcmToken, // fcmToken이 null이면 빈 문자열로 저장
           );
           saveUserInfo();
           return jsonResponse['token'];
@@ -159,5 +165,17 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
     _storage.delete(key: 'fcmToken');
     _storage.readAll().then((value) => print(value));
     _storage.read(key: 'userPhoneNumber').then((value) => print(value));
+  }
+
+  void clearAllInfo() {
+    state = null;
+    _storage.deleteAll();
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.clear();
+    });
+  }
+
+  String? getNickname() {
+    return state?.name ?? "사용자";
   }
 }

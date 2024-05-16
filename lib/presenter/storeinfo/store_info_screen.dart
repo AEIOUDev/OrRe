@@ -220,6 +220,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
               WaitingStatusWidget(
                 storeCode: widget.storeCode,
                 myWaitingInfo: myWaitingInfo,
+                locationInfo: storeDetailInfo.locationInfo,
               ),
               CSVDividerWidget(),
               StoreMenuCategoryListWidget(storeDetailInfo: storeDetailInfo),
