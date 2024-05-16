@@ -38,6 +38,11 @@ class LocationListNotifier extends StateNotifier<LocationState> {
   Future<void> addLocation(LocationInfo locationInfo) async {
     print("addLocation");
 
+    if (locationInfo.locationName == "현재 위치") {
+      print("nowLocation cannot be added as a custom location");
+      return;
+    }
+
     final updatedLocations = List<LocationInfo>.from(state.customLocations)
       ..add(locationInfo);
     state = state.copyWith(customLocations: updatedLocations);
@@ -50,11 +55,6 @@ class LocationListNotifier extends StateNotifier<LocationState> {
     List<LocationInfo> updatedLocations = state.customLocations
         .where((location) => location.locationName != locationName)
         .toList();
-
-    // "nowLocation"은 삭제되지 않도록 보장
-    if (locationName == "nowLocation") {
-      return;
-    }
 
     // 선택된 위치가 삭제되는 위치와 같은지 확인
     LocationInfo? updatedSelectedLocation =
@@ -75,6 +75,7 @@ class LocationListNotifier extends StateNotifier<LocationState> {
     List<String> stringList = state.customLocations
         .map((location) => json.encode(location.toJson()))
         .toList();
+    print("saveLocations : $stringList");
     await _storage.write(key: 'savedLocations', value: json.encode(stringList));
   }
 
@@ -103,23 +104,8 @@ class LocationListNotifier extends StateNotifier<LocationState> {
   // "nowLocation"을 현재 위치 정보로 업데이트하는 메서드
   Future<void> updateNowLocation(LocationInfo newLocation) async {
     print("updateNowLocation " + newLocation.locationName);
-    // "nowLocation"을 찾습니다.
-    int index = state.customLocations
-        .indexWhere((loc) => loc.locationName == "nowLocation");
-
-    List<LocationInfo> updatedLocations = List.from(state.customLocations);
-
-    if (index != -1) {
-      // "nowLocation"이 이미 존재한다면, 해당 위치를 업데이트합니다.
-      updatedLocations[index] = newLocation;
-    } else {
-      // "nowLocation"이 존재하지 않는다면, 리스트의 시작 부분에 추가합니다.
-      updatedLocations.insert(0, newLocation);
-    }
-
     // 상태를 업데이트합니다.
-    state = state.copyWith(
-        customLocations: updatedLocations, nowLocation: newLocation);
+    state = state.copyWith(nowLocation: newLocation);
     print("locationListProvider : ${state.selectedLocation?.locationName}");
     selectLocation(newLocation);
     // 변경된 위치 정보를 저장합니다.

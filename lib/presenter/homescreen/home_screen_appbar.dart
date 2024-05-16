@@ -74,15 +74,15 @@ class HomeScreenAppBar extends ConsumerWidget {
             ],
           ),
           actions: [
-            IconButton(
-              icon: Icon(
-                Icons.search,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                // 위치 검색 로직
-              },
-            ),
+            // IconButton(
+            //   icon: Icon(
+            //     Icons.search,
+            //     color: Colors.black,
+            //   ),
+            //   onPressed: () {
+            //     // 위치 검색 로직
+            //   },
+            // ),
             IconButton(
               icon: Icon(
                 Icons.star,
@@ -91,29 +91,7 @@ class HomeScreenAppBar extends ConsumerWidget {
               onPressed: () {
                 print("즐겨찾기 페이지로 이동");
                 // 즐겨찾기 페이지로 이동
-                showNotification() async {
-                  var androidDetails = AndroidNotificationDetails(
-                    '유니크한 알림 채널 ID',
-                    '알림종류 설명',
-                    priority: Priority.high,
-                    importance: Importance.max,
-                    color: Color.fromARGB(255, 255, 0, 0),
-                  );
-
-                  var iosDetails = DarwinNotificationDetails(
-                    presentAlert: true,
-                    presentBadge: true,
-                    presentSound: true,
-                  );
-
-                  // 알림 id, 제목, 내용 맘대로 채우기
-                  notifications.show(
-                      1,
-                      '제목1',
-                      '내용1',
-                      NotificationDetails(
-                          android: androidDetails, iOS: iosDetails));
-                }
+                showNotification();
               },
             ),
             IconButton(
@@ -142,8 +120,8 @@ class HomeScreenAppBar extends ConsumerWidget {
     print("_refreshCurrentLocation");
     try {
       // nowLocationProvider를 refresh하고 결과를 기다립니다.
-      ref
-          .refresh(nowLocationProvider.notifier)
+      await ref
+          .read(nowLocationProvider.notifier)
           .updateNowLocation()
           .then((value) {
         // 결과를 출력합니다.
@@ -165,4 +143,25 @@ class HomeScreenAppBar extends ConsumerWidget {
       );
     }
   }
+}
+
+showNotification() async {
+  print("showNotification");
+  var androidDetails = AndroidNotificationDetails(
+    '유니크한 알림 채널 ID',
+    '알림종류 설명',
+    priority: Priority.high,
+    importance: Importance.max,
+    color: Color.fromARGB(255, 255, 0, 0),
+  );
+
+  var iosDetails = DarwinNotificationDetails(
+    presentAlert: true,
+    presentBadge: true,
+    presentSound: true,
+  );
+
+  // 알림 id, 제목, 내용 맘대로 채우기
+  notifications.show(3643, '숨겨진 이스터에그', '꽥꽥!',
+      NotificationDetails(android: androidDetails, iOS: iosDetails));
 }
