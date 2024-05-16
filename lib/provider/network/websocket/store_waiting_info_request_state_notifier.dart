@@ -37,7 +37,7 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
   void setClient(StompClient client) {
     print("StoreWaitingRequest : setClient");
     _client = client; // 내부 변수에 StompClient 인스턴스 저장
-    loadWaitingRequestList();
+    // loadWaitingRequestList();
   }
 
   Future<bool> startSubscribe(

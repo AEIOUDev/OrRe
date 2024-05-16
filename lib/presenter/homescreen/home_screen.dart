@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/main.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/presenter/error/error_screen.dart';
 import 'package:orre/presenter/homescreen/home_screen_store_list.dart';
@@ -42,7 +43,7 @@ class HomeScreen extends ConsumerWidget {
       Future.delayed(Duration.zero, () {
         ref.read(errorStateNotifierProvider.notifier).addError(Error.websocket);
       });
-      return ErrorScreen();
+      return NetworkCheckScreen();
     }
     return stompLoadedScreen(context, ref, location);
   }

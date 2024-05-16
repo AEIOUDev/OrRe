@@ -23,7 +23,11 @@ class LocationListNotifier extends StateNotifier<LocationState> {
         .read(nowLocationProvider.notifier)
         .updateNowLocation()
         .then((userLocationInfo) {
-      updateNowLocation(userLocationInfo);
+      if (userLocationInfo != null) {
+        updateNowLocation(userLocationInfo);
+      } else {
+        print("Error fetching now location");
+      }
     }).catchError((error) {
       // 오류 처리
       print("Error fetching now location: $error");
