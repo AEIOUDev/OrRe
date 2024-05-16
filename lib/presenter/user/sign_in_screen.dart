@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/presenter/main_screen.dart';
+import 'package:orre/main.dart';
 import 'package:orre/presenter/user/sign_up_reset_password_screen.dart';
 import 'package:orre/presenter/user/sign_up_screen.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
@@ -118,14 +118,23 @@ class SignInScreen extends ConsumerWidget {
                           ref
                               .read(userInfoProvider.notifier)
                               .requestSignIn(signInUserInfo)
-                              .then((value) {
+                              .then((value) async {
                             if (value != null) {
+                              print("로그인 성공");
                               Navigator.popUntil(
                                   context, (route) => route.isFirst);
-                              Navigator.pushReplacement(context,
+                              await Navigator.pushReplacement(context,
                                   MaterialPageRoute(builder: (context) {
-                                return MainScreen();
+                                return LocationStateCheckWidget();
                               }));
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertPopupWidget(
+                                        title: '로그인 성공',
+                                        subtitle: '$value님, 환영합니다!',
+                                        buttonText: '확인');
+                                  });
                             } else {
                               showDialog(
                                   context: context,

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 class LocationInfo {
   final String locationName; // 장소 이름
   final double latitude; // 위도
@@ -46,6 +48,35 @@ class LocationInfo {
         other.latitude == latitude &&
         other.longitude == longitude &&
         other.address == address;
+  }
+
+  int operator -(Object other) {
+    const double earthRadius = 6371; // in kilometers
+
+    if (other is LocationInfo) {
+      double lat1 = latitude;
+      double lon1 = longitude;
+      double lat2 = other.latitude;
+      double lon2 = other.longitude;
+
+      double dLat = _toRadians(lat2 - lat1);
+      double dLon = _toRadians(lon2 - lon1);
+
+      double a = pow(sin(dLat / 2), 2) +
+          cos(_toRadians(lat1)) * cos(_toRadians(lat2)) * pow(sin(dLon / 2), 2);
+      double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+      double distance = earthRadius * c * 1000; // in meters
+      distance = double.parse(distance.toStringAsFixed(2));
+      print("distance: $distance");
+      return distance.toInt();
+    } else {
+      return -1;
+    }
+  }
+
+  double _toRadians(double degrees) {
+    return degrees * pi / 180;
   }
 }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/presenter/user/agreement_screen.dart';
 import 'package:orre/presenter/user/sign_in_screen.dart';
 import 'package:orre/presenter/user/sign_up_screen.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
@@ -77,7 +78,7 @@ class OnboardingScreen extends ConsumerWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SignUpScreen()));
+                              builder: (context) => AgreementScreen()));
                     },
                     backgroundColor: Color(0xFFDFDFDF), // 버튼 배경색을 조절합니다.
                     minimumSize: Size(double.infinity, 50), // 버튼 크기를 조절합니다.
