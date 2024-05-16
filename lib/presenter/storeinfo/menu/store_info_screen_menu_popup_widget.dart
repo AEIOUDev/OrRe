@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:orre/widget/text/text_widget.dart';
+import 'package:photo_view/photo_view.dart';
 
 class PopupDialog {
   static Future<void> show(BuildContext context, String title,
@@ -18,13 +19,26 @@ class PopupDialog {
             child: Column(
               children: [
                 SizedBox(height: 30),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image(
-                    image: imageProvider,
-                    width: 180,
-                    height: 180,
-                    fit: BoxFit.cover,
+                GestureDetector(
+                  onTap: () {
+                    // Add your onTap logic here
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PhotoView(
+                          imageProvider: imageProvider,
+                        ),
+                      ),
+                    );
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image(
+                      image: imageProvider,
+                      width: 180,
+                      height: 180,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 const SizedBox(

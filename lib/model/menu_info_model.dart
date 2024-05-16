@@ -18,6 +18,15 @@ class MenuInfo {
   });
 
   factory MenuInfo.fromJson(Map<String, dynamic> json) {
+    if (json.isEmpty)
+      return MenuInfo(
+          menu: 'null',
+          introduce: 'null',
+          price: -1,
+          image: 'null',
+          recommend: -1,
+          menuCode: 'null',
+          available: -1);
     return MenuInfo(
       menu: json['menu'],
       introduce: json['introduce'],

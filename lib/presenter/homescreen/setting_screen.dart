@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:orre/presenter/user/onboarding_screen.dart';
+import 'package:orre/presenter/user/sign_up_reset_password_screen.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
@@ -14,8 +14,7 @@ import 'package:orre/widget/text/text_widget.dart';
 class SettingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO : 엄마 닉네임 긁어와줘
-    final nickname = '오리';
+    final nickname = ref.watch(userInfoProvider.notifier).getNickname();
 
     return WaveformBackgroundWidget(
       child: Scaffold(
@@ -89,7 +88,13 @@ class SettingScreen extends ConsumerWidget {
                         height: 10,
                       ),
                       BigButtonWidget(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      SignUpResetPasswordScreen()));
+                        },
                         backgroundColor: Color(0xFFDFDFDF),
                         minimumSize: Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
@@ -109,14 +114,38 @@ class SettingScreen extends ConsumerWidget {
                             fontSize: 16,
                             textColor: Color(0xFFDFDFDF),
                             onPressed: () {
-                              ref
-                                  .read(userInfoProvider.notifier)
-                                  .clearUserInfo();
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => OnboardingScreen()),
-                              );
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertPopupWidget(
+                                      title: '로그아웃',
+                                      subtitle: '로그아웃 하시겠습니까?',
+                                      onPressed: () {
+                                        print("로그아웃");
+
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                          ref
+                                              .read(userInfoProvider.notifier)
+                                              .clearUserInfo();
+                                          print(
+                                              "로그아웃 후: ${ref.read(userInfoProvider.notifier).state}");
+
+                                          // 모든 화면을 pop한 후, OnboardingScreen으로 교체
+                                          Navigator.popUntil(context,
+                                              (route) => route.isFirst);
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    OnboardingScreen()),
+                                          );
+                                        });
+                                      },
+                                      buttonText: '확인',
+                                      cancelButton: true,
+                                    );
+                                  });
                             },
                           ),
                           SizedBox(width: 10),
@@ -131,27 +160,48 @@ class SettingScreen extends ConsumerWidget {
                             fontSize: 16,
                             textColor: Color(0xFFDFDFDF),
                             onPressed: () {
-                              ref
-                                  .read(userInfoProvider.notifier)
-                                  .withdraw()
-                                  .then((value) {
-                                print("회원탈퇴 결과: $value");
-                                if (value) {
-                                  Navigator.popUntil(
-                                      context, (route) => route.isFirst);
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            OnboardingScreen()),
-                                  );
-                                  AlertPopupWidget(
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertPopupWidget(
                                     title: '회원탈퇴',
-                                    subtitle: '회원탈퇴가 완료되었습니다.',
+                                    subtitle: '회원탈퇴 하시겠습니까?',
+                                    onPressed: () {
+                                      ref
+                                          .read(userInfoProvider.notifier)
+                                          .withdraw()
+                                          .then((value) async {
+                                        print("회원탈퇴 결과: $value");
+                                        if (value) {
+                                          // 모든 화면을 pop한 후, OnboardingScreen으로 교체
+                                          Navigator.popUntil(context,
+                                              (route) => route.isFirst);
+                                          await Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    OnboardingScreen()),
+                                          );
+
+                                          // OnboardingScreen으로 전환이 완료된 후 다이얼로그 표시
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertPopupWidget(
+                                                title: '회원탈퇴',
+                                                subtitle: '회원탈퇴가 완료되었습니다.',
+                                                buttonText: '확인',
+                                              );
+                                            },
+                                          );
+                                        }
+                                      });
+                                    },
                                     buttonText: '확인',
+                                    cancelButton: true,
                                   );
-                                }
-                              });
+                                },
+                              );
                             },
                           ),
                         ],
