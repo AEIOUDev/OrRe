@@ -42,6 +42,8 @@ import 'package:orre/services/network/https_services.dart';
 
 import 'package:orre/widget/text/text_widget.dart';
 
+final notifications = FlutterLocalNotificationsPlugin();
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutter 엔진과 위젯 바인딩을 초기화
   await Firebase.initializeApp(
@@ -322,8 +324,6 @@ class LoadServiceLogWidget extends ConsumerWidget {
 Future<void> initializeFirebaseMessaging() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-
   const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
@@ -333,7 +333,7 @@ Future<void> initializeFirebaseMessaging() async {
     sound: RawResourceAndroidNotificationSound('orre'),
   );
 
-  await flutterLocalNotificationsPlugin
+  await notifications
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
@@ -342,21 +342,25 @@ Future<void> initializeFirebaseMessaging() async {
       AndroidInitializationSettings('@mipmap/ic_launcher');
 
   const DarwinInitializationSettings initializationSettingsIOS =
-      DarwinInitializationSettings();
+      DarwinInitializationSettings(
+    requestAlertPermission: true,
+    requestBadgePermission: true,
+    requestSoundPermission: true,
+  );
 
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
     iOS: initializationSettingsIOS,
   );
 
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  await notifications.initialize(initializationSettings);
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
 
     if (notification != null && android != null) {
-      flutterLocalNotificationsPlugin.show(
+      notifications.show(
         notification.hashCode,
         notification.title,
         notification.body,
@@ -367,9 +371,14 @@ Future<void> initializeFirebaseMessaging() async {
             channelDescription: channel.description,
             icon: android.smallIcon,
             playSound: true,
-            sound: RawResourceAndroidNotificationSound('orre'),
+            sound: const RawResourceAndroidNotificationSound('orre'),
           ),
-          iOS: DarwinNotificationDetails(),
+          iOS: DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+            sound: "slow_spring_board.aiff",
+          ),
         ),
       );
     }
