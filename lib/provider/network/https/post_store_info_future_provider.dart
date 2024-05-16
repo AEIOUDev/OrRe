@@ -31,6 +31,6 @@ Future<StoreDetailInfo> fetchStoreDetailInfo(StoreInfoParams params) async {
 
 final storeDetailProvider =
     FutureProvider.family<StoreDetailInfo, int>((ref, storeCode) async {
-  return fetchStoreDetailInfo(StoreInfoParams(
+  return await fetchStoreDetailInfo(StoreInfoParams(
       storeCode, 0)); // 여기서 fetchStoreDetailInfo는 상세 정보를 가져오는 함수
 });

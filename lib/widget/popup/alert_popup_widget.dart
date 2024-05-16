@@ -8,6 +8,7 @@ class AlertPopupWidget extends StatelessWidget {
   final String buttonText;
   final Function()? onPressed;
   final bool autoPop;
+  final bool cancelButton;
 
   const AlertPopupWidget({
     Key? key,
@@ -16,6 +17,7 @@ class AlertPopupWidget extends StatelessWidget {
     required this.buttonText,
     this.onPressed,
     this.autoPop = true,
+    this.cancelButton = false,
   }) : super(key: key);
 
   @override
@@ -41,6 +43,18 @@ class AlertPopupWidget extends StatelessWidget {
             )
           : null,
       actions: <Widget>[
+        if (cancelButton)
+          Container(
+            width: double.infinity, // 버튼을 AlertDialog의 가로 길이에 맞추기 위해
+            child: SmallButtonWidget(
+              minSize: Size(double.infinity, 50),
+              text: '취소',
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            margin: EdgeInsets.only(bottom: 8),
+          ),
         Container(
           width: double.infinity, // 버튼을 AlertDialog의 가로 길이에 맞추기 위해
           child: SmallButtonWidget(
