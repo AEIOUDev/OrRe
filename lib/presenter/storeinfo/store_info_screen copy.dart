@@ -72,7 +72,7 @@
 //         ],
 //       ),
 //       body: storeDetailInfo.storeCode == 0
-//           ? Center(child: CircularProgressIndicator()) // TODO: 추후 에러 페이지로 변경
+//           ? Center(child: CustomLoadingIndicator()) // TODO: 추후 에러 페이지로 변경
 //           : SingleChildScrollView(
 //               padding: const EdgeInsets.only(bottom: 10.0),
 //               child: Column(
@@ -128,7 +128,7 @@
 //                       ),
 //                     ),
 //                   ),
-//               placeholder: (context, url) => CircularProgressIndicator(),
+//               placeholder: (context, url) => CustomLoadingIndicator(),
 //               errorWidget: (context, url, error) => Icon(Icons.store)),
 //           SizedBox(height: 8),
 //           TextWidget(
@@ -212,7 +212,7 @@
 //             height: 50,
 //             width: 50,
 //             alignment: Alignment.center,
-//             child: CircularProgressIndicator(
+//             child: CustomLoadingIndicator(
 //               color: Colors.orange,
 //             ),
 //           );
@@ -284,7 +284,7 @@
 //                     borderRadius: BorderRadius.circular(10.0),
 //                   ),
 //                 ),
-//                 placeholder: (context, url) => CircularProgressIndicator(),
+//                 placeholder: (context, url) => CustomLoadingIndicator(),
 //                 errorWidget: (context, url, error) => Icon(Icons.no_food),
 //               ),
 //               title: TextWidget(menu.menu),
