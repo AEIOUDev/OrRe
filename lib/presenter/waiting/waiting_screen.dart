@@ -7,6 +7,7 @@ import 'package:orre/provider/network/https/post_store_info_future_provider.dart
 import 'package:orre/provider/network/https/store_detail_info_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
+import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:orre/widget/text_field/text_input_widget.dart';
 
@@ -113,7 +114,13 @@ class WaitingStoreItem extends ConsumerWidget {
             StoreInfoParams(storeWaitingRequest.token.storeCode, 0)),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return Container(
+              width: 40,
+              height: 40,
+              child: Center(
+                child: CustomLoadingIndicator(),
+              ),
+            );
           } else if (snapshot.hasError) {
             return TextWidget('Error: ${snapshot.error}');
           } else {
@@ -151,8 +158,13 @@ class WaitingStoreItem extends ConsumerWidget {
                                 borderRadius: BorderRadius.circular(10.0),
                               ),
                             ),
-                            placeholder: (context, url) =>
-                                CircularProgressIndicator(),
+                            placeholder: (context, url) => Container(
+                              width: 40,
+                              height: 40,
+                              child: Center(
+                                child: CustomLoadingIndicator(),
+                              ),
+                            ),
                             errorWidget: (context, url, error) =>
                                 Icon(Icons.error),
                           ),
@@ -187,7 +199,13 @@ class WaitingStoreItem extends ConsumerWidget {
                                   builder: ((context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
-                                      return CircularProgressIndicator();
+                                      return Container(
+                                        width: 40,
+                                        height: 40,
+                                        child: Center(
+                                          child: CustomLoadingIndicator(),
+                                        ),
+                                      );
                                     } else if (snapshot.hasError) {
                                       return TextWidget(
                                           'Error: ${snapshot.error}');
@@ -208,8 +226,11 @@ class WaitingStoreItem extends ConsumerWidget {
                                       } else {
                                         return Row(
                                           children: [
-                                            TextWidget('내 순서까지  ',
-                                                fontSize: 20),
+                                            TextWidget(
+                                              '내 순서까지  ',
+                                              fontSize: 20,
+                                              textAlign: TextAlign.start,
+                                            ),
                                             TextWidget(
                                               '${myWaitingIndex}',
                                               fontSize: 24,

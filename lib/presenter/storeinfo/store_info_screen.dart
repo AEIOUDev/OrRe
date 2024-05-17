@@ -6,6 +6,7 @@ import 'package:orre/presenter/permission/permission_request_phone.dart';
 import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_category_list_widget.dart';
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import 'package:orre/widget/custom_scroll_view/csv_divider_widget.dart';
+import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -51,7 +52,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
 
     if (storeDetailInfo == null) {
       return Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        body: Center(child: CustomLoadingIndicator()),
       );
     } else {
       return buildScaffold(context, storeDetailInfo);
@@ -121,7 +122,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
     final myWaitingInfo = ref.watch(storeWaitingRequestNotifierProvider);
     if (storeDetailInfo == null || storeDetailInfo.storeCode == 0) {
       return Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        body: Center(child: CustomLoadingIndicator()),
       );
     } else {
       return Scaffold(
