@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/main.dart';
+import 'package:orre/presenter/error/websocket_error_screen.dart';
 import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/provider/network/https/get_service_log_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_detail_info_state_notifier.dart';
@@ -76,6 +79,12 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
             ref.read(stompState.notifier).state = StompStatus.DISCONNECTED;
             print("websocket done");
             // 연결 끊김 시 재시도 로직
+            if (ref
+                .read(errorStateNotifierProvider.notifier)
+                .state
+                .contains(Error.network)) {
+              return;
+            }
           },
         ),
       );
@@ -128,6 +137,7 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
       return status;
     }
     ref.read(stompState.notifier).state = status;
+
     Future.delayed(Duration(milliseconds: 500), () {
       print("웹소켓 재시도");
       state?.activate();

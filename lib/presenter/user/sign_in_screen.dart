@@ -121,13 +121,7 @@ class SignInScreen extends ConsumerWidget {
                               .then((value) async {
                             if (value != null) {
                               print("로그인 성공");
-                              Navigator.popUntil(
-                                  context, (route) => route.isFirst);
-                              await Navigator.pushReplacement(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return LocationStateCheckWidget();
-                              }));
-                              showDialog(
+                              await showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertPopupWidget(
@@ -135,6 +129,12 @@ class SignInScreen extends ConsumerWidget {
                                         subtitle: '$value님, 환영합니다!',
                                         buttonText: '확인');
                                   });
+                              Navigator.popUntil(
+                                  context, (route) => route.isFirst);
+                              await Navigator.pushReplacement(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return LocationStateCheckWidget();
+                              }));
                             } else {
                               showDialog(
                                   context: context,

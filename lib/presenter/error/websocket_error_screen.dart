@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/presenter/error/network_error_screen.dart';
 import 'package:orre/presenter/error/server_error_screen.dart';
 import 'package:orre/provider/network/connectivity_state_notifier.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
@@ -13,14 +14,16 @@ class WebsocketErrorScreen extends ConsumerWidget {
     final networkError = ref.watch(networkStateNotifierProvider);
 
     print("ServerErrorScreen : $stompStack");
-    // 네트워크 연결은 정상이나 웹소켓 연결을 5번 이상 실패했을 경우
-    if (stompStack > 5 && networkError == true) {
+    // 웹소켓 연결을 5번 이상 실패했을 경우
+    if (networkError) {
+      // 네트워크 에러로 판단하여 네트워크 에러 화면으로 이동
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => NetworkErrorScreen()));
+    }
+    if (stompStack > 5) {
       // 서버 에러로 판단하여 서버 에러 화면으로 이동
       Navigator.pushReplacement(context,
           MaterialPageRoute(builder: (context) => ServerErrorScreen()));
-    } else {
-      print("다시 시도하기");
-      ref.read(stompClientStateNotifierProvider.notifier).state?.activate();
     }
     return Scaffold(
       body: Center(
@@ -32,10 +35,11 @@ class WebsocketErrorScreen extends ConsumerWidget {
               onPressed: () {
                 print("다시 시도하기");
                 ref.read(stompErrorStack.notifier).state = 0;
-                ref
-                    .read(stompClientStateNotifierProvider.notifier)
-                    .state
-                    ?.activate();
+                ref.read(stompClientStateNotifierProvider)?.activate();
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NetworkErrorScreen()));
               },
               child: TextWidget('다시 시도하기'),
             ),
