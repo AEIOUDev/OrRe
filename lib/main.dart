@@ -43,6 +43,7 @@ import 'package:orre/services/network/https_services.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 final notifications = FlutterLocalNotificationsPlugin();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutter 엔진과 위젯 바인딩을 초기화
@@ -85,6 +86,7 @@ class OrreMain extends ConsumerWidget {
       ErrorScreen(),
     ];
     return MaterialApp(
+      navigatorKey: navigatorKey,
       home: FlutterSplashScreen.fadeIn(
         backgroundColor: Colors.white,
         onInit: () async {
