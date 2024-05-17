@@ -222,7 +222,6 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                 myWaitingInfo: myWaitingInfo,
                 locationInfo: storeDetailInfo.locationInfo,
               ),
-              CSVDividerWidget(),
               StoreMenuCategoryListWidget(storeDetailInfo: storeDetailInfo),
               PopScope(
                 child: SliverToBoxAdapter(
