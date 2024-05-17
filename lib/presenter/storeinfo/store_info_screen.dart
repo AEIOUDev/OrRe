@@ -30,16 +30,18 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
   @override
   void initState() {
     super.initState();
-    print('storeCode: ${widget.storeCode}');
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(storeDetailInfoProvider.notifier).clearStoreDetailInfo();
-      ref
-          .read(storeDetailInfoProvider.notifier)
-          .subscribeStoreDetailInfo(widget.storeCode);
-      ref
-          .read(storeDetailInfoProvider.notifier)
-          .sendStoreDetailInfoRequest(widget.storeCode);
+      var currentDetailInfo = ref.read(storeDetailInfoProvider);
+      if (currentDetailInfo == null ||
+          currentDetailInfo.storeCode != widget.storeCode) {
+        ref.read(storeDetailInfoProvider.notifier).clearStoreDetailInfo();
+        ref
+            .read(storeDetailInfoProvider.notifier)
+            .subscribeStoreDetailInfo(widget.storeCode);
+        ref
+            .read(storeDetailInfoProvider.notifier)
+            .sendStoreDetailInfoRequest(widget.storeCode);
+      }
     });
   }
 
