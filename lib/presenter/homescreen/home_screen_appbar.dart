@@ -39,7 +39,7 @@ class HomeScreenAppBar extends ConsumerWidget {
         height: 300,
         color: Colors.transparent,
         child: AppBar(
-          title: PopupMenuButton<String>(
+          title: GestureDetector(
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -47,31 +47,16 @@ class HomeScreenAppBar extends ConsumerWidget {
                 Icon(Icons.arrow_drop_down),
               ],
             ),
-            onSelected: (String result) {
-              if (result == 'changeLocation') {
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => LocationManagementScreen()))
-                    .then((_) {
-                  // 위치 변경 후 HomeScreen으로 돌아왔을 때 필요한 로직 (예: 상태 업데이트)
-                });
-              } else if (result == 'nowLocation') {
-                // 현재 위치로 변경
-                print("nowLocation selected!!!!!!!!!!!!");
-                _refreshCurrentLocation(context, ref);
-              }
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LocationManagementScreen(),
+                ),
+              ).then((_) {
+                // 위치 변경 후 HomeScreen으로 돌아왔을 때 필요한 로직 (예: 상태 업데이트)
+              });
             },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              PopupMenuItem<String>(
-                value: 'nowLocation',
-                child: TextWidget('현재 위치'),
-              ),
-              PopupMenuItem<String>(
-                value: 'changeLocation',
-                child: TextWidget('위치 변경하기'),
-              ),
-            ],
           ),
           actions: [
             IconButton(
@@ -81,6 +66,7 @@ class HomeScreenAppBar extends ConsumerWidget {
               ),
               onPressed: () {
                 // 위치 검색 로직
+                // 위치 아니야 ㅡ3ㅡ 가게 검색이야
               },
             ),
             IconButton(
@@ -135,34 +121,5 @@ class HomeScreenAppBar extends ConsumerWidget {
           ),
           backgroundColor: Color(0xFFFFB74D),
         ));
-  }
-
-  // 현재 위치를 새로고침하는 메소드
-  void _refreshCurrentLocation(BuildContext context, WidgetRef ref) async {
-    print("_refreshCurrentLocation");
-    try {
-      // nowLocationProvider를 refresh하고 결과를 기다립니다.
-      ref
-          .refresh(nowLocationProvider.notifier)
-          .updateNowLocation()
-          .then((value) {
-        // 결과를 출력합니다.
-        print("updateNowLocation value : $value");
-        // 성공적으로 위치 정보를 받았으면, 이를 LocationListProvider에 업데이트합니다.
-        if (value != null) {
-          ref.read(locationListProvider.notifier).updateNowLocation(value);
-        } else {
-          // 에러 처리...
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: TextWidget('현재 위치를 불러오는데 실패했습니다.')),
-          );
-        }
-      });
-    } catch (error) {
-      // 에러 처리...
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: TextWidget('현재 위치를 불러오는데 실패했습니다.')),
-      );
-    }
   }
 }
