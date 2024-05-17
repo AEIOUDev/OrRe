@@ -6,8 +6,6 @@ import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
-// TODO : 이용약관 동의 화면 디자인
-
 class AgreementScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
