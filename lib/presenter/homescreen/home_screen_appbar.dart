@@ -23,12 +23,6 @@ class HomeScreenAppBar extends ConsumerWidget {
         sortType: ref.watch(selectSortTypeProvider),
         latitude: location.latitude,
         longitude: location.longitude);
-    if (ref.read(storeListProvider.notifier).isExistRequest(params)) {
-      print("storeListProvider isExistRequest");
-    } else {
-      print("storeListProvider fetchStoreDetailInfo");
-      ref.read(storeListProvider.notifier).fetchStoreDetailInfo(params);
-    }
 
     // final watchState = ref.watch(stompState);
 

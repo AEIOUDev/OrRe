@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:internet_connectivity_checker/internet_connectivity_checker.dart';
 import 'package:orre/presenter/error/error_screen.dart';
 import 'package:orre/presenter/error/network_error_screen.dart';
 import 'package:orre/presenter/error/server_error_screen.dart';
@@ -199,9 +200,21 @@ class OrreMain extends ConsumerWidget {
 class NetworkCheckScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isConnected = ref.watch(networkStateNotifierProvider);
-
-    return isConnected ? StompCheckScreen() : NetworkErrorScreen();
+    return ConnectivityBuilder(builder: (status) {
+      if (status == ConnectivityStatus.online) {
+        print("네트워크 연결 성공");
+        return StompCheckScreen();
+      } else if (status == ConnectivityStatus.checking) {
+        return Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      } else {
+        print("네트워크 연결 실패, NetworkErrorScreen() 호출");
+        return NetworkErrorScreen();
+      }
+    });
   }
 }
 

@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+final firstStoreWaitingListLoaded = StateProvider<bool>((ref) => false);
+
 final storeWaitingInfoNotifierProvider =
     StateNotifierProvider<StoreWaitingInfoListNotifier, List<StoreWaitingInfo>>(
         (ref) {
@@ -123,7 +125,9 @@ class StoreWaitingInfoListNotifier
   }
 
   void reconnect() {
+    print("StoreWaitingInfoListNotifier reconnect");
     _client?.activate();
+    unSubscribeAll();
     loadState();
     state.forEach((element) {
       print("reconnect : ${element.storeCode}");
