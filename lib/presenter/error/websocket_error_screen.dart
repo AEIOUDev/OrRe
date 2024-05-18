@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/main.dart';
 import 'package:orre/presenter/error/network_error_screen.dart';
 import 'package:orre/presenter/error/server_error_screen.dart';
 import 'package:orre/provider/network/connectivity_state_notifier.dart';
@@ -16,14 +17,25 @@ class WebsocketErrorScreen extends ConsumerWidget {
     print("ServerErrorScreen : $stompStack");
     // 웹소켓 연결을 5번 이상 실패했을 경우
     if (networkError) {
+      print("NetworkErrorScreen : $stompStack");
       // 네트워크 에러로 판단하여 네트워크 에러 화면으로 이동
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => NetworkErrorScreen()));
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NetworkCheckScreen(),
+            fullscreenDialog: true,
+          ),
+        );
+      });
     }
     if (stompStack > 5) {
       // 서버 에러로 판단하여 서버 에러 화면으로 이동
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => ServerErrorScreen()));
+      print("ServerErrorScreen : $stompStack");
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => ServerErrorScreen()));
+      });
     }
     return Scaffold(
       body: Center(
@@ -36,10 +48,10 @@ class WebsocketErrorScreen extends ConsumerWidget {
                 print("다시 시도하기");
                 ref.read(stompErrorStack.notifier).state = 0;
                 ref.read(stompClientStateNotifierProvider)?.activate();
-                Navigator.push(
+                Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => NetworkErrorScreen()));
+                        builder: (context) => NetworkCheckScreen()));
               },
               child: TextWidget('다시 시도하기'),
             ),
