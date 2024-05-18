@@ -6,6 +6,7 @@ import 'package:orre/presenter/error/error_screen.dart';
 import 'package:orre/presenter/homescreen/home_screen_store_list.dart';
 import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
+import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import '../../provider/home_screen/store_category_provider.dart';
 import '../../provider/location/location_securestorage_provider.dart';
 import '../../provider/network/https/store_list_state_notifier.dart';
@@ -32,10 +33,17 @@ class HomeScreen extends ConsumerWidget {
     print("locationLoadedScreen");
 
     if (stomp == StompStatus.CONNECTED) {
-      Future.delayed(Duration.zero, () {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         ref
             .read(errorStateNotifierProvider.notifier)
             .deleteError(Error.websocket);
+        if (ref.read(firstStoreWaitingListLoaded.notifier).state == true) {
+          print("reconnect and reload storeWaitingInfoList");
+          ref.read(storeWaitingInfoNotifierProvider.notifier).reconnect();
+        } else {
+          print("firstStoreWaitingListLoaded");
+          ref.read(firstStoreWaitingListLoaded.notifier).state = true;
+        }
       });
       print("stomp : ${stomp}");
     } else {
@@ -51,6 +59,7 @@ class HomeScreen extends ConsumerWidget {
   // 가게 데이터가 정상적으로 로드되어 화면을 구성
   Widget stompLoadedScreen(
       BuildContext context, WidgetRef ref, LocationInfo location) {
+    print("stompLoadedScreen");
     final nowCategory = ref.watch(selectCategoryProvider);
     final storeList = ref
         .watch(storeListProvider)

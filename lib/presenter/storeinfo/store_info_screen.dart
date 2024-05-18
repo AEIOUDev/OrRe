@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
@@ -154,7 +156,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                       // Call the store
                       final status = await Permission.phone.request();
                       print("status: $status");
-                      if (status.isGranted) {
+                      if (status.isGranted || Platform.isIOS) {
                         print('Permission granted');
                         print(
                             'Call the store: ${storeDetailInfo.storePhoneNumber}');
