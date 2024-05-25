@@ -96,7 +96,7 @@
 //                 storeCode: widget.storeCode,
 //                 waitingState: (myWaitingInfo != null),
 //               ),
-//               width: MediaQuery.of(context).size.width * 0.95,
+//               width: MediaQuery.sizeOf(context).width * 0.95,
 //             )
 //           : null,
 //     );
@@ -118,8 +118,8 @@
 //           CachedNetworkImage(
 //               imageUrl: storeDetailInfo.storeImageMain,
 //               imageBuilder: (context, imageProvider) => Container(
-//                     width: MediaQuery.of(context).size.height / 5,
-//                     height: MediaQuery.of(context).size.height / 5,
+//                     width: MediaQuery.sizeOf(context).height / 5,
+//                     height: MediaQuery.sizeOf(context).height / 5,
 //                     decoration: BoxDecoration(
 //                       shape: BoxShape.circle,
 //                       image: DecorationImage(

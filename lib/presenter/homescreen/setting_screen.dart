@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:orre/presenter/user/onboarding_screen.dart';
 import 'package:orre/presenter/user/sign_up_reset_password_screen.dart';
@@ -19,8 +20,7 @@ class SettingScreen extends ConsumerWidget {
     return WaveformBackgroundWidget(
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize:
-              Size.fromHeight(MediaQuery.of(context).size.height * 0.25),
+          preferredSize: Size.fromHeight(0.25.sh),
           child: StaticAppBarWidget(
             title: '설정',
             leading: IconButton(

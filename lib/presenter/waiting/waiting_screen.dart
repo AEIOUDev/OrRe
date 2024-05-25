@@ -48,8 +48,8 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
       body: Align(
         alignment: Alignment.bottomCenter,
         child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.75,
+          width: MediaQuery.sizeOf(context).width,
+          height: MediaQuery.sizeOf(context).height * 0.75,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -69,8 +69,8 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
               Divider(
                 color: Color(0xFFFFB74D),
                 thickness: 3,
-                endIndent: MediaQuery.of(context).size.width * 0.25,
-                indent: MediaQuery.of(context).size.width * 0.25,
+                endIndent: MediaQuery.sizeOf(context).width * 0.25,
+                indent: MediaQuery.sizeOf(context).width * 0.25,
               ),
               SizedBox(height: 25),
               Expanded(
