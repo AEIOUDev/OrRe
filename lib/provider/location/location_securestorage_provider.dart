@@ -38,6 +38,11 @@ class LocationListNotifier extends StateNotifier<LocationState> {
   Future<void> addLocation(LocationInfo locationInfo) async {
     print("addLocation");
 
+    if (locationInfo.locationName == "현재 위치") {
+      print("nowLocation cannot be added as a custom location");
+      return;
+    }
+
     final updatedLocations = List<LocationInfo>.from(state.customLocations)
       ..add(locationInfo);
     state = state.copyWith(customLocations: updatedLocations);
@@ -50,11 +55,6 @@ class LocationListNotifier extends StateNotifier<LocationState> {
     List<LocationInfo> updatedLocations = state.customLocations
         .where((location) => location.locationName != locationName)
         .toList();
-
-    // "nowLocation"은 삭제되지 않도록 보장
-    if (locationName == "nowLocation") {
-      return;
-    }
 
     // 선택된 위치가 삭제되는 위치와 같은지 확인
     LocationInfo? updatedSelectedLocation =
@@ -75,51 +75,42 @@ class LocationListNotifier extends StateNotifier<LocationState> {
     List<String> stringList = state.customLocations
         .map((location) => json.encode(location.toJson()))
         .toList();
+    print("saveLocations : $stringList");
     await _storage.write(key: 'savedLocations', value: json.encode(stringList));
   }
 
   // 저장소에서 위치 정보 리스트 로드
   Future<void> loadLocations() async {
     print("loadLocations");
-    String? stringListJson = await _storage.read(key: 'savedLocations');
-    List<LocationInfo> loadedLocations = [];
-    LocationInfo? initialSelectedLocation;
+    try {
+      if (_storage.containsKey(key: 'savedLocations') == false) {
+        print("savedLocations not found");
+        state = LocationState(customLocations: [], selectedLocation: null);
+        return;
+      }
 
-    if (stringListJson != null) {
-      List<dynamic> stringList = json.decode(stringListJson);
-      loadedLocations = stringList
-          .map((string) => LocationInfo.fromJson(json.decode(string)))
-          .toList();
-      // 초기 선택된 위치를 설정할 수 있습니다.
-    } else {
-      // 초기 상태 설정 또는 기본값 사용
+      String? stringListJson = await _storage.read(key: 'savedLocations');
+      if (stringListJson != null) {
+        List<dynamic> stringList = json.decode(stringListJson);
+        List<LocationInfo> loadedLocations = stringList
+            .map((string) => LocationInfo.fromJson(json.decode(string)))
+            .toList();
+        // 초기 선택된 위치 설정 로직 추가 가능
+      } else {
+        // 초기 상태 설정 또는 기본값 사용
+        print("No data found for savedLocations");
+      }
+    } catch (e) {
+      print("Error reading from Keychain: $e");
+      // 에러 처리 로직 추가 (예: 상태 초기화 또는 사용자에게 알림)
     }
-
-    state = LocationState(
-        customLocations: loadedLocations,
-        selectedLocation: initialSelectedLocation);
   }
 
   // "nowLocation"을 현재 위치 정보로 업데이트하는 메서드
   Future<void> updateNowLocation(LocationInfo newLocation) async {
     print("updateNowLocation " + newLocation.locationName);
-    // "nowLocation"을 찾습니다.
-    int index = state.customLocations
-        .indexWhere((loc) => loc.locationName == "nowLocation");
-
-    List<LocationInfo> updatedLocations = List.from(state.customLocations);
-
-    if (index != -1) {
-      // "nowLocation"이 이미 존재한다면, 해당 위치를 업데이트합니다.
-      updatedLocations[index] = newLocation;
-    } else {
-      // "nowLocation"이 존재하지 않는다면, 리스트의 시작 부분에 추가합니다.
-      updatedLocations.insert(0, newLocation);
-    }
-
     // 상태를 업데이트합니다.
-    state = state.copyWith(
-        customLocations: updatedLocations, nowLocation: newLocation);
+    state = state.copyWith(nowLocation: newLocation);
     print("locationListProvider : ${state.selectedLocation?.locationName}");
     selectLocation(newLocation);
     // 변경된 위치 정보를 저장합니다.

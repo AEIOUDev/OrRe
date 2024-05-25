@@ -103,6 +103,7 @@ class SignInScreen extends ConsumerWidget {
                               RegExp(r'[0-9a-zA-Z!@#$%^&*]'))
                         ],
 
+<<<<<<< HEAD
                         focusNode: passwordFocusNode, // Passing FocusNode
                         minLength: 8,
                         maxLength: 20,
@@ -115,6 +116,57 @@ class SignInScreen extends ConsumerWidget {
                           onPressed: () {
                             if (!formKey.currentState!.validate()) {
                               return;
+=======
+                      focusNode: passwordFocusNode, // Passing FocusNode
+                      minLength: 8,
+                      maxLength: 20,
+                    ),
+                    SizedBox(height: 32),
+                    // 하단 "회원 가입하기" 버튼
+                    BigButtonWidget(
+                        text: '로그인 하기',
+                        textColor: Colors.white,
+                        onPressed: () {
+                          if (!formKey.currentState!.validate()) {
+                            return;
+                          }
+                          final signInUserInfo = SignInInfo(
+                            password: passwordController.text,
+                            phoneNumber: phoneNumberController.text
+                                .replaceAll(RegExp(r'[^0-9]'), ''),
+                          );
+                          print(signInUserInfo.password);
+                          print(signInUserInfo.phoneNumber);
+                          ref
+                              .read(userInfoProvider.notifier)
+                              .requestSignIn(signInUserInfo)
+                              .then((value) async {
+                            if (value != null) {
+                              print("로그인 성공");
+                              await showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertPopupWidget(
+                                        title: '로그인 성공',
+                                        subtitle: '$value님, 환영합니다!',
+                                        buttonText: '확인');
+                                  });
+                              Navigator.popUntil(
+                                  context, (route) => route.isFirst);
+                              await Navigator.pushReplacement(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return LocationStateCheckWidget();
+                              }));
+                            } else {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertPopupWidget(
+                                        title: '로그인 실패',
+                                        subtitle: '전화번호 또는 비밀번호를 확인해주세요.',
+                                        buttonText: '확인');
+                                  });
+>>>>>>> myknow
                             }
                             final signInUserInfo = SignInInfo(
                               password: passwordController.text,
