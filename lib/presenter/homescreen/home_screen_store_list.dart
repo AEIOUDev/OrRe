@@ -41,7 +41,7 @@ class StoreItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref
-        .read(storeWaitingInfoNotifierProvider.notifier)
+        .watch(storeWaitingInfoNotifierProvider.notifier)
         .subscribeToStoreWaitingInfo(storeInfo.storeCode);
     final storeWaitingInfo = ref.watch(
       storeWaitingInfoNotifierProvider.select((state) {
