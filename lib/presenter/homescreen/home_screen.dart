@@ -5,6 +5,7 @@ import 'package:orre/model/location_model.dart';
 import 'package:orre/presenter/homescreen/home_screen_store_list.dart';
 import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
+import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import '../../provider/home_screen/store_category_provider.dart';
 import '../../provider/location/location_securestorage_provider.dart';
 import '../../provider/network/https/store_list_state_notifier.dart';
@@ -33,10 +34,17 @@ class HomeScreen extends ConsumerWidget {
     final stomp = ref.watch(stompState);
 
     if (stomp == StompStatus.CONNECTED) {
-      Future.delayed(Duration.zero, () {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         ref
             .read(errorStateNotifierProvider.notifier)
             .deleteError(Error.websocket);
+        if (ref.read(firstStoreWaitingListLoaded.notifier).state == true) {
+          print("reconnect and reload storeWaitingInfoList");
+          ref.read(storeWaitingInfoNotifierProvider.notifier).reconnect();
+        } else {
+          print("firstStoreWaitingListLoaded");
+          ref.read(firstStoreWaitingListLoaded.notifier).state = true;
+        }
       });
       print("stomp : ${stomp}");
     } else {

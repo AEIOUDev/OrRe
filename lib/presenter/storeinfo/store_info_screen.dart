@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
@@ -28,16 +30,18 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
   @override
   void initState() {
     super.initState();
-    print('storeCode: ${widget.storeCode}');
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(storeDetailInfoProvider.notifier).clearStoreDetailInfo();
-      ref
-          .read(storeDetailInfoProvider.notifier)
-          .subscribeStoreDetailInfo(widget.storeCode);
-      ref
-          .read(storeDetailInfoProvider.notifier)
-          .sendStoreDetailInfoRequest(widget.storeCode);
+      var currentDetailInfo = ref.read(storeDetailInfoProvider);
+      if (currentDetailInfo == null ||
+          currentDetailInfo.storeCode != widget.storeCode) {
+        ref.read(storeDetailInfoProvider.notifier).clearStoreDetailInfo();
+        ref
+            .read(storeDetailInfoProvider.notifier)
+            .subscribeStoreDetailInfo(widget.storeCode);
+        ref
+            .read(storeDetailInfoProvider.notifier)
+            .sendStoreDetailInfoRequest(widget.storeCode);
+      }
     });
   }
 
@@ -150,7 +154,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                       // Call the store
                       final status = await Permission.phone.request();
                       print("status: $status");
-                      if (status.isGranted) {
+                      if (status.isGranted || Platform.isIOS) {
                         print('Permission granted');
                         print(
                             'Call the store: ${storeDetailInfo.storePhoneNumber}');

@@ -8,6 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:internet_connectivity_checker/internet_connectivity_checker.dart';
+import 'package:internet_connectivity_checker/internet_connectivity_checker.dart';
 import 'package:orre/presenter/error/error_screen.dart';
 import 'package:orre/presenter/error/network_error_screen.dart';
 import 'package:orre/presenter/error/websocket_error_screen.dart';
@@ -46,6 +47,7 @@ import 'widget/text/text_widget.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 final notifications = FlutterLocalNotificationsPlugin();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutter 엔진과 위젯 바인딩을 초기화

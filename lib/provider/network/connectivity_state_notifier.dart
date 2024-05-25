@@ -1,5 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 import 'package:internet_connectivity_checker/internet_connectivity_checker.dart';
+import 'package:orre/provider/error_state_notifier.dart';
+import 'package:orre/widget/popup/alert_popup_widget.dart';
 
 final networkStateProvider = Provider<Stream<bool>>((ref) {
   return ConnectivityChecker(interval: const Duration(seconds: 5)).stream;
@@ -21,6 +25,15 @@ class NetworkStateNotifier extends StateNotifier<bool> {
     ref.watch(networkStateProvider).listen((isConnected) {
       if (state != isConnected) {
         state = isConnected;
+        if (isConnected) {
+          print("networkStateNotifierProvider is connected");
+          ref
+              .read(errorStateNotifierProvider.notifier)
+              .deleteError(Error.network);
+        } else {
+          print("networkStateNotifierProvider is disconnected");
+          ref.read(errorStateNotifierProvider.notifier).addError(Error.network);
+        }
       }
     });
   }
