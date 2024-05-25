@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/presenter/error/server_error_screen.dart';
 import 'package:orre/provider/network/connectivity_state_notifier.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
@@ -36,6 +37,7 @@ class WebsocketErrorScreen extends ConsumerWidget {
                     .read(stompClientStateNotifierProvider.notifier)
                     .state
                     ?.activate();
+                context.go("/");
               },
               child: TextWidget('다시 시도하기'),
             ),

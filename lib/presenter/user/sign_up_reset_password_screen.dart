@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orre/presenter/user/onboarding_screen.dart';
 import 'package:orre/services/network/https_services.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
@@ -14,6 +15,8 @@ import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/text_field/text_input_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/provider/timer_state_notifier.dart';
+
+import '../../services/debug.services.dart';
 
 final isObscureProvider = StateProvider<bool>((ref) => true);
 
@@ -31,14 +34,15 @@ class SignUpResetPasswordScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    printd("\n\n SignUpResetPasswordScreen 진입");
     final isObscure = ref.watch(isObscureProvider);
     final formKey = ref.watch(resetFormKeyProvider);
 
     return WaveformBackgroundWidget(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: PreferredSize(
-          preferredSize:
-              Size.fromHeight(MediaQuery.of(context).size.height * 0.25),
+          preferredSize: Size.fromHeight(0.25.sh),
           child: StaticAppBarWidget(
             title: '비밀번호 재설정',
             leading: IconButton(

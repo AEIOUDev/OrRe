@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/presenter/user/sign_up_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
+import '../../services/debug.services.dart';
+
 class AgreementScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    printd("\n\n AgreementScreen 진입");
     var agreement = '''단모음데브 개인정보 처리방침
 
 제1조 (목적)
@@ -50,9 +55,9 @@ class AgreementScreen extends ConsumerWidget {
 제9조 (개인정보 보호책임자)
 회사는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 개인정보 처리와 관련한 이용자의 불만처리 및 피해구제 등을 위하여 아래와 같이 개인정보 보호책임자를 지정하고 있습니다.
 
-개인정보 보호책임자: [이름]
-연락처: [연락처]
-이메일: [이메일 주소]
+개인정보 보호책임자: 정민호
+연락처: 010-9256-6504
+이메일: myknow00@naver.com
 
 제10조 (개인정보 처리방침 변경)
 회사는 개인정보 처리방침을 변경하는 경우에는 변경 및 시행 시기, 변경된 내용을 지속적으로 공개합니다. 이 방침은 2024년 5월 16일부터 시행됩니다.
@@ -60,8 +65,7 @@ class AgreementScreen extends ConsumerWidget {
     return WaveformBackgroundWidget(
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize:
-              Size.fromHeight(MediaQuery.of(context).size.height * 0.25),
+          preferredSize: Size.fromHeight(0.25.sh),
           child: StaticAppBarWidget(
               title: '오리 서비스 이용약관',
               leading: IconButton(
@@ -189,8 +193,8 @@ class AgreementScreen extends ConsumerWidget {
                   padding: EdgeInsets.only(left: 35),
                   child: Container(
                     padding: EdgeInsets.all(8.0),
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.3,
+                    width: MediaQuery.sizeOf(context).width,
+                    height: MediaQuery.sizeOf(context).height * 0.3,
                     decoration: BoxDecoration(
                       border: Border.all(color: Color(0xffDFDFDF), width: 1.0),
                       borderRadius: BorderRadius.circular(8.0),
@@ -213,10 +217,7 @@ class AgreementScreen extends ConsumerWidget {
                   child: BigButtonWidget(
                     onPressed: () {
                       print("이용약관에 동의하셨습니다.");
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SignUpScreen()));
+                      context.push('/user/signup');
                     },
                     text: '동의합니다',
                     textColor: Colors.white,

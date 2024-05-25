@@ -9,6 +9,8 @@ import 'package:orre/services/geocording/geocording_library_service.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
+import '../../services/debug.services.dart';
+
 // import '../../services/geocording/naver_map_services.dart';
 
 // 마커 상태를 관리하는 프로바이더를 정의합니다. 처음에는 마커가 없으므로 null로 초기화합니다.
@@ -27,30 +29,32 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    printd("\n\nAddLocationScreen 진입");
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(80),
-        child: Container(
-          color: Colors.white,
-          padding: EdgeInsets.only(left: 16.0, top: 20),
+      appBar: AppBar(
+        title: TextWidget(
+          '위치 설정하기', // 텍스트
+          color: Color(0xFFFFB74D),
+          fontSize: 32,
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios), // 뒤로 가기 아이콘
+          color: Color(0xFFFFB74D),
+          onPressed: () {
+            Navigator.pop(context); // 현재 화면을 종료하고 이전 화면으로 돌아갑니다.
+          },
+        ),
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(50),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  Icon(Icons.gps_not_fixed, color: Color(0xFFFFB74D)), // 아이콘
-                  SizedBox(width: 8.0), // 아이콘과 텍스트 사이 간격 조절
-                  TextWidget(
-                    '위치 설정하기', // 텍스트
-                    color: Color(0xFFFFB74D),
-                    textAlign: TextAlign.start,
-                    fontSize: 32,
-                  ),
-                ],
-              ),
+              SizedBox(height: 16),
               TextWidget('지도를 움직여 원하는 위치로 이동하세요.',
                   textAlign: TextAlign.start, fontSize: 20),
+              SizedBox(height: 16),
             ],
           ),
         ),
@@ -167,7 +171,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
                           fontSize: 20),
                       SizedBox(height: 8),
                       Container(
-                        width: MediaQuery.of(context).size.width,
+                        width: MediaQuery.sizeOf(context).width,
                         height: 50,
                         child: ElevatedButton(
                           onPressed: marker != null
