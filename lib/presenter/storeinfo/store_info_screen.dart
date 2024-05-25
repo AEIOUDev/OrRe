@@ -7,16 +7,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/presenter/permission/permission_request_phone.dart';
 import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_category_list_widget.dart';
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
-import 'package:orre/widget/custom_scroll_view/csv_divider_widget.dart';
+import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sliver_app_bar_builder/sliver_app_bar_builder.dart';
 
 import '../../model/store_info_model.dart';
 import '../../provider/network/websocket/store_detail_info_state_notifier.dart';
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
-import 'package:orre/presenter/storeinfo/store_info_screen_waiting_status.dart';
 import './store_info_screen_button_selector.dart';
 
 class StoreDetailInfoWidget extends ConsumerStatefulWidget {
@@ -55,7 +53,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
 
     if (storeDetailInfo == null) {
       return Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        body: Center(child: CustomLoadingIndicator()),
       );
     } else {
       return buildScaffold(context, storeDetailInfo);
@@ -125,7 +123,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
     final myWaitingInfo = ref.watch(storeWaitingRequestNotifierProvider);
     if (storeDetailInfo == null || storeDetailInfo.storeCode == 0) {
       return Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        body: Center(child: CustomLoadingIndicator()),
       );
     } else {
       return Scaffold(
@@ -221,12 +219,11 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                 floating: true, // 스크롤 올릴 때 축소될지 여부
                 snap: true, // 스크롤을 빨리 움직일 때 자동으로 확장/축소될지 여부
               ),
-              WaitingStatusWidget(
-                storeCode: widget.storeCode,
-                myWaitingInfo: myWaitingInfo,
-                locationInfo: storeDetailInfo.locationInfo,
-              ),
-              CSVDividerWidget(),
+              // WaitingStatusWidget(
+              //   storeCode: widget.storeCode,
+              //   myWaitingInfo: myWaitingInfo,
+              //   locationInfo: storeDetailInfo.locationInfo,
+              // ),
               StoreMenuCategoryListWidget(storeDetailInfo: storeDetailInfo),
               PopScope(
                 child: SliverToBoxAdapter(
@@ -252,7 +249,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                   storeCode: widget.storeCode,
                   waitingState: (myWaitingInfo != null),
                 ),
-                width: MediaQuery.of(context).size.width * 0.95,
+                width: MediaQuery.sizeOf(context).width * 0.95,
               )
             : null,
       );

@@ -14,7 +14,7 @@ class WaitingButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery.sizeOf(context).width,
       height: 70,
       decoration: BoxDecoration(color: Colors.white),
       child: Padding(

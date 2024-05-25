@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/presenter/user/agreement_screen.dart';
-import 'package:orre/presenter/user/sign_in_screen.dart';
-import 'package:orre/presenter/user/sign_up_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
+
+import '../../services/debug.services.dart';
 
 class OnboardingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // 사용자의 데이터를 가져오거나 로직을 적용할 곳입니다.
+    printd("\n\n OnboardingScreen 진입");
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white, // 배경색을 주어진 이미지 색상과 유사하게 설정합니다.
       body: WaveformBackgroundWidget(
         backgroundColor: Colors.white,
@@ -21,7 +24,7 @@ class OnboardingScreen extends ConsumerWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: MediaQuery.of(context).size.height * 0.25),
+                SizedBox(height: 0.25.sh),
                 TextWidget(
                   '오리',
                   fontFamily: 'Dovemayo_gothic',
@@ -30,15 +33,15 @@ class OnboardingScreen extends ConsumerWidget {
                   letterSpacing: 50,
                 ),
                 SizedBox(
-                  height: 20,
+                  height: 20.h,
                 ),
                 ClipOval(
                   child: Container(
                     color: Color(0xFFFFFFBF52),
                     child: Image.asset(
                       "assets/images/orre_logo.png",
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      height: MediaQuery.of(context).size.width * 0.5,
+                      width: MediaQuery.sizeOf(context).width * 0.5,
+                      height: MediaQuery.sizeOf(context).width * 0.5,
                     ),
                   ),
                 ),
@@ -55,10 +58,7 @@ class OnboardingScreen extends ConsumerWidget {
                   child: BigButtonWidget(
                     onPressed: () {
                       // 로그인 로직을 추가합니다.
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SignInScreen()));
+                      context.push('/user/signin');
                     },
                     backgroundColor: Color(0xFFFFFFBF52), // 버튼 배경색을 조절합니다.
                     minimumSize: Size(double.infinity, 50), // 버튼 크기를 조절합니다.
@@ -75,10 +75,7 @@ class OnboardingScreen extends ConsumerWidget {
                   child: BigButtonWidget(
                     onPressed: () {
                       // 회원 가입 로직을 추가합니다.
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AgreementScreen()));
+                      context.push('/user/agreement');
                     },
                     backgroundColor: Color(0xFFDFDFDF), // 버튼 배경색을 조절합니다.
                     minimumSize: Size(double.infinity, 50), // 버튼 크기를 조절합니다.

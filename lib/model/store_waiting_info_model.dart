@@ -1,4 +1,6 @@
-class StoreWaitingInfo {
+import 'package:equatable/equatable.dart';
+
+class StoreWaitingInfo extends Equatable {
   final int storeCode;
   final List<int> waitingTeamList;
   final List<int> enteringTeamList;
@@ -37,4 +39,13 @@ class StoreWaitingInfo {
       'estimatedWaitingTimePerTeam': estimatedWaitingTimePerTeam,
     };
   }
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [
+        storeCode,
+        waitingTeamList,
+        enteringTeamList,
+        estimatedWaitingTimePerTeam,
+      ];
 }
