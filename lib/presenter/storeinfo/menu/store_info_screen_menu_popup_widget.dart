@@ -10,7 +10,7 @@ class PopupDialog {
       builder: (context) {
         return Dialog(
           child: Container(
-            width: MediaQuery.of(context).size.width * 0.7,
+            width: MediaQuery.sizeOf(context).width * 0.7,
             height: 400,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),

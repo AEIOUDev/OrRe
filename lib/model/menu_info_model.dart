@@ -1,4 +1,7 @@
-class MenuInfo {
+import 'package:equatable/equatable.dart';
+import 'package:orre/services/debug.services.dart';
+
+class MenuInfo extends Equatable {
   final String menu;
   final String introduce;
   final int price;
@@ -7,7 +10,7 @@ class MenuInfo {
   final String menuCode;
   final int available;
 
-  MenuInfo({
+  const MenuInfo({
     required this.menu,
     required this.introduce,
     required this.price,
@@ -18,8 +21,8 @@ class MenuInfo {
   });
 
   factory MenuInfo.fromJson(Map<String, dynamic> json) {
-    if (json.isEmpty)
-      return MenuInfo(
+    if (json.isEmpty) {
+      return const MenuInfo(
           menu: 'null',
           introduce: 'null',
           price: -1,
@@ -27,6 +30,7 @@ class MenuInfo {
           recommend: -1,
           menuCode: 'null',
           available: -1);
+    }
     return MenuInfo(
       menu: json['menu'],
       introduce: json['introduce'],
@@ -60,9 +64,21 @@ class MenuInfo {
       return menuCategory == category;
     }).toList();
   }
+
+  // recommended 메뉴를 추출하는 메서드
+  static List<MenuInfo> getRecommendedMenu(List<MenuInfo> menuList) {
+    return menuList.where((menu) {
+      return menu.recommend == 1;
+    }).toList();
+  }
+
+  @override
+  // TODO: implement props
+  List<Object?> get props =>
+      [menu, introduce, price, image, recommend, menuCode, available];
 }
 
-class MenuCategories {
+class MenuCategories extends Equatable {
   final int storeCode;
   final String? recommend;
   final Map<String, String?> categories;
@@ -108,7 +124,7 @@ class MenuCategories {
         },
       );
     } catch (e) {
-      print(e);
+      printd(e);
       return MenuCategories.nullValue();
     }
   }
@@ -189,9 +205,13 @@ class MenuCategories {
         .cast<String>());
     return categories;
   }
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [storeCode, recommend, categories];
 }
 
-class OrderedMenuList {
+class OrderedMenuList extends Equatable {
   final Map<String, String> menuCategories;
   final List<MenuInfo> orderedMenus;
 
@@ -199,4 +219,8 @@ class OrderedMenuList {
     required this.menuCategories,
     required this.orderedMenus,
   });
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [menuCategories, orderedMenus];
 }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/store_list_model.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
+import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import '../storeinfo/store_info_screen.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
@@ -40,7 +41,7 @@ class StoreItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref
-        .read(storeWaitingInfoNotifierProvider.notifier)
+        .watch(storeWaitingInfoNotifierProvider.notifier)
         .subscribeToStoreWaitingInfo(storeInfo.storeCode);
     final storeWaitingInfo = ref.watch(
       storeWaitingInfoNotifierProvider.select((state) {
@@ -79,7 +80,7 @@ class StoreItem extends ConsumerWidget {
           ),
           width: 50,
           height: 50,
-          placeholder: (context, url) => CircularProgressIndicator(),
+          placeholder: (context, url) => CustomLoadingIndicator(),
           errorWidget: (context, url, error) => Icon(Icons.error),
         ),
         //title: TextWidget('가게 ${storeInfo.storeCode}: ${storeInfo.storeName}'),

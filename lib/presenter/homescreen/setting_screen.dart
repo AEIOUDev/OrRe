@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/presenter/homescreen/service_log_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:orre/presenter/user/onboarding_screen.dart';
 import 'package:orre/presenter/user/sign_up_reset_password_screen.dart';
@@ -12,6 +12,8 @@ import 'package:orre/widget/button/text_button_widget.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
+import 'service_log_screen.dart';
+
 class SettingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,8 +22,7 @@ class SettingScreen extends ConsumerWidget {
     return WaveformBackgroundWidget(
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize:
-              Size.fromHeight(MediaQuery.of(context).size.height * 0.25),
+          preferredSize: Size.fromHeight(0.25.sh),
           child: StaticAppBarWidget(
             title: '설정',
             leading: IconButton(

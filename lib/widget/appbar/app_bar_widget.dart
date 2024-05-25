@@ -66,12 +66,12 @@ class AppBarWidget extends ConsumerWidget {
                   children: [
                     Image.asset(
                       "assets/images/waveform/wave_shadow.png",
-                      width: MediaQuery.of(context).size.width,
+                      width: MediaQuery.sizeOf(context).width,
                       fit: BoxFit.cover,
                     ),
                     Image.asset(
                       "assets/images/waveform/wave.png",
-                      width: MediaQuery.of(context).size.width,
+                      width: MediaQuery.sizeOf(context).width,
                       fit: BoxFit.cover,
                     ),
                   ],
