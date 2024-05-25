@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/main.dart';
 import 'package:orre/model/location_model.dart';
-import 'package:orre/presenter/location/location_manager_screen.dart';
 import 'package:orre/presenter/homescreen/setting_screen.dart';
-import 'package:orre/provider/location/now_location_provider.dart';
 
 import '../../provider/home_screen/store_list_sort_type_provider.dart';
-import '../../provider/location/location_securestorage_provider.dart';
 import '../../provider/network/https/store_list_state_notifier.dart';
 import 'package:orre/widget/text/text_widget.dart';
+
+import '../../services/debug.services.dart';
 
 class HomeScreenAppBar extends ConsumerWidget {
   final LocationInfo location;
@@ -30,11 +30,6 @@ class HomeScreenAppBar extends ConsumerWidget {
       ref.read(storeListProvider.notifier).fetchStoreDetailInfo(params);
     }
 
-    // final watchState = ref.watch(stompState);
-
-    // ScaffoldMessenger.of(context)
-    //     .showSnackBar(SnackBar(content: TextWidget('stompState : {$watchState}')));
-
     return Container(
         height: 300,
         color: Colors.transparent,
@@ -48,14 +43,7 @@ class HomeScreenAppBar extends ConsumerWidget {
               ],
             ),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LocationManagementScreen(),
-                ),
-              ).then((_) {
-                // 위치 변경 후 HomeScreen으로 돌아왔을 때 필요한 로직 (예: 상태 업데이트)
-              });
+              context.push('/location/locationManagement');
             },
           ),
           actions: [
@@ -65,8 +53,9 @@ class HomeScreenAppBar extends ConsumerWidget {
                 color: Colors.black,
               ),
               onPressed: () {
-                // 위치 검색 로직
-                // 위치 아니야 ㅡ3ㅡ 가게 검색이야
+                // 가게 검색 로직
+                printd("임시로 Store Info 1로 이동");
+                context.push('/storeinfo/1');
               },
             ),
             IconButton(
@@ -77,29 +66,7 @@ class HomeScreenAppBar extends ConsumerWidget {
               onPressed: () {
                 print("즐겨찾기 페이지로 이동");
                 // 즐겨찾기 페이지로 이동
-                showNotification() async {
-                  var androidDetails = AndroidNotificationDetails(
-                    '유니크한 알림 채널 ID',
-                    '알림종류 설명',
-                    priority: Priority.high,
-                    importance: Importance.max,
-                    color: Color.fromARGB(255, 255, 0, 0),
-                  );
-
-                  var iosDetails = DarwinNotificationDetails(
-                    presentAlert: true,
-                    presentBadge: true,
-                    presentSound: true,
-                  );
-
-                  // 알림 id, 제목, 내용 맘대로 채우기
-                  notifications.show(
-                      1,
-                      '제목1',
-                      '내용1',
-                      NotificationDetails(
-                          android: androidDetails, iOS: iosDetails));
-                }
+                showNotification();
               },
             ),
             IconButton(
@@ -121,5 +88,25 @@ class HomeScreenAppBar extends ConsumerWidget {
           ),
           backgroundColor: Color(0xFFFFB74D),
         ));
+  }
+
+  void showNotification() async {
+    var androidDetails = AndroidNotificationDetails(
+      '유니크한 알림 채널 ID',
+      '알림종류 설명',
+      priority: Priority.high,
+      importance: Importance.max,
+      color: Color.fromARGB(255, 255, 0, 0),
+    );
+
+    var iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    // 알림 id, 제목, 내용 맘대로 채우기
+    notifications.show(1, '제목1', '내용1',
+        NotificationDetails(android: androidDetails, iOS: iosDetails));
   }
 }

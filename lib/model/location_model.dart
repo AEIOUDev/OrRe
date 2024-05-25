@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'package:equatable/equatable.dart';
+import 'package:orre/services/debug.services.dart';
 
-class LocationInfo {
+class LocationInfo extends Equatable {
   final String locationName; // 장소 이름
   final double latitude; // 위도
   final double longitude; // 경도
@@ -38,18 +40,6 @@ class LocationInfo {
     );
   }
 
-  // == 연산자 오버라이딩
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is LocationInfo &&
-        other.locationName == locationName &&
-        other.latitude == latitude &&
-        other.longitude == longitude &&
-        other.address == address;
-  }
-
   int operator -(Object other) {
     const double earthRadius = 6371; // in kilometers
 
@@ -68,7 +58,7 @@ class LocationInfo {
 
       double distance = earthRadius * c * 1000; // in meters
       distance = double.parse(distance.toStringAsFixed(2));
-      print("distance: $distance");
+      printd("distance: $distance");
       return distance.toInt();
     } else {
       return -1;
@@ -78,10 +68,14 @@ class LocationInfo {
   double _toRadians(double degrees) {
     return degrees * pi / 180;
   }
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [locationName, latitude, longitude, address];
 }
 
 // 새로운 상태 클래스 정의
-class LocationState {
+class LocationState extends Equatable {
   final LocationInfo? nowLocation;
   final LocationInfo? selectedLocation;
   final List<LocationInfo> customLocations;
@@ -103,4 +97,8 @@ class LocationState {
       customLocations: customLocations ?? this.customLocations,
     );
   }
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [nowLocation, selectedLocation, customLocations];
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/widget/text/text_widget.dart';
-import '../../provider/location/location_securestorage_provider.dart'; // 필요에 따라 경로 수정
-import '../../provider/location/now_location_provider.dart';
-import 'add_location_screen.dart'; // 필요에 따라 경로 수정
+import '../../provider/location/location_securestorage_provider.dart';
+import '../../services/debug.services.dart'; // 필요에 따라 경로 수정
 
 class LocationManagementScreen extends ConsumerStatefulWidget {
   @override
@@ -41,6 +41,7 @@ class _LocationManagementScreenState
 
   @override
   Widget build(BuildContext context) {
+    printd("\n\nLocationManagementScreen 진입");
     final userLocations = ref.watch(locationListProvider);
     final selectedLocation = userLocations.selectedLocation;
 
@@ -56,21 +57,18 @@ class _LocationManagementScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  width: MediaQuery.of(context).size.width,
+                  width: MediaQuery.sizeOf(context).width,
                   height: 40,
                   child: ElevatedButton.icon(
                     onPressed: () async {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => AddLocationScreen()),
-                      );
+                      context.push('/location/addLocation');
                     },
                     icon: Icon(
-                      Icons.search,
+                      Icons.map_rounded,
                       color: Color(0xFF999999),
                     ),
                     label: TextWidget(
-                      ' 주소로 위치를 검색해보세요.',
+                      ' 지도로 위치를 설정해보세요.',
                       color: Color(0xFF999999),
                       fontSize: 20,
                     ),
@@ -85,7 +83,9 @@ class _LocationManagementScreenState
                 ),
                 TextButton.icon(
                   onPressed: () {
-                    _refreshCurrentLocation(context, ref);
+                    ref
+                        .read(locationListProvider.notifier)
+                        .selectLocationToNowLocation();
                   },
                   icon: Icon(Icons.my_location, color: Color(0xFF999999)),
                   label: TextWidget(
@@ -103,8 +103,6 @@ class _LocationManagementScreenState
           ),
         ),
       ),
-
-      // TODO : 이거 선택된 친구만 주황색으로 만들어줘. 임시로 송파구쨩만 주황색 되게 만들었어...^^
       body: Column(
         children: [
           SizedBox(height: 16),
@@ -115,15 +113,14 @@ class _LocationManagementScreenState
                 itemCount: userLocations.customLocations.length,
                 itemBuilder: (context, index) {
                   final location = userLocations.customLocations[index];
+                  final isSelected =
+                      location.locationName == selectedLocation?.locationName;
                   return ListTile(
                     leading: Icon(Icons.location_on,
-                        color: location.locationName == "송파구"
-                            ? Color(0xFFFFFFBF52)
-                            : Colors.black),
+                        color: isSelected ? Color(0xFFFFFFBF52) : Colors.black),
                     title: TextWidget(location.address,
-                        color: location.locationName == "송파구"
-                            ? Color(0xFFFFFFBF52)
-                            : Colors.black),
+                        color: isSelected ? Color(0xFFFFFFBF52) : Colors.black,
+                        textAlign: TextAlign.left),
                     onTap: () {
                       ref
                           .read(locationListProvider.notifier)
@@ -132,9 +129,8 @@ class _LocationManagementScreenState
                     },
                     trailing: IconButton(
                       icon: Icon(Icons.delete,
-                          color: location.locationName == "송파구"
-                              ? Color(0xFFFFFFBF52)
-                              : Colors.black),
+                          color:
+                              isSelected ? Color(0xFFFFFFBF52) : Colors.black),
                       onPressed: () =>
                           _deleteLocation(location.locationName, ref),
                     ),
@@ -145,62 +141,6 @@ class _LocationManagementScreenState
           )
         ],
       ),
-    );
-  }
-
-  // 현재 위치를 새로고침하는 메소드
-  void _refreshCurrentLocation(BuildContext context, WidgetRef ref) async {
-    print("_refreshCurrentLocation");
-    try {
-      // nowLocationProvider를 refresh하고 결과를 기다립니다.
-      ref
-          .refresh(nowLocationProvider.notifier)
-          .updateNowLocation()
-          .then((value) {
-        // 결과를 출력합니다.
-        print("updateNowLocation value : $value");
-        // 성공적으로 위치 정보를 받았으면, 이를 LocationListProvider에 업데이트합니다.
-        if (value != null) {
-          ref.read(locationListProvider.notifier).updateNowLocation(value);
-        } else {
-          // 에러 처리...
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: TextWidget('현재 위치를 불러오는데 실패했습니다.')),
-          );
-        }
-      });
-    } catch (error) {
-      // 에러 처리...
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: TextWidget('현재 위치를 불러오는데 실패했습니다.')),
-      );
-    }
-  }
-}
-
-class NewLocationDialog extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    TextEditingController _controller = TextEditingController();
-
-    return AlertDialog(
-      title: TextWidget('새 위치 추가'),
-      content: TextField(
-        controller: _controller,
-        decoration: InputDecoration(
-          hintText: '위치 이름 입력',
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(_controller.text),
-          child: TextWidget('추가'),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: TextWidget('취소'),
-        ),
-      ],
     );
   }
 }

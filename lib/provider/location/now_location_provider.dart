@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:orre/model/location_model.dart';
+import 'package:orre/provider/location/location_securestorage_provider.dart';
 import '../../services/geocording/geocording_library_service.dart'; // 추가
 
 final nowLocationProvider =
@@ -9,7 +10,8 @@ final nowLocationProvider =
 });
 
 class LocationStateNotifier extends StateNotifier<LocationInfo?> {
-  LocationStateNotifier(Ref _ref) : super(null) {}
+  late final Ref _ref;
+  LocationStateNotifier(this._ref) : super(null) {}
 
   Future<LocationInfo?> updateNowLocation() async {
     print("nowLocationProvider updateNowLocation");
@@ -55,6 +57,7 @@ class LocationStateNotifier extends StateNotifier<LocationInfo?> {
           latitude: position.latitude,
           longitude: position.longitude);
     }
+    _ref.read(locationListProvider.notifier).updateNowLocation(state!);
     return state;
   }
 }
