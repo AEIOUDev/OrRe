@@ -19,13 +19,7 @@ class WebsocketErrorScreen extends ConsumerWidget {
       print("NetworkErrorScreen : $stompStack");
       // 네트워크 에러로 판단하여 네트워크 에러 화면으로 이동
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => NetworkCheckScreen(),
-            fullscreenDialog: true,
-          ),
-        );
+        context.go("/networkError");
       });
     }
     if (stompStack > 5) {
@@ -50,7 +44,7 @@ class WebsocketErrorScreen extends ConsumerWidget {
                     .read(stompClientStateNotifierProvider.notifier)
                     .state
                     ?.activate();
-                context.go("/");
+                context.go("/stompCheck");
               },
               child: TextWidget('다시 시도하기'),
             ),
