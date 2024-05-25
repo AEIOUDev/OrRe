@@ -20,8 +20,31 @@ class _OrderPrepareScreenState extends ConsumerState<OrderPrepareScreen> {
     final _message = ref.watch(nfcScanMessageProvider);
 
     return Scaffold(
-      appBar: AppBar(title: TextWidget('Order Prepare')),
-      body: Center(child: TextWidget(_message)),
+      appBar:
+          AppBar(title: TextWidget('주문하기'), backgroundColor: Color(0xFFFFB74D)),
+      body: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Transform.rotate(
+              angle: -45 * 3.14 / 180,
+              child: Icon(
+                Icons.phonelink_ring,
+                size: 80,
+                color: Color(0xFFDFDFDF),
+              ),
+            ),
+            SizedBox(height: 16),
+            TextWidget(
+              _message,
+              textAlign: TextAlign.center,
+              fontSize: 32,
+              color: Color(0xFFDFDFDF),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
