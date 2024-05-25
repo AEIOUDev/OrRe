@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/main.dart';
 import 'package:orre/model/location_model.dart';
-import 'package:orre/presenter/location/location_manager_screen.dart';
 import 'package:orre/presenter/homescreen/setting_screen.dart';
-import 'package:orre/provider/location/now_location_provider.dart';
 
 import '../../provider/home_screen/store_list_sort_type_provider.dart';
-import '../../provider/location/location_securestorage_provider.dart';
 import '../../provider/network/https/store_list_state_notifier.dart';
 import 'package:orre/widget/text/text_widget.dart';
+
+import '../../services/debug.services.dart';
 
 class HomeScreenAppBar extends ConsumerWidget {
   final LocationInfo location;
@@ -30,16 +30,11 @@ class HomeScreenAppBar extends ConsumerWidget {
       ref.read(storeListProvider.notifier).fetchStoreDetailInfo(params);
     }
 
-    // final watchState = ref.watch(stompState);
-
-    // ScaffoldMessenger.of(context)
-    //     .showSnackBar(SnackBar(content: TextWidget('stompState : {$watchState}')));
-
     return Container(
         height: 300,
         color: Colors.transparent,
         child: AppBar(
-          title: PopupMenuButton<String>(
+          title: GestureDetector(
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -47,42 +42,22 @@ class HomeScreenAppBar extends ConsumerWidget {
                 Icon(Icons.arrow_drop_down),
               ],
             ),
-            onSelected: (String result) {
-              if (result == 'changeLocation') {
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => LocationManagementScreen()))
-                    .then((_) {
-                  // 위치 변경 후 HomeScreen으로 돌아왔을 때 필요한 로직 (예: 상태 업데이트)
-                });
-              } else if (result == 'nowLocation') {
-                // 현재 위치로 변경
-                print("nowLocation selected!!!!!!!!!!!!");
-                _refreshCurrentLocation(context, ref);
-              }
+            onTap: () {
+              context.push('/location/locationManagement');
             },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              PopupMenuItem<String>(
-                value: 'nowLocation',
-                child: TextWidget('현재 위치'),
-              ),
-              PopupMenuItem<String>(
-                value: 'changeLocation',
-                child: TextWidget('위치 변경하기'),
-              ),
-            ],
           ),
           actions: [
-            // IconButton(
-            //   icon: Icon(
-            //     Icons.search,
-            //     color: Colors.black,
-            //   ),
-            //   onPressed: () {
-            //     // 위치 검색 로직
-            //   },
-            // ),
+            IconButton(
+              icon: Icon(
+                Icons.search,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                // 가게 검색 로직
+                printd("임시로 Store Info 1로 이동");
+                context.push('/storeinfo/1');
+              },
+            ),
             IconButton(
               icon: Icon(
                 Icons.star,
@@ -115,53 +90,23 @@ class HomeScreenAppBar extends ConsumerWidget {
         ));
   }
 
-  // 현재 위치를 새로고침하는 메소드
-  void _refreshCurrentLocation(BuildContext context, WidgetRef ref) async {
-    print("_refreshCurrentLocation");
-    try {
-      // nowLocationProvider를 refresh하고 결과를 기다립니다.
-      await ref
-          .read(nowLocationProvider.notifier)
-          .updateNowLocation()
-          .then((value) {
-        // 결과를 출력합니다.
-        print("updateNowLocation value : $value");
-        // 성공적으로 위치 정보를 받았으면, 이를 LocationListProvider에 업데이트합니다.
-        if (value != null) {
-          ref.read(locationListProvider.notifier).updateNowLocation(value);
-        } else {
-          // 에러 처리...
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: TextWidget('현재 위치를 불러오는데 실패했습니다.')),
-          );
-        }
-      });
-    } catch (error) {
-      // 에러 처리...
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: TextWidget('현재 위치를 불러오는데 실패했습니다.')),
-      );
-    }
+  void showNotification() async {
+    var androidDetails = AndroidNotificationDetails(
+      '유니크한 알림 채널 ID',
+      '알림종류 설명',
+      priority: Priority.high,
+      importance: Importance.max,
+      color: Color.fromARGB(255, 255, 0, 0),
+    );
+
+    var iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    // 알림 id, 제목, 내용 맘대로 채우기
+    notifications.show(1, '제목1', '내용1',
+        NotificationDetails(android: androidDetails, iOS: iosDetails));
   }
-}
-
-showNotification() async {
-  print("showNotification");
-  var androidDetails = AndroidNotificationDetails(
-    '유니크한 알림 채널 ID',
-    '알림종류 설명',
-    priority: Priority.high,
-    importance: Importance.max,
-    color: Color.fromARGB(255, 255, 0, 0),
-  );
-
-  var iosDetails = DarwinNotificationDetails(
-    presentAlert: true,
-    presentBadge: true,
-    presentSound: true,
-  );
-
-  // 알림 id, 제목, 내용 맘대로 채우기
-  notifications.show(3643, '숨겨진 이스터에그', '꽥꽥!',
-      NotificationDetails(android: androidDetails, iOS: iosDetails));
 }

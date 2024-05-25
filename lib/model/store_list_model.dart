@@ -1,4 +1,6 @@
-class StoreLocationInfo {
+import 'package:equatable/equatable.dart';
+
+class StoreLocationInfo extends Equatable {
   final String storeImageMain;
   final int storeCode;
   final String storeName;
@@ -46,4 +48,18 @@ class StoreLocationInfo {
         'latitude': latitude,
         'longitude': longitude,
       };
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [
+        storeImageMain,
+        storeCode,
+        storeName,
+        storeShortIntroduce,
+        storeCategory,
+        address,
+        distance,
+        latitude,
+        longitude
+      ];
 }

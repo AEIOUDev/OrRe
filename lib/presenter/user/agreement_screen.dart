@@ -1,72 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/presenter/user/sign_up_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
-// TODO : 이용약관 동의 화면 디자인
+import 'package:orre/widget/appbar/static_app_bar_widget.dart';
+import 'package:orre/widget/background/waveform_background_widget.dart';
+import 'package:orre/widget/button/big_button_widget.dart';
+import 'package:orre/widget/text/text_widget.dart';
+
+import '../../services/debug.services.dart';
 
 class AgreementScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('이용약관 동의'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '오리 서비스 이용약관 요약',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
-            Text(
-              '수집 목적: 서비스 이용\n수집 항목: 전화번호, 위치\n보유 및 이용 기간: 개인정보를 보유 및 이용하는 기간은 탈퇴 시까지',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => FullAgreementScreen()),
-                );
-              },
-              child: Text('전체 이용약관 보기'),
-            ),
-            Spacer(),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // 동의 처리 로직 추가
-                  print("이용약관에 동의하셨습니다.");
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SignUpScreen()));
-                },
-                child: Text('동의합니다'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class FullAgreementScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('전체 이용약관'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Text(
-            '''단모음데브 개인정보 처리방침
+    printd("\n\n AgreementScreen 진입");
+    var agreement = '''단모음데브 개인정보 처리방침
 
 제1조 (목적)
 본 약관은 단모음데브(이하 "회사")가 제공하는 오리 서비스(이하 "서비스")의 이용과 관련하여 회사와 이용자의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
@@ -107,14 +55,176 @@ class FullAgreementScreen extends StatelessWidget {
 제9조 (개인정보 보호책임자)
 회사는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 개인정보 처리와 관련한 이용자의 불만처리 및 피해구제 등을 위하여 아래와 같이 개인정보 보호책임자를 지정하고 있습니다.
 
-개인정보 보호책임자: [이름]
-연락처: [연락처]
-이메일: [이메일 주소]
+개인정보 보호책임자: 정민호
+연락처: 010-9256-6504
+이메일: myknow00@naver.com
 
 제10조 (개인정보 처리방침 변경)
 회사는 개인정보 처리방침을 변경하는 경우에는 변경 및 시행 시기, 변경된 내용을 지속적으로 공개합니다. 이 방침은 2024년 5월 16일부터 시행됩니다.
-''',
-            style: TextStyle(fontSize: 16),
+''';
+    return WaveformBackgroundWidget(
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(0.25.sh),
+          child: StaticAppBarWidget(
+              title: '오리 서비스 이용약관',
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )),
+        ),
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 16 * 5),
+                Row(
+                  children: [
+                    Icon(Icons.push_pin),
+                    SizedBox(width: 10),
+                    TextWidget(
+                      '오리 서비스 이용약관 요약',
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Padding(
+                  padding: EdgeInsets.only(left: 35),
+                  child: Container(
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Color(0xffDFDFDF), width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: TextWidget(
+                                '수집 목적',
+                                fontSize: 16,
+                                textAlign: TextAlign.start,
+                                color: Color(0xFF999999),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 7,
+                              child: TextWidget(
+                                ': 서비스 이용',
+                                fontSize: 16,
+                                textAlign: TextAlign.start,
+                                color: Color(0xFF999999),
+                              ),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: TextWidget(
+                                '수집 항목',
+                                fontSize: 16,
+                                textAlign: TextAlign.start,
+                                color: Color(0xFF999999),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 7,
+                              child: TextWidget(
+                                ': 전화번호, 위치',
+                                fontSize: 16,
+                                textAlign: TextAlign.start,
+                                color: Color(0xFF999999),
+                              ),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: TextWidget(
+                                '보유 및 이용 기간',
+                                fontSize: 16,
+                                textAlign: TextAlign.start,
+                                color: Color(0xFF999999),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 7,
+                              child: TextWidget(
+                                ': 보유 및 이용하는 기간은 탈퇴 시까지',
+                                fontSize: 16,
+                                textAlign: TextAlign.start,
+                                color: Color(0xFF999999),
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 24),
+                Row(
+                  children: [
+                    Icon(Icons.push_pin),
+                    SizedBox(width: 10),
+                    TextWidget(
+                      '전체 이용약관 보기',
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Padding(
+                  padding: EdgeInsets.only(left: 35),
+                  child: Container(
+                    padding: EdgeInsets.all(8.0),
+                    width: MediaQuery.sizeOf(context).width,
+                    height: MediaQuery.sizeOf(context).height * 0.3,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Color(0xffDFDFDF), width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: SingleChildScrollView(
+                      child: Text(
+                        agreement,
+                        style: TextStyle(
+                          fontFamily: 'Dovemayo_gothic',
+                          fontSize: 16,
+                          color: Color(0xFF999999),
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16),
+                Center(
+                  child: BigButtonWidget(
+                    onPressed: () {
+                      print("이용약관에 동의하셨습니다.");
+                      context.push('/user/signup');
+                    },
+                    text: '동의합니다',
+                    textColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
