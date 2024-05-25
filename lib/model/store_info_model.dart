@@ -1,10 +1,12 @@
-import 'package:orre/model/location_model.dart';
+import 'package:equatable/equatable.dart';
+
+import 'location_model.dart';
 
 import 'menu_info_model.dart';
 import 'user_info_model.dart';
 
 // 모델
-class StoreDetailInfo {
+class StoreDetailInfo extends Equatable {
   final String storeImageMain;
   final int storeCode;
   final String storeName;
@@ -47,35 +49,35 @@ class StoreDetailInfo {
 
   factory StoreDetailInfo.fromJson(Map<String, dynamic> json) {
     final openingTime = timeFromJson(json['openingTime'] ?? '');
-    print('openingTime: $openingTime');
+    // print('openingTime: $openingTime');
     DateTime closingTime = timeFromJson(json['closingTime'] ?? '');
     closingTime = timeAdjust(openingTime, closingTime);
-    print('closingTime: $closingTime');
+    // print('closingTime: $closingTime');
 
     final lastOrderTime = timeFromJson(json['lastOrderTime'] ?? '');
-    print('lastOrderTime: $lastOrderTime');
+    // print('lastOrderTime: $lastOrderTime');
 
     final breakStartTime =
         timeFromJson(json['startBreakTime'] ?? (json['closingTime'] ?? ''));
-    print('breakStartTime: $breakStartTime');
+    // print('breakStartTime: $breakStartTime');
     DateTime breakEndTime =
         timeFromJson(json['endBreakTime'] ?? (json['openingTime'] ?? ''));
     breakEndTime = timeAdjust(breakStartTime, breakEndTime);
-    print('breakEndTime: $breakEndTime');
+    // print('breakEndTime: $breakEndTime');
 
     final locationLatitude = json['locationInfo'][0]['latitude'] ?? '';
-    print("locationLatitude: $locationLatitude");
+    // print("locationLatitude: $locationLatitude");
     final locationLongitude = json['locationInfo'][0]['longitude'] ?? '';
-    print("locationLongitude: $locationLongitude");
+    // print("locationLongitude: $locationLongitude");
     final locationName = json['locationInfo'][0]['storeName'] ?? '';
-    print("locationName: $locationName");
+    // print("locationName: $locationName");
     final locationAddress = json['locationInfo'][0]['address'] ?? '';
-    print("locationAddress: $locationAddress");
+    // print("locationAddress: $locationAddress");
 
-    print("categories : ${json['menuCategories']}");
+    // print("categories : ${json['menuCategories']}");
     final menuCategories =
         MenuCategories.fromJson(json['menuCategories'] ?? {});
-    print("menuCategories: $menuCategories");
+    // print("menuCategories: $menuCategories");
 
     return StoreDetailInfo(
       storeImageMain: json['storeImageMain'] ?? '',
@@ -156,7 +158,7 @@ class StoreDetailInfo {
   }
 
   static DateTime timeFromJson(String time) {
-    print("time: $time");
+    // print("time: $time");
     if (time == '') {
       return DateTime.now();
     }
@@ -177,9 +179,31 @@ class StoreDetailInfo {
     }
     return endTime;
   }
+
+  @override
+  List<Object?> get props => [
+        storeImageMain,
+        storeCode,
+        storeName,
+        storeIntroduce,
+        storeCategory,
+        storeInfoVersion,
+        waitingAvailable,
+        numberOfTeamsWaiting,
+        estimatedWaitingTime,
+        openingTime,
+        closingTime,
+        lastOrderTime,
+        breakStartTime,
+        breakEndTime,
+        storePhoneNumber,
+        locationInfo,
+        menuInfo,
+        menuCategories,
+      ];
 }
 
-class TableInfo {
+class TableInfo extends Equatable {
   final String tableCode;
   final UserSimpleInfo userSimpleInfo;
   final List<OrderedMenuList> orderedMenuList;
@@ -188,4 +212,7 @@ class TableInfo {
       {required this.tableCode,
       required this.userSimpleInfo,
       required this.orderedMenuList});
+
+  @override
+  List<Object?> get props => [tableCode, userSimpleInfo, orderedMenuList];
 }

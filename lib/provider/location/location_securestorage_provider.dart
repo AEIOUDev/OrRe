@@ -82,23 +82,28 @@ class LocationListNotifier extends StateNotifier<LocationState> {
   // 저장소에서 위치 정보 리스트 로드
   Future<void> loadLocations() async {
     print("loadLocations");
-    String? stringListJson = await _storage.read(key: 'savedLocations');
-    List<LocationInfo> loadedLocations = [];
-    LocationInfo? initialSelectedLocation;
+    try {
+      if (_storage.containsKey(key: 'savedLocations') == false) {
+        print("savedLocations not found");
+        state = LocationState(customLocations: [], selectedLocation: null);
+        return;
+      }
 
-    if (stringListJson != null) {
-      List<dynamic> stringList = json.decode(stringListJson);
-      loadedLocations = stringList
-          .map((string) => LocationInfo.fromJson(json.decode(string)))
-          .toList();
-      // 초기 선택된 위치를 설정할 수 있습니다.
-    } else {
-      // 초기 상태 설정 또는 기본값 사용
+      String? stringListJson = await _storage.read(key: 'savedLocations');
+      if (stringListJson != null) {
+        List<dynamic> stringList = json.decode(stringListJson);
+        List<LocationInfo> loadedLocations = stringList
+            .map((string) => LocationInfo.fromJson(json.decode(string)))
+            .toList();
+        // 초기 선택된 위치 설정 로직 추가 가능
+      } else {
+        // 초기 상태 설정 또는 기본값 사용
+        print("No data found for savedLocations");
+      }
+    } catch (e) {
+      print("Error reading from Keychain: $e");
+      // 에러 처리 로직 추가 (예: 상태 초기화 또는 사용자에게 알림)
     }
-
-    state = LocationState(
-        customLocations: loadedLocations,
-        selectedLocation: initialSelectedLocation);
   }
 
   // "nowLocation"을 현재 위치 정보로 업데이트하는 메서드
@@ -118,6 +123,11 @@ class LocationListNotifier extends StateNotifier<LocationState> {
     print("selectLocation");
     print(location.locationName);
     state = state.copyWith(selectedLocation: location);
+  }
+
+  void selectLocationToNowLocation() {
+    final newState = state.copyWith(selectedLocation: state.nowLocation);
+    state = newState;
   }
 }
 

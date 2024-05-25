@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/services.dart';
 import 'package:orre/model/user_info_model.dart';
+import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/services/network/https_services.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -9,11 +11,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 final userInfoProvider =
     StateNotifierProvider<UserInfoProvider, UserInfo?>((ref) {
-  return UserInfoProvider();
+  return UserInfoProvider(ref);
 });
 
 class UserInfoProvider extends StateNotifier<UserInfo?> {
-  UserInfoProvider() : super(null);
+  late Ref ref;
+  UserInfoProvider(this.ref) : super(null);
 
   final _storage = FlutterSecureStorage();
 
@@ -164,7 +167,6 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
     _storage.delete(key: 'name');
     _storage.delete(key: 'fcmToken');
     _storage.readAll().then((value) => print(value));
-    _storage.read(key: 'userPhoneNumber').then((value) => print(value));
   }
 
   void clearAllInfo() {
@@ -173,6 +175,7 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
     SharedPreferences.getInstance().then((prefs) {
       prefs.clear();
     });
+    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
   }
 
   String? getNickname() {

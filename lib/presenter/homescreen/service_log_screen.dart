@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/main.dart';
 import 'package:orre/provider/network/https/get_service_log_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
+import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 class ServiceLogScreen extends ConsumerWidget {
@@ -24,7 +25,7 @@ class ServiceLogScreen extends ConsumerWidget {
         builder: (context, snapshot) {
           if (snapshot.data == null) {
             return Center(
-              child: CircularProgressIndicator(),
+              child: CustomLoadingIndicator(),
             );
           }
           return Scaffold(

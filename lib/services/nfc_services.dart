@@ -11,7 +11,7 @@ final nfcScanAvailableProvider = StateProvider<bool>((ref) => true);
 
 // NFC 스캔 결과 메시지를 관리하는 StateProvider
 final nfcScanMessageProvider =
-    StateProvider<String>((ref) => 'NFC 태그에 가까이 하세요.');
+    StateProvider<String>((ref) => '테이블에 부착된 NFC 태그에 가까이 하세요.');
 
 // NFC 스캔을 시작하는 함수
 Future<void> startNFCScan(WidgetRef ref, BuildContext context) async {
