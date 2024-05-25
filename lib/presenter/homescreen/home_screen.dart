@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/main.dart';
 import 'package:orre/model/location_model.dart';
-import 'package:orre/presenter/error/error_screen.dart';
 import 'package:orre/presenter/homescreen/home_screen_store_list.dart';
 import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
@@ -10,6 +9,7 @@ import 'package:orre/provider/network/websocket/store_waiting_info_list_state_no
 import '../../provider/home_screen/store_category_provider.dart';
 import '../../provider/location/location_securestorage_provider.dart';
 import '../../provider/network/https/store_list_state_notifier.dart';
+import '../../services/debug.services.dart';
 import 'home_screen_appbar.dart';
 import 'home_screen_category_widget.dart';
 
@@ -17,6 +17,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   // 위치 권한을 요청하고, 위치 정보를 불러오는 프로바이더를 사용하여 화면을 구성
   Widget build(BuildContext context, WidgetRef ref) {
+    printd("\n\n HomeScreen 진입");
     // 데이터가 정상적으로 로드되었을 때 UI를 표시
     final location = ref.watch(locationListProvider
         .select((value) => value.selectedLocation)); // 선택된 위치
@@ -29,8 +30,8 @@ class HomeScreen extends ConsumerWidget {
   // 위치 데이터가 정상적으로 로드되었을 때 가게 목록을 요청하는 화면을 구성
   Widget locationLoadedScreen(
       BuildContext context, WidgetRef ref, LocationInfo location) {
+    printd("\n\nlocationLoadedScreen 진입");
     final stomp = ref.watch(stompState);
-    print("locationLoadedScreen");
 
     if (stomp == StompStatus.CONNECTED) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -51,7 +52,7 @@ class HomeScreen extends ConsumerWidget {
       Future.delayed(Duration.zero, () {
         ref.read(errorStateNotifierProvider.notifier).addError(Error.websocket);
       });
-      return NetworkCheckScreen();
+      return StompCheckScreen();
     }
     return stompLoadedScreen(context, ref, location);
   }
@@ -59,7 +60,7 @@ class HomeScreen extends ConsumerWidget {
   // 가게 데이터가 정상적으로 로드되어 화면을 구성
   Widget stompLoadedScreen(
       BuildContext context, WidgetRef ref, LocationInfo location) {
-    print("stompLoadedScreen");
+    printd("\n\nstompLoadedScreen 진입");
     final nowCategory = ref.watch(selectCategoryProvider);
     final storeList = ref
         .watch(storeListProvider)

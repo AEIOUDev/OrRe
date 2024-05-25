@@ -26,7 +26,7 @@ class BottomButtonSelector extends ConsumerWidget {
         return WaitingButton(storeCode: storeCode, waitingState: waitingState);
       } else {
         return Container(
-          width: MediaQuery.of(context).size.width,
+          width: MediaQuery.sizeOf(context).width,
           height: 70,
           decoration: BoxDecoration(color: Colors.white),
           child: Padding(
@@ -62,7 +62,7 @@ class BottomButtonSelector extends ConsumerWidget {
       } else {
         // 다른 가게에서 웨이팅 중임
         return Container(
-          width: MediaQuery.of(context).size.width,
+          width: MediaQuery.sizeOf(context).width,
           height: 70,
           decoration: BoxDecoration(color: Colors.white),
           child: Padding(

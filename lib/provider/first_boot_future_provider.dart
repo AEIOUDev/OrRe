@@ -1,30 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/provider/network/connectivity_state_notifier.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 
 Future<int> initializeApp(WidgetRef ref) async {
   try {
-    final networkStatus = ref.read(networkStateProvider);
-
-    // 네트워크 연결 확인
-    final networkStatusSubscription = networkStatus.listen((isConnected) {
-      if (isConnected) {
-        ref.read(networkStateNotifierProvider.notifier).state = true;
-      } else {
-        ref.read(networkStateNotifierProvider.notifier).state = false;
-      }
-    });
-
-    // 10초 후에 타임아웃 처리
-    final networkTimeout = Future.delayed(const Duration(seconds: 10), () {
-      networkStatusSubscription.cancel();
-      ref.read(networkStateNotifierProvider.notifier).state = false;
-    });
-
-    // 네트워크 연결이 되어 있을 때 STOMP 연결 확인
     print("네트워크 연결 성공");
     final stompStatusStream =
         ref.read(stompClientStateNotifierProvider.notifier).configureClient();

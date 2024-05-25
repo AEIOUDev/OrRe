@@ -124,6 +124,11 @@ class LocationListNotifier extends StateNotifier<LocationState> {
     print(location.locationName);
     state = state.copyWith(selectedLocation: location);
   }
+
+  void selectLocationToNowLocation() {
+    final newState = state.copyWith(selectedLocation: state.nowLocation);
+    state = newState;
+  }
 }
 
 // 위치 정보 리스트를 관리하는 Provider
