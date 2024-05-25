@@ -12,6 +12,8 @@ import 'package:orre/widget/button/text_button_widget.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
+import 'service_log_screen.dart';
+
 class SettingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {

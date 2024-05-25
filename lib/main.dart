@@ -169,6 +169,19 @@ final GoRouter _router = GoRouter(
           return LocationStateCheckWidget();
         }),
     GoRoute(
+        path: '/stompCheck',
+        builder: (context, state) {
+          printd("Navigating to StompCheckScreen, fullPath: ${state.fullPath}");
+          return StompCheckScreen();
+        }),
+    GoRoute(
+        path: "/networkError",
+        builder: (context, state) {
+          printd(
+              "Navigating to NetworkErrorScreen, fullPath: ${state.fullPath}");
+          return NetworkErrorScreen();
+        }),
+    GoRoute(
         path: '/loadServiceLog',
         builder: (context, state) {
           printd(
