@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../services/debug.services.dart';
+
 final firstStoreWaitingListLoaded = StateProvider<bool>((ref) => false);
 
 final storeWaitingInfoNotifierProvider =
@@ -45,9 +47,17 @@ class StoreWaitingInfoListNotifier
               var existingIndex = state.indexWhere(
                   (info) => info.storeCode == firstResult.storeCode);
               if (existingIndex != -1) {
-                state[existingIndex] = firstResult;
-                state = List.from(state);
-                // saveState();
+                // 이 때 기존 상태와 새로운 상태가 동일하다면 업데이트하지 않음
+                if (state[existingIndex] == firstResult) {
+                  printd("state[existingIndex] == firstResult");
+                  return;
+                } else {
+                  // 기존 상태와 새로운 상태가 다르다면 업데이트
+                  printd("state[existingIndex] != firstResult");
+                  state[existingIndex] = firstResult;
+                  state = List.from(state);
+                  saveState();
+                }
               } else {
                 // 새로운 요소를 상태에 추가
                 state = [...state, firstResult];
@@ -111,7 +121,7 @@ class StoreWaitingInfoListNotifier
     prefs.setString('waitingInfoList', encodedList);
   }
 
-  void loadState() async {
+  Future<List<StoreWaitingInfo>> loadState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? encodedList = prefs.getString('waitingInfoList');
     if (encodedList != null) {
@@ -121,17 +131,19 @@ class StoreWaitingInfoListNotifier
           .map((e) => StoreWaitingInfo.fromJson(e))
           .toList(); // JSON 문자열을 객체로 변환
       // saveState();
+      return state;
     }
+    return [];
   }
 
   void reconnect() {
     print("StoreWaitingInfoListNotifier reconnect");
-    _client?.activate();
     unSubscribeAll();
-    loadState();
-    state.forEach((element) {
-      print("reconnect : ${element.storeCode}");
-      subscribeToStoreWaitingInfo(element.storeCode);
+    loadState().then((value) {
+      value.forEach((element) {
+        print("reconnect : ${element.storeCode}");
+        subscribeToStoreWaitingInfo(element.storeCode);
+      });
     });
   }
 
