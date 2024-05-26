@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -10,15 +11,17 @@ class PopupDialog {
       builder: (context) {
         return Dialog(
           child: Container(
-            width: MediaQuery.sizeOf(context).width * 0.7,
-            height: 400,
+            width: 300.r,
+            height: 450.r,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.r),
               color: Colors.white,
             ),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 30),
+                SizedBox(height: 24.r),
                 GestureDetector(
                   onTap: () {
                     // Add your onTap logic here
@@ -35,24 +38,24 @@ class PopupDialog {
                     borderRadius: BorderRadius.circular(10),
                     child: Image(
                       image: imageProvider,
-                      width: 180,
-                      height: 180,
+                      width: 180.r,
+                      height: 180.r,
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
+                SizedBox(
+                  height: 8.r,
                 ),
                 TextWidget(
                   title,
-                  fontSize: 25,
+                  fontSize: 24.r,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8),
                   child: TextWidget(
-                    '${price} 원',
-                    fontSize: 15,
+                    '$price 원',
+                    fontSize: 16.r,
                   ),
                 ),
                 Padding(
@@ -60,8 +63,8 @@ class PopupDialog {
                   child: TextWidget(
                     info,
                     maxLines: 3,
-                    fontSize: 15,
-                    color: Color(0xFF5F5F5F),
+                    fontSize: 16.r,
+                    color: const Color(0xFF5F5F5F),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -70,14 +73,14 @@ class PopupDialog {
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFFBF52),
+                    backgroundColor: const Color(0xFFFFBF52),
                   ),
                   icon: const Icon(
                     Icons.close,
                     color: Colors.white,
                   ),
                   label: const TextWidget(
-                    'close',
+                    '닫기',
                     color: Colors.white,
                   ),
                 )

@@ -4,9 +4,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orre/presenter/permission/permission_request_phone.dart';
 import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_category_list_widget.dart';
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
+import 'package:orre/services/debug.services.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
@@ -16,6 +18,7 @@ import '../../model/store_info_model.dart';
 import '../../provider/network/websocket/store_detail_info_state_notifier.dart';
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import './store_info_screen_button_selector.dart';
+import 'store_info_screen_waiting_status.dart';
 
 class StoreDetailInfoWidget extends ConsumerStatefulWidget {
   final int storeCode;
@@ -26,27 +29,34 @@ class StoreDetailInfoWidget extends ConsumerStatefulWidget {
   _StoreDetailInfoWidgetState createState() => _StoreDetailInfoWidgetState();
 }
 
-class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
+class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      var currentDetailInfo = ref.read(storeDetailInfoProvider);
-      if (currentDetailInfo == null ||
-          currentDetailInfo.storeCode != widget.storeCode) {
-        ref.read(storeDetailInfoProvider.notifier).clearStoreDetailInfo();
-        ref
-            .read(storeDetailInfoProvider.notifier)
-            .subscribeStoreDetailInfo(widget.storeCode);
-        ref
-            .read(storeDetailInfoProvider.notifier)
-            .sendStoreDetailInfoRequest(widget.storeCode);
-      }
-    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    printd("\n\nStoreDetailInfoWidget didChangeDependencies 진입");
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addObserver(this);
+    var currentDetailInfo = ref.read(storeDetailInfoProvider);
+    if (currentDetailInfo == null ||
+        currentDetailInfo.storeCode != widget.storeCode) {
+      ref.read(storeDetailInfoProvider.notifier).clearStoreDetailInfo();
+      ref
+          .read(storeDetailInfoProvider.notifier)
+          .subscribeStoreDetailInfo(widget.storeCode);
+      ref
+          .read(storeDetailInfoProvider.notifier)
+          .sendStoreDetailInfoRequest(widget.storeCode);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    printd("\n\nStoreDetailInfoWidget build 진입");
     final storeDetailInfo = ref.watch(storeDetailInfoProvider);
     _handleCancelState();
     _handleUserCallAlert();
@@ -120,6 +130,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
   }
 
   Widget buildScaffold(BuildContext context, StoreDetailInfo? storeDetailInfo) {
+    printd("\n\nStoreDetailInfoWidget buildScaffold 진입");
     final myWaitingInfo = ref.watch(storeWaitingRequestNotifierProvider);
     if (storeDetailInfo == null || storeDetailInfo.storeCode == 0) {
       return Scaffold(
@@ -127,6 +138,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
       );
     } else {
       return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Container(
           color: Colors.white,
           child: CustomScrollView(
@@ -189,6 +201,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                 expandedHeight: 240, // 높이 설정
                 flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,
+                  titlePadding: const EdgeInsets.only(bottom: 12),
                   title: TextWidget(
                     storeDetailInfo.storeName,
                     color: Colors.white,
@@ -216,14 +229,12 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                   ),
                 ),
                 pinned: true, // 스크롤시 고정
-                floating: true, // 스크롤 올릴 때 축소될지 여부
-                snap: true, // 스크롤을 빨리 움직일 때 자동으로 확장/축소될지 여부
               ),
-              // WaitingStatusWidget(
-              //   storeCode: widget.storeCode,
-              //   myWaitingInfo: myWaitingInfo,
-              //   locationInfo: storeDetailInfo.locationInfo,
-              // ),
+              WaitingStatusWidget(
+                storeCode: widget.storeCode,
+                myWaitingInfo: myWaitingInfo,
+                locationInfo: storeDetailInfo.locationInfo,
+              ),
               StoreMenuCategoryListWidget(storeDetailInfo: storeDetailInfo),
               PopScope(
                 child: SliverToBoxAdapter(
@@ -248,20 +259,12 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget> {
                 child: BottomButtonSelector(
                   storeCode: widget.storeCode,
                   waitingState: (myWaitingInfo != null),
+                  nowWaitable: storeDetailInfo.waitingAvailable == 0,
                 ),
-                width: MediaQuery.sizeOf(context).width * 0.95,
+                width: 0.95.sw,
               )
             : null,
       );
     }
-  }
-
-  Shader _shaderCallback(Rect rect) {
-    return const LinearGradient(
-      begin: Alignment.bottomCenter,
-      end: Alignment.topCenter,
-      colors: [Colors.black, Colors.transparent],
-      stops: [0.6, 1],
-    ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
   }
 }
