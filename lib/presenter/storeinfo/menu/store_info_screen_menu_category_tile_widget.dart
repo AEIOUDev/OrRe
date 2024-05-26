@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_list_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
-import '../../../model/store_info_model.dart';
+import '../../../../model/store_info_model.dart';
 
 class StoreMenuCategoryTileWidget extends ConsumerWidget {
   final StoreDetailInfo storeDetailInfo;
 
-  StoreMenuCategoryTileWidget({required this.storeDetailInfo});
+  const StoreMenuCategoryTileWidget({super.key, required this.storeDetailInfo});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,50 +31,51 @@ class StoreMenuCategoryTileWidget extends ConsumerWidget {
         );
         // print("categoryCode: $categoryCode");
         return Material(
+          color: Colors.white,
           child: Column(
             children: [
               SizedBox(
-                height: 10,
+                height: 8.r,
               ),
               Padding(
-                padding: EdgeInsets.only(left: 10),
+                padding: EdgeInsets.only(left: 10.r),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Icon(Icons.auto_awesome, color: Color(0xFFFFB74D)),
+                    const Icon(Icons.auto_awesome, color: Color(0xFFFFB74D)),
                     SizedBox(
-                      width: 5,
+                      width: 5.r,
                     ),
                     TextWidget(category,
-                        fontSize: 36,
+                        fontSize: 24.r,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFFFFB74D)),
+                        color: const Color(0xFFFFB74D)),
                     SizedBox(
-                      width: 5,
+                      width: 5.r,
                     ),
-                    Icon(Icons.auto_awesome, color: Color(0xFFFFB74D)),
+                    const Icon(Icons.auto_awesome, color: Color(0xFFFFB74D)),
                   ],
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 8.r,
               ),
               StoreMenuListWidget(
                 storeDetailInfo: storeDetailInfo,
                 category: categoryCode,
               ),
               SizedBox(
-                height: 10,
+                height: 8.r,
               ),
             ],
           ),
         );
       },
       separatorBuilder: (context, index) => Divider(
-        color: Color(0xFFDFDFDF),
-        thickness: 2,
-        endIndent: 10,
-        indent: 10,
+        color: const Color(0xFFDFDFDF),
+        thickness: 2.r,
+        endIndent: 10.r,
+        indent: 10.r,
       ),
     );
   }
