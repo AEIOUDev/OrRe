@@ -1,7 +1,11 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:stomp_dart_client/stomp.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/provider/network/https/get_service_log_state_notifier.dart';
+import 'package:orre/provider/network/websocket/store_waiting_info_request_state_notifier.dart';
+import 'package:orre/services/debug.services.dart';
+import 'package:stomp_dart_client/stomp.dart';
 
 import '../../waiting_usercall_time_list_state_notifier.dart';
 
@@ -62,7 +66,7 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
 
   // StompClient 인스턴스를 설정하는 메소드
   void setClient(StompClient client) {
-    print("UserCall : setClient");
+    printd("UserCall : setClient");
     _client = client; // 내부 변수에 StompClient 인스턴스 저장
     // loadWaitingRequestList();
   }
@@ -71,17 +75,17 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
     int storeCode,
     int waitingNumber,
   ) {
-    print("subscribeToUserCall : $storeCode, $waitingNumber");
+    printd("subscribeToUserCall : $storeCode, $waitingNumber");
     _subscribeUserCall.forEach((key, value) {
-      print("subscribeUserCall : $key");
-      print("subscribeUserCall : $value");
+      printd("subscribeUserCall : $key");
+      printd("subscribeUserCall : $value");
     });
     if (_subscribeUserCall[storeCode] == null) {
       _subscribeUserCall[storeCode] = _client?.subscribe(
         destination: '/topic/user/userCall/$storeCode/$waitingNumber',
         callback: (frame) {
           if (frame.body != null) {
-            print("subscribeToUserCall : ${frame.body}");
+            printd("subscribeToUserCall : ${frame.body}");
             var decodedBody = json.decode(frame.body!); // JSON 문자열을 객체로 변환
             // 첫 번째 요소를 추출하고 UserCall 인스턴스로 변환
             var userCall = UserCall.fromJson(decodedBody);
@@ -90,9 +94,9 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
           }
         },
       );
-      print("UserCallList/${storeCode} : subscribe!");
+      printd("UserCallList/${storeCode} : subscribe!");
     } else {
-      print("UserCallList/${storeCode} : already subscribed!");
+      printd("UserCallList/${storeCode} : already subscribed!");
     }
   }
 
@@ -102,13 +106,24 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
     _ref
         .read(waitingUserCallTimeListProvider.notifier)
         .setUserCallTime(userCall.entryTime);
+
+    _ref
+        .read(waitingStatus.notifier)
+        .setWaitingStatus(StoreWaitingStatus.CALLED);
   }
 
   void unSubscribe() {
-    print("unSubscribe UserCall");
+    printd("unSubscribe UserCall");
     _subscribeUserCall.forEach((key, value) {
-      value(unsubscribeHeaders: null); // 구독 해제 함수 호출
+      if (value != null) {
+        printd("unSubscribe UserCall : $key");
+        value(unsubscribeHeaders: <String, String>{}); // 구독 해제 함수 호출
+        printd("unSubscribe UserCall : $value");
+      } else {
+        printd("unSubscribe UserCall is null for key: $key");
+      }
     });
+    printd("unSubscribe UserCall : ${_subscribeUserCall.length}");
     _subscribeUserCall.clear();
     state = null;
     _ref.read(userCallAlertProvider.notifier).state = false;
@@ -119,7 +134,7 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
 
   // 위치 정보 리스트를 안전한 저장소에 저장
   Future<void> saveWaitingRequestList() async {
-    print("saveUserCallStatus");
+    printd("saveUserCallStatus");
 
     if (state == null) {
       if (await _storage.containsKey(key: 'userCallStatus')) {
@@ -127,25 +142,25 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
       }
     } else {
       final json_data_status = jsonEncode(state!.toJson());
-      print("saveUserCallStatus : $json_data_status");
+      printd("saveUserCallStatus : $json_data_status");
       await _storage.write(key: 'userCallStatus', value: json_data_status);
     }
   }
 
   // 안전한 저장소에 저장된 위치 정보 리스트를 불러오는 메소드
   Future<void> loadWaitingRequestList() async {
-    print("loadUserCallStatus");
+    printd("loadUserCallStatus");
     try {
       bool keyExists = await _storage.containsKey(key: 'userCallStatus');
       if (!keyExists) {
-        print("키체인에 'userCallStatus' 키가 존재하지 않습니다.");
+        printd("키체인에 'userCallStatus' 키가 존재하지 않습니다.");
         state = null;
         return;
       }
 
       final jsonDataStatus = await _storage.read(key: 'userCallStatus');
       if (jsonDataStatus != null) {
-        print("loadUserCallStatus : $jsonDataStatus");
+        printd("loadUserCallStatus : $jsonDataStatus");
         final UserCall userCall = UserCall.fromJson(jsonDecode(jsonDataStatus));
         state = userCall;
         subscribeToUserCall(userCall.storeCode, userCall.waitingNumber);
@@ -156,16 +171,22 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
         state = null;
       }
     } on Error catch (e) {
-      print('키체인 오류: ${e}');
+      printd('키체인 오류: ${e}');
       state = null;
     } catch (e) {
-      print('예상치 못한 오류: $e');
+      printd('예상치 못한 오류: $e');
       state = null;
     }
   }
 
-  void reconnect() {
-    print("reconnect UserCall");
-    loadWaitingRequestList();
+  void repairUserCallStateByServiceLog(UserLogs userLog) {
+    printd("repairUserCallStateByServiceLog");
+    final newState = UserCall(
+      storeCode: userLog.storeCode,
+      waitingNumber: userLog.waiting,
+      entryTime: userLog.calledTimeOut ?? DateTime.now(),
+    );
+
+    state = newState;
   }
 }
