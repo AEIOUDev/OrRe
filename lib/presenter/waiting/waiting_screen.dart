@@ -1,17 +1,22 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/model/store_waiting_request_model.dart';
+import 'package:orre/provider/network/https/get_service_log_state_notifier.dart';
 import 'package:orre/provider/network/https/post_store_info_future_provider.dart';
 import 'package:orre/provider/network/https/store_detail_info_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
+import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
+import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
-import 'package:orre/widget/text_field/text_input_widget.dart';
 
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
+import '../../services/debug.services.dart';
 import '../storeinfo/store_info_screen.dart';
 
 class WaitingScreen extends ConsumerStatefulWidget {
@@ -48,8 +53,8 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
       body: Align(
         alignment: Alignment.bottomCenter,
         child: Container(
-          width: MediaQuery.sizeOf(context).width,
-          height: MediaQuery.sizeOf(context).height * 0.75,
+          width: 1.sw,
+          height: 0.9.sh,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -79,12 +84,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
                   itemBuilder: (context, irndex) {
                     final item = listOfWaitingStoreProvider;
                     if (item == null) {
-                      return ListTile(
-                        title: TextWidget(
-                          '줄서기 중인 가게가 없습니다.',
-                          color: Color(0xFFDFDFDF),
-                        ),
-                      );
+                      return LastStoreItem();
                     } else {
                       return WaitingStoreItem(item);
                     }
@@ -106,7 +106,6 @@ class WaitingStoreItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final phoneNumberTextController = TextEditingController();
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
     return FutureBuilder(
@@ -173,7 +172,7 @@ class WaitingStoreItem extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TextWidget(
-                                storeDetailInfo!.storeName,
+                                storeDetailInfo.storeName,
                                 textAlign: TextAlign.start,
                                 fontSize: 28,
                               ), // 가게 이름 동적으로 표시
@@ -247,68 +246,29 @@ class WaitingStoreItem extends ConsumerWidget {
                         ],
                       ),
                       BigButtonWidget(
-                        text: '웨이팅 취소하기',
-                        textColor: Color(0xFF999999),
-                        backgroundColor: Color(0xFFDFDFDF),
-                        minimumSize: Size(double.infinity, 40),
-                        onPressed: () => showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: TextWidget('웨이팅 취소'),
-                            content: TextInputWidget(
-                              controller: phoneNumberTextController,
-                              hintText: '전화번호 입력',
-                              type: TextInputType.number,
-                              ref: ref,
-                              autofillHints: [AutofillHints.telephoneNumber],
-                              isObscure: false,
-                              minLength: 11,
-                              maxLength: 11,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                                LengthLimitingTextInputFormatter(11),
-                              ],
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                child: TextWidget('취소'),
-                                onPressed: () => Navigator.pop(context),
-                              ),
-                              TextButton(
-                                child: TextWidget('확인'),
-                                onPressed: () {
-                                  if (!_formKey.currentState!.validate()) {
-                                    return;
-                                  }
-                                  final enteredCode =
-                                      phoneNumberTextController.text;
-                                  final phoneNumber =
-                                      storeWaitingRequest.token.phoneNumber;
-                                  print("enteredCode: $enteredCode");
-                                  print("phoneNumber: $phoneNumber");
-
-                                  if (enteredCode == phoneNumber) {
-                                    ref
-                                        .read(
-                                            storeWaitingRequestNotifierProvider
-                                                .notifier)
-                                        .sendWaitingCancelRequest(
-                                            storeWaitingRequest.token.storeCode,
-                                            storeWaitingRequest
-                                                .token.phoneNumber);
-                                    Navigator.pop(context);
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            content: TextWidget(
-                                                '전화번호가 일치하지 않습니다.')));
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                          text: '웨이팅 취소하기',
+                          textColor: Color(0xFF999999),
+                          backgroundColor: Color(0xFFDFDFDF),
+                          minimumSize: Size(double.infinity, 40),
+                          onPressed: () {
+                            AwesomeDialogWidget.showCustomDialogWithCancel(
+                              context: context,
+                              title: "웨이팅 취소",
+                              desc: "정말로 웨이팅을 취소하시겠습니까?",
+                              dialogType: DialogType.question,
+                              onPressed: () {
+                                ref
+                                    .read(storeWaitingRequestNotifierProvider
+                                        .notifier)
+                                    .sendWaitingCancelRequest(
+                                        storeWaitingRequest.token.storeCode,
+                                        storeWaitingRequest.token.phoneNumber);
+                              },
+                              btnText: "네",
+                              onCancel: () {},
+                              cancelText: "아니요",
+                            );
+                          }),
                     ],
                   ),
                 ),
@@ -316,5 +276,136 @@ class WaitingStoreItem extends ConsumerWidget {
             );
           }
         });
+  }
+}
+
+class LastStoreItem extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userInfo = ref.watch(userInfoProvider);
+
+    if (userInfo == null) {
+      printd("사용자 정보 없음. 로그인 페이지로 이동");
+      context.go('/user/onboarding');
+    } else {
+      return FutureBuilder(
+          future: ref
+              .watch(serviceLogProvider.notifier)
+              .fetchStoreServiceLog(userInfo.phoneNumber),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Container(
+                width: 40,
+                height: 40,
+                child: Center(
+                  child: CustomLoadingIndicator(),
+                ),
+              );
+            } else if (snapshot.hasError || snapshot.data == null) {
+              return TextWidget('Error: ${snapshot.error}');
+            } else {
+              final serviceLog = snapshot.data;
+              final storeCode = snapshot.data!.userLogs.last.storeCode;
+              if (serviceLog!.userLogs.isNotEmpty) {
+                return FutureBuilder(
+                    future: fetchStoreDetailInfo(StoreInfoParams(storeCode, 0)),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          width: 40,
+                          height: 40,
+                          child: Center(
+                            child: CustomLoadingIndicator(),
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return TextWidget('Error: ${snapshot.error}');
+                      } else {
+                        final storeDetailInfo = snapshot.data;
+                        if (storeDetailInfo == null) {
+                          return TextWidget('가게 정보를 불러오지 못했습니다.');
+                        }
+                        return GestureDetector(
+                          onTap: () => context.push("/storeinfo/$storeCode"),
+                          child: Container(
+                            margin: EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    CachedNetworkImage(
+                                      imageUrl: storeDetailInfo.storeImageMain,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        width: 80,
+                                        height: 80,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.rectangle,
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) => Container(
+                                        width: 40,
+                                        height: 40,
+                                        child: Center(
+                                          child: CustomLoadingIndicator(),
+                                        ),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Icon(Icons.error),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        TextWidget(
+                                          storeDetailInfo.storeName,
+                                          textAlign: TextAlign.start,
+                                          fontSize: 28,
+                                        ), // 가게 이름 동적으로 표시
+                                        SizedBox(height: 5),
+                                        TextWidget(
+                                            serviceLog.userLogs.last.status
+                                                .toKr(),
+                                            fontSize: 24,
+                                            color: Color(0xFFDD0000)),
+                                        Row(
+                                          children: [
+                                            TextWidget('내 웨이팅 번호는 ',
+                                                fontSize: 20),
+                                            TextWidget(
+                                              '${serviceLog.userLogs.last.waiting}',
+                                              fontSize: 24,
+                                              color: Color(0xFFDD0000),
+                                            ),
+                                            TextWidget('번이었어요.', fontSize: 20),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                    });
+              } else {
+                return TextWidget('서비스 로그 없음.');
+              }
+            }
+          });
+    }
+    return CustomLoadingIndicator();
   }
 }

@@ -101,16 +101,11 @@ class StoreItem extends ConsumerWidget {
                 ),
               ],
             ),
-            // TextWidget('주소: ${storeInfo.address}'),
-            // TextWidget('거리: ${storeInfo.distance.round()}m'),
-            // TextWidget('위도: ${storeInfo.latitude}'),
-            // TextWidget('경도: ${storeInfo.longitude}'),
             TextWidget(
               '${storeInfo.storeShortIntroduce}',
               fontSize: 18,
               color: Color(0xFF999999),
             ),
-            //TextWidget("카테고리: ${storeInfo.storeCategory}"),
             Row(
               children: [
                 Icon(

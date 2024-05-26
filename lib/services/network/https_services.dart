@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+import 'package:orre/services/debug.services.dart';
 
 enum APIResponseStatus {
   success,
@@ -15,6 +16,7 @@ enum APIResponseStatus {
   waitingExitFailure,
   waitingCancelByStore,
   waitingEnteringSuccess,
+  waitingAlreadyJoin,
   serviceLogEmpty,
   serviceLogPhoneNumberFailure,
   etc
@@ -51,6 +53,8 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return '가게에 의한 대기열 취소';
       case APIResponseStatus.waitingEnteringSuccess:
         return '대기열 입장 성공';
+      case APIResponseStatus.waitingAlreadyJoin:
+        return '이미 대기열에 참가 중';
       case APIResponseStatus.serviceLogEmpty:
         return '서비스 로그 조회 결과 없음';
       case APIResponseStatus.serviceLogPhoneNumberFailure:
@@ -91,6 +95,8 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return 'Waiting cancel by store';
       case APIResponseStatus.waitingEnteringSuccess:
         return 'Waiting entering success';
+      case APIResponseStatus.waitingAlreadyJoin:
+        return 'Already joined in waiting';
       case APIResponseStatus.serviceLogEmpty:
         return 'Service log empty';
       case APIResponseStatus.serviceLogPhoneNumberFailure:
@@ -129,6 +135,8 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return '1103';
       case APIResponseStatus.waitingEnteringSuccess:
         return '1104';
+      case APIResponseStatus.waitingAlreadyJoin:
+        return '1105';
       case APIResponseStatus.serviceLogEmpty:
         return '1201';
       case APIResponseStatus.serviceLogPhoneNumberFailure:
@@ -171,6 +179,8 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return APIResponseStatus.waitingCancelByStore;
       case '1104':
         return APIResponseStatus.waitingEnteringSuccess;
+      case '1105':
+        return APIResponseStatus.waitingAlreadyJoin;
       case '1201':
         return APIResponseStatus.serviceLogEmpty;
       case '1202':
@@ -182,20 +192,20 @@ extension APIResponseStatusExtension on APIResponseStatus {
   }
 
   bool isEqualTo(String other) {
-    return this.toCode() == other;
+    return toCode() == other;
   }
 }
 
 class HttpsService {
-  static final String _defaultUrl = 'https://orre.store/api/user';
+  static const String _defaultUrl = 'https://orre.store/api/user';
 
   static Uri getUri(String url) {
     return Uri.parse(_defaultUrl + url);
   }
 
   static Future<http.Response> postRequest(String url, String jsonBody) async {
-    print('jsonBody: $jsonBody');
-    print('post url: ${getUri(url)}');
+    printd('jsonBody: $jsonBody');
+    printd('post url: ${getUri(url)}');
     final response = await http.post(
       getUri(url),
       headers: {
@@ -203,12 +213,12 @@ class HttpsService {
       },
       body: jsonBody,
     );
-    print('response: ${response.body}');
+    printd('response: ${response.body}');
     return response;
   }
 
   static Future<http.Response> getRequest(String url) async {
-    print('get url: ${getUri(url)}');
+    printd('get url: ${getUri(url)}');
     final response = await http.get(
       getUri(url),
       headers: {

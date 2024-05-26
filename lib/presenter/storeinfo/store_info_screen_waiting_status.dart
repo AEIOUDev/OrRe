@@ -8,6 +8,7 @@ import 'package:orre/widget/text/text_widget.dart';
 import '../../provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import '../../provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import '../../provider/waiting_usercall_time_list_state_notifier.dart';
+import '../../services/debug.services.dart';
 
 class WaitingStatusWidget extends ConsumerWidget {
   final int storeCode;
@@ -45,6 +46,7 @@ class WaitingStatusWidget extends ConsumerWidget {
       StoreWaitingInfo storeWaitingInfo,
       UserCall? myUserCall,
       Duration? remainingTime) {
+    printd("\n\nbuildMyWaitingStatus 진입");
     final myWaitingNumber = myWaitingInfo.token.waiting;
     final myWaitingIndex =
         storeWaitingInfo.waitingTeamList.indexOf(myWaitingNumber);
@@ -60,7 +62,7 @@ class WaitingStatusWidget extends ConsumerWidget {
           Expanded(
               flex: 3,
               child: TextWidget(
-                '현재 대기 팀 수',
+                '남은 팀 수',
                 textAlign: TextAlign.start,
               )),
           Expanded(
@@ -91,16 +93,11 @@ class WaitingStatusWidget extends ConsumerWidget {
           )
         ],
       ),
-      // TextWidget('내 웨이팅 번호: $myWaitingNumber'),
-      // TextWidget("내 웨이팅 인원: ${myWaitingInfo.token.personNumber}명"),
-      // TextWidget('내 웨이팅 전화번호: ${myWaitingInfo.token.phoneNumber}'),
-      // TextWidget('남은 팀 수 : $myWaitingIndex'),
     ];
 
-    print("myUserCall: $myUserCall");
-    if (myUserCall != null &&
-        remainingTime != null &&
-        remainingTime.inSeconds > 0) {
+    printd("myUserCall: ${myUserCall?.entryTime.second}");
+    printd("remainingTime: ${remainingTime?.inSeconds}");
+    if (myUserCall != null && remainingTime != null) {
       children.add(
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -162,6 +159,7 @@ class WaitingStatusWidget extends ConsumerWidget {
 
   Widget buildGeneralWaitingStatus(
       StoreWaitingInfo storeWaitingInfo, WidgetRef ref) {
+    printd("\n\nbuildGeneralWaitingStatus 진입");
     final nowLocation = ref.watch(nowLocationProvider);
     String distance;
     if (nowLocation == null) {

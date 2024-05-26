@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/services/debug.services.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 
 class WaitingUserCallTimeListStateNotifier extends StateNotifier<Duration?> {
@@ -11,6 +13,15 @@ class WaitingUserCallTimeListStateNotifier extends StateNotifier<Duration?> {
 
   // Sets the user call time and starts a timer to update the remaining time
   void setUserCallTime(DateTime userCallTime) {
+    if (userCallTime
+        .toUtc()
+        .isBefore(DateTime.now().toUtc().add(const Duration(hours: 9)))) {
+      printd("유저 호출 시간이 현재 시간보다 이전입니다.");
+      deleteTimer();
+      return;
+    } else {
+      printd("유저 호출 시간이 현재 시간보다 이후입니다.");
+    }
     this.userCallTime = userCallTime;
     startTimer();
   }
@@ -31,35 +42,38 @@ class WaitingUserCallTimeListStateNotifier extends StateNotifier<Duration?> {
       deleteTimer();
       return;
     }
+    final currentTime = DateTime.now().toUtc().add(const Duration(hours: 9));
 
-    final currentTime = DateTime.now();
-    final difference = userCallTime!.difference(currentTime);
+    // Convert userCallTime to local time
+    final localUserCallTime = userCallTime!.toUtc();
 
-    // Debug print to check the time difference
-    print('Time difference: $difference');
+    printd("유저 호출 시간 (로컬): $localUserCallTime");
+    printd("현재 시간: $currentTime");
 
-    if (difference.isNegative) {
+    if (currentTime.isAfter(localUserCallTime)) {
+      printd("유저 호출 시간이 지났습니다.");
       deleteTimer();
+      return;
     } else {
-      state = difference;
+      printd("유저 호출 시간이 지나지 않았습니다.");
+      printd(
+          "유저 호출 시간까지 남은 시간: ${localUserCallTime.difference(currentTime).inSeconds}");
+      state = localUserCallTime.difference(currentTime);
     }
   }
 
   // Stops the timer and cleans up
   void deleteTimer() {
-    print('Stopping and deleting timer');
+    printd('Stopping and deleting timer');
     timer?.cancel();
     timer = null;
-    state = null; // Optionally reset state to null when the timer is stopped
-    ref
-        .read(storeWaitingRequestNotifierProvider.notifier)
-        .clearWaitingRequestList();
+    state = Duration.zero;
   }
 
   // Disposes of the state notifier and its resources
   @override
   void dispose() {
-    print('Disposing WaitingUserCallTimeListStateNotifier');
+    printd('Disposing WaitingUserCallTimeListStateNotifier');
     deleteTimer();
     super.dispose();
   }

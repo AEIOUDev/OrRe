@@ -5,10 +5,32 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:orre/model/store_waiting_request_model.dart';
 import 'package:orre/provider/waiting_usercall_time_list_state_notifier.dart';
 import 'package:orre/services/network/https_services.dart';
-import 'package:stomp_dart_client/stomp.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/services/debug.services.dart';
+import 'package:stomp_dart_client/stomp.dart';
+
+import '../https/get_service_log_state_notifier.dart';
 
 final cancelDialogStatus = StateProvider<int?>((ref) => null);
+
+final isWaitingNow = StateProvider<bool>((ref) {
+  return false;
+});
+
+final waitingStatus =
+    StateNotifierProvider<UserWaitingStatusStateNotifier, StoreWaitingStatus?>(
+        (ref) => UserWaitingStatusStateNotifier(ref));
+
+class UserWaitingStatusStateNotifier
+    extends StateNotifier<StoreWaitingStatus?> {
+  final Ref ref;
+  UserWaitingStatusStateNotifier(this.ref) : super(null);
+
+  void setWaitingStatus(StoreWaitingStatus status) {
+    state = status;
+  }
+}
 
 final storeWaitingRequestNotifierProvider =
     StateNotifierProvider<StoreWaitingRequestNotifier, StoreWaitingRequest?>(
@@ -30,12 +52,16 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
   int storeCodeForCancel = -1;
 
   StoreWaitingRequestNotifier(this.ref) : super(null) {
-    print("StoreWaitingRequest : constructor");
+    printd("StoreWaitingRequest : constructor");
+  }
+
+  bool isClientConnected() {
+    return _client?.connected ?? false;
   }
 
   // StompClient 인스턴스를 설정하는 메소드
   void setClient(StompClient client) {
-    print("StoreWaitingRequest : setClient");
+    printd("StoreWaitingRequest : setClient");
     _client = client; // 내부 변수에 StompClient 인스턴스 저장
     // loadWaitingRequestList();
   }
@@ -43,47 +69,47 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
   Future<bool> startSubscribe(
       int storeCode, String userPhoneNumber, int personNumber) async {
     Completer<bool> completer = Completer<bool>();
-    print("startSubscribe : $storeCode, $userPhoneNumber, $personNumber");
+    printd("startSubscribe : $storeCode, $userPhoneNumber, $personNumber");
     if (_client != null) {
       if (state != null) {
-        print("state is not null");
+        printd("state is not null");
         unSubscribe(storeCode);
       }
       await subscribeToStoreWaitingRequest(
               storeCode, userPhoneNumber, personNumber)
           .then((value) {
-        if (value) {
-          print("WaitingRequest waitingSubscribeComplete : Success");
+        if (value == APIResponseStatus.success) {
+          printd("WaitingRequest waitingSubscribeComplete : Success");
           completer.complete(true);
           saveWaitingRequestList();
           subscribeToStoreWaitingCancelRequest(storeCode, userPhoneNumber);
           // if (cancel) {
-          //   print("WaitingRequest waitingCancelSubcribeComplete : Success");
+          //   printd("WaitingRequest waitingCancelSubcribeComplete : Success");
           //   completer.complete(true);
           // } else {
           //   // print("WaitingRequest waitingCancelSubcribeComplete : Fail 1");
           //   // completer.complete(false);
           // }
         } else {
-          print("WaitingRequest waitingSubscribeComplete : Fail 2");
+          printd("WaitingRequest waitingSubscribeComplete : Fail 2");
           completer.complete(false);
         }
       });
     } else {
-      print("WaitingRequest waitingSubscribeComplete : Fail 3");
+      printd("WaitingRequest waitingSubscribeComplete : Fail 3");
       completer.complete(false);
     }
     return completer.future;
   }
 
-  Future<bool> subscribeToStoreWaitingRequest(
+  Future<APIResponseStatus> subscribeToStoreWaitingRequest(
     int storeCode,
     String userPhoneNumber,
     int personNumber,
   ) async {
-    print(
+    printd(
         "subscribeToStoreWaitingRequest : $storeCode, $userPhoneNumber, $personNumber");
-    Completer<bool> completer = Completer<bool>();
+    Completer<APIResponseStatus> completer = Completer<APIResponseStatus>();
 
     // 구독이 이미 설정되어 있지 않은 경우에만 요청을 보냅니다.
     if (_subscribeRequest[storeCode.toString()] == null) {
@@ -92,23 +118,29 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
         destination: '/topic/user/waiting/make/$storeCode/$userPhoneNumber',
         callback: (frame) {
           if (frame.body != null) {
-            print("subscribeToStoreWaitingRequest : ${frame.body}");
+            printd("subscribeToStoreWaitingRequest : ${frame.body}");
             try {
               var decodedBody = json.decode(frame.body!);
+              var firstResult = StoreWaitingRequest.fromJson(decodedBody);
               if (APIResponseStatus.success.isEqualTo(decodedBody['status'])) {
-                var firstResult = StoreWaitingRequest.fromJson(decodedBody);
                 waitingAddProcess(firstResult);
-                completer.complete(true);
+                completer.complete(APIResponseStatus.success);
+              } else if (APIResponseStatus.waitingAlreadyJoin
+                  .isEqualTo(decodedBody['status'])) {
+                printd("이미 웨이팅 중입니다.");
+                waitingAddProcess(firstResult);
+                completer.complete(APIResponseStatus.waitingAlreadyJoin);
               } else {
-                completer.complete(false);
+                printd("웨이팅 실패!! : 가게가 웨이팅을 받지 않습니다.");
+                completer.complete(APIResponseStatus.waitingJoinFailure);
               }
             } catch (e) {
               if (!completer.isCompleted) {
-                completer.complete(false);
+                completer.complete(APIResponseStatus.waitingJoinFailure);
               }
             }
           } else {
-            completer.complete(false);
+            completer.complete(APIResponseStatus.waitingJoinFailure);
           }
         },
       );
@@ -116,10 +148,10 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
       // 요청을 보냅니다. 이 로직은 구독 설정과 동시에 한 번만 실행됩니다.
       sendWaitingRequest(storeCode, userPhoneNumber, personNumber);
     } else {
-      print("Already subscribed to this storeCode: $storeCode");
+      printd("Already subscribed to this storeCode: $storeCode");
       // 이미 구독된 상태라면, 기존 구독을 유지하고 새 요청을 보내지 않습니다.
       if (!completer.isCompleted) {
-        completer.complete(false);
+        completer.complete(APIResponseStatus.waitingAlreadyJoin);
       }
     }
 
@@ -132,36 +164,55 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
   ) async {
     Completer<bool> completer = Completer<bool>();
     if (_subscribeCancel[storeCode.toString()] == null) {
-      print(
+      ref.read(isWaitingNow.notifier).state = true;
+      printd(
           "subscribeToStoreWaitingCancelRequest : $storeCode, $userPhoneNumber");
       _subscribeCancel[storeCode.toString()] = _client?.subscribe(
         destination: '/topic/user/waiting/cancel/$storeCode/$userPhoneNumber',
         callback: (frame) {
           if (frame.body != null) {
-            print("subscribeToStoreWaitingCancelRequest : ${frame.body}");
+            printd("subscribeToStoreWaitingCancelRequest : ${frame.body}");
             try {
               var decodedBody = json.decode(frame.body!); // JSON 문자열을 객체로 변환
-              print(
+              printd(
                   "decodedBody!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : $decodedBody");
               if (APIResponseStatus.success.isEqualTo(decodedBody['status'])) {
-                print("웨이팅 취소 성공!!");
+                printd("웨이팅 취소 성공!!");
                 waitingCancelProcess(true, storeCode, userPhoneNumber);
                 ref.read(cancelDialogStatus.notifier).state = 200;
+                ref
+                    .read(waitingStatus.notifier)
+                    .setWaitingStatus(StoreWaitingStatus.USER_CANCELED);
                 completer.complete(true);
               } else if (APIResponseStatus.waitingCancelByStore
                   .isEqualTo(decodedBody['status'])) {
-                print("가게에서 취소!!");
+                printd("가게에서 취소!!");
                 waitingCancelProcess(true, storeCode, userPhoneNumber);
                 ref.read(cancelDialogStatus.notifier).state = 1103;
-                completer.complete(false);
+                ref
+                    .read(waitingStatus.notifier)
+                    .setWaitingStatus(StoreWaitingStatus.STORE_CANCELED);
+                completer.complete(true);
+              } else if (APIResponseStatus.waitingEnteringSuccess
+                  .isEqualTo(decodedBody['status'])) {
+                printd("입장 성공!!");
+                waitingCancelProcess(true, storeCode, userPhoneNumber);
+                ref.read(cancelDialogStatus.notifier).state = 1104;
+                ref
+                    .read(waitingStatus.notifier)
+                    .setWaitingStatus(StoreWaitingStatus.ENTERD);
+                completer.complete(true);
               } else {
-                print("웨이팅 취소 실패!!");
+                printd("웨이팅 취소 실패!!");
                 waitingCancelProcess(false, storeCode, userPhoneNumber);
                 ref.read(cancelDialogStatus.notifier).state = 1102;
+                ref
+                    .read(waitingStatus.notifier)
+                    .setWaitingStatus(StoreWaitingStatus.ETC);
                 completer.complete(false);
               }
             } catch (e) {
-              print("Error decoding data: $e");
+              printd("Error decoding data: $e");
               if (!completer.isCompleted) {
                 completer.complete(false);
               }
@@ -176,9 +227,9 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
   // 웨이팅 요청을 서버로 전송하는 메소드
   void sendWaitingRequest(
       int storeCode, String userPhoneNumber, int personNumber) {
-    print("storeCodeForRequest : $storeCodeForRequest");
+    printd("storeCodeForRequest : $storeCodeForRequest");
     if (storeCodeForRequest == -1) {
-      print(
+      printd(
           "sendWaitingRequest : {$storeCode}, {$userPhoneNumber}, {$personNumber}");
       _client?.send(
         destination: '/app/user/waiting/make/$storeCode/$userPhoneNumber',
@@ -190,14 +241,14 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
       );
       storeCodeForRequest = storeCode;
     } else {
-      print("Already sendWaitingRequest : {$storeCode}, {$userPhoneNumber}");
+      printd("Already sendWaitingRequest : {$storeCode}, {$userPhoneNumber}");
     }
   }
 
   void sendWaitingCancelRequest(int storeCode, String userPhoneNumber) {
-    print("storeCodeForCancel : $storeCodeForCancel");
+    printd("storeCodeForCancel : $storeCodeForCancel");
     if (storeCodeForCancel == -1) {
-      print("sendWaitingCancelRequest : {$storeCode}, {$userPhoneNumber}");
+      printd("sendWaitingCancelRequest : {$storeCode}, {$userPhoneNumber}");
       _client?.send(
         destination: '/app/user/waiting/cancel/$storeCode/$userPhoneNumber',
         body: json.encode({
@@ -207,7 +258,7 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
       );
       storeCodeForCancel = storeCode;
     } else {
-      print(
+      printd(
           "Already sendWaitingCancelRequest : {$storeCode}, {$userPhoneNumber}");
     }
   }
@@ -221,28 +272,28 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
         _subscribeRequest[result.token.storeCode] = null;
         saveWaitingRequestList();
       } else {
-        print("unsubscribeFunction is null");
+        printd("unsubscribeFunction is null");
       }
     } else {
-      print(result.token);
+      printd(result.token);
     }
   }
 
   void waitingCancelProcess(bool result, int storeCode, String phoneNumber) {
-    print("waitingCancelProcess : $result, $storeCode, $phoneNumber");
+    printd("waitingCancelProcess : $result, $storeCode, $phoneNumber");
     if (result) {
-      print("waitingCancelProcessSuccess : $result, $storeCode, $phoneNumber");
+      printd("waitingCancelProcessSuccess : $result, $storeCode, $phoneNumber");
       unSubscribe(storeCode);
       ref.read(waitingUserCallTimeListProvider.notifier).deleteTimer();
       state = null;
       storeCodeForCancel = -1;
     } else {
-      print(result);
+      printd(result);
     }
   }
 
   void unSubscribe(int storeCode) {
-    print("cancel waiting/make/$storeCode");
+    printd("cancel waiting/make/$storeCode");
     var unsubscribeFunction = _subscribeRequest[storeCode.toString()];
     if (unsubscribeFunction != null) {
       // Map<String, String> 타입을 명시하여 타입 에러를 해결
@@ -252,7 +303,7 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
       storeCodeForRequest = -1;
     }
 
-    print("cancel waiting/cancel/$storeCode");
+    printd("cancel waiting/cancel/$storeCode");
     var unsubscribeFunctionCancel = _subscribeCancel[storeCode.toString()];
     if (unsubscribeFunctionCancel != null) {
       // Map<String, String> 타입을 명시하여 타입 에러를 해결
@@ -269,60 +320,89 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
   // 위치 정보 리스트를 안전한 저장소에 저장
   Future<void> saveWaitingRequestList() async {
     final json_data_status = jsonEncode(state);
-    print("saveWaitingRequest : $json_data_status");
+    printd("saveWaitingRequest : $json_data_status");
     await _storage.write(key: 'waitingStatus', value: json_data_status);
   }
 
   // 저장소에서 위치 정보 리스트 로드
   Future<void> loadWaitingRequestList() async {
-    print("loadWaitingRequest");
+    printd("loadWaitingRequest");
     final json_data_status = await _storage.read(key: 'waitingStatus');
-    print("loadWaitingRequest : $json_data_status");
+    printd("loadWaitingRequest : $json_data_status");
 
     if (json_data_status != null) {
-      print("json_data_status : $json_data_status");
+      printd("json_data_status : $json_data_status");
       // JSON 데이터가 존재하면 상태를 업데이트하고 구독을 시작합니다.
       state = StoreWaitingRequest.fromJson(jsonDecode(json_data_status));
       // 안전을 위해 state가 정상적으로 설정되었는지 다시 확인
       if (state != StoreWaitingRequest.nullValue() &&
           state?.token.storeCode != -1) {
         if (state != null) {
-          print("state is not null");
+          printd("state is not null");
           if (state!.token != StoreWaitingRequest.nullValue().token) {
-            print("state.token is not null");
+            printd("state.token is not null");
 
             subscribeToStoreWaitingCancelRequest(
                 state!.token.storeCode, state!.token.phoneNumber);
           } else {
-            print("state.token is null");
+            printd("state.token is null");
           }
         }
       } else {
-        print("state is null");
+        printd("state is null");
         state = null;
       }
     } else {
       // JSON 데이터가 없을 때는 상태를 null로 설정하고 추가 작업을 수행하지 않습니다.
-      print("json_data_status is null");
+      printd("json_data_status is null");
       state = null;
     }
   }
 
   void clearWaitingRequestList() {
-    print("clearWaitingRequestList");
+    printd("clearWaitingRequestList");
     if (state != null) {
+      ref.read(isWaitingNow.notifier).state = false;
       unSubscribe(state!.token.storeCode);
     }
   }
 
   void reconnect() {
     _client?.activate();
-    print("storeWaitingInfo reconnect");
+    printd("storeWaitingInfo reconnect");
     loadWaitingRequestList();
     if (state != null) {
-      print("reconnect : ${state!.token.storeCode}");
+      printd("reconnect : ${state!.token.storeCode}");
       subscribeToStoreWaitingCancelRequest(
           state!.token.storeCode, state!.token.phoneNumber);
+    }
+  }
+
+  void repairStateByServiceLog(UserLogs userLogs) {
+    String status = userLogs.status.toCode();
+    printd("repairStateByServiceLog status : $status");
+
+    if (StoreWaitingStatus.USER_CANCELED == userLogs.status ||
+        StoreWaitingStatus.STORE_CANCELED == userLogs.status ||
+        StoreWaitingStatus.ENTERD == userLogs.status) {
+      // 현재 웨이팅 중이 아님
+      state = null;
+      printd("repairStateByServiceLog state is null");
+    } else {
+      // 현재 웨이팅 중
+      StoreWaitingRequest newState = StoreWaitingRequest(
+        status: status,
+        token: StoreWaitingRequestDetail(
+          storeCode: userLogs.storeCode,
+          waiting: userLogs.waiting,
+          status: -1, // TODO: 서버에서 상태값을 받아오는 로직이 필요
+          phoneNumber: userLogs.userPhoneNumber,
+          personNumber: userLogs.personNumber,
+        ),
+      );
+      state = newState;
+      printd(
+          "repairStateByServiceLog state is not null : ${state?.token.waiting}");
     }
   }
 }

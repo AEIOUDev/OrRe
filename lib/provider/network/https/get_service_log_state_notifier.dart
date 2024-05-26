@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/services/debug.services.dart';
 import 'package:orre/model/menu_info_model.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_request_state_notifier.dart';
@@ -51,6 +53,36 @@ extension StoreWaitingStatusExtension on StoreWaitingStatus {
     }
   }
 
+  String toCode() {
+    switch (this) {
+      case StoreWaitingStatus.WAITING:
+      case StoreWaitingStatus.USER_CANCELED:
+      case StoreWaitingStatus.CALLED:
+        return '200';
+      case StoreWaitingStatus.STORE_CANCELED:
+        return '1103';
+      case StoreWaitingStatus.ENTERD:
+        return '1105';
+      default:
+        return 'etc';
+    }
+  }
+
+  int toInt() {
+    switch (this) {
+      case StoreWaitingStatus.WAITING:
+      case StoreWaitingStatus.USER_CANCELED:
+      case StoreWaitingStatus.CALLED:
+        return 200;
+      case StoreWaitingStatus.STORE_CANCELED:
+        return 1103;
+      case StoreWaitingStatus.ENTERD:
+        return 1105;
+      default:
+        return 0;
+    }
+  }
+
   static StoreWaitingStatus fromString(String status) {
     switch (status) {
       case 'waiting':
@@ -96,18 +128,14 @@ class ServiceLogResponse {
   }
 
   static ServiceLogResponse fromJson(Map<String, dynamic> json) {
-    print("ServiceLogResponse.fromJson");
+    // printd("ServiceLogResponse.fromJson");
     final status = json['status'];
 
-    print("status: $status");
+    // printd("status: $status");
     final userLogs = List<UserLogs>.from(
         json['userLogs'].map((log) => UserLogs.fromJson(log)));
-    print("userLogs: $userLogs");
-    return ServiceLogResponse(
-      status: json['status'],
-      userLogs: List<UserLogs>.from(
-          json['userLogs'].map((log) => UserLogs.fromJson(log))),
-    );
+    // printd("userLogs: $userLogs");
+    return ServiceLogResponse(status: status, userLogs: userLogs);
   }
 }
 
@@ -155,51 +183,51 @@ class UserLogs {
   }
 
   static UserLogs fromJson(Map<String, dynamic> json) {
-    print("UserLogs.fromJson");
+    // printd("UserLogs.fromJson");
     final userPhoneNumber = json['userPhoneNumber'];
-    print("userPhoneNumber: $userPhoneNumber");
+    // printd("userPhoneNumber: $userPhoneNumber");
     final historyNum = json['historyNum'];
-    print("historyNum: $historyNum");
+    // printd("historyNum: $historyNum");
     final String status = json['status'];
-    print("status: $status");
+    // printd("status: $status");
     final StoreWaitingStatus waitingStatus;
     DateTime? calledTimeOutDateTime;
 
     final statusChangeTime = DateTime.parse(json['statusChangeTime']);
-    print("statusChangeTime: $statusChangeTime");
+    // printd("statusChangeTime: $statusChangeTime");
 
     if (status.contains(StoreWaitingStatus.CALLED.toEn())) {
-      print("status.contains(StoreWaitingStatus.CALLED.toEn())");
+      // printd("status.contains(StoreWaitingStatus.CALLED.toEn())");
       waitingStatus = StoreWaitingStatus.CALLED;
-      print("waitingStatus: ${waitingStatus.toEn()}");
+      // printd("waitingStatus: ${waitingStatus.toEn()}");
 
       // "called : {몇분}" 형식에서 {몇분}을 추출
       final calledTimeOutString =
           status.replaceFirst('${StoreWaitingStatus.CALLED.toEn()} : ', '');
-      print("calledTimeOutString: $calledTimeOutString");
+      // printd("calledTimeOutString: $calledTimeOutString");
 
       // {몇분}을 DateTime 객체의 minute으로 변환
       final calledTimeOutMinutes = int.parse(calledTimeOutString);
       calledTimeOutDateTime =
           statusChangeTime.add(Duration(minutes: calledTimeOutMinutes));
-      print("calledTimeOutDateTime: $calledTimeOutDateTime");
+      // printd("calledTimeOutDateTime: $calledTimeOutDateTime");
     } else {
-      print("status.contains(StoreWaitingStatus.CALLED.toEn()) else");
+      // printd("status.contains(StoreWaitingStatus.CALLED.toEn()) else");
       waitingStatus = StoreWaitingStatusExtension.fromString(status);
-      print("waitingStatus: ${waitingStatus.toEn()}");
+      // printd("waitingStatus: ${waitingStatus.toEn()}");
       calledTimeOutDateTime = null;
-      print("calledTimeOutDateTime: $calledTimeOutDateTime");
+      // printd("calledTimeOutDateTime: $calledTimeOutDateTime");
     }
 
-    print("status: ${waitingStatus.toKr()}");
-    print("calledTimeOut: $calledTimeOutDateTime");
+    // printd("status: ${waitingStatus.toKr()}");
+    // printd("calledTimeOut: $calledTimeOutDateTime");
 
     final makeWaitingTime = DateTime.parse(json['makeWaitingTime']);
-    print("makeWaitingTime: $makeWaitingTime");
+    // printd("makeWaitingTime: $makeWaitingTime");
     final storeCode = json['storeCode'];
-    print("storeCode: $storeCode");
+    // printd("storeCode: $storeCode");
     final paidMoney = json['paidMoney'];
-    print("paidMoney: $paidMoney");
+    // printd("paidMoney: $paidMoney");
     final orderedMenu = json['orderedMenu'];
     List<MenuInfo> menuConvert = [];
     if (orderedMenu == null || orderedMenu == "") {
@@ -238,8 +266,8 @@ class ServiceLogStateNotifier extends StateNotifier<ServiceLogResponse> {
   Future<ServiceLogResponse> fetchStoreServiceLog(
       String userPhoneNumber) async {
     try {
-      print("fetchStoreServiceLog");
-      print("userPhoneNumber: $userPhoneNumber");
+      // printd("fetchStoreServiceLog");
+      // printd("userPhoneNumber: $userPhoneNumber");
 
       final body = {
         'userPhoneNumber': userPhoneNumber,
@@ -249,9 +277,9 @@ class ServiceLogStateNotifier extends StateNotifier<ServiceLogResponse> {
       final response = await HttpsService.postRequest('/log', jsonBody);
 
       if (response.statusCode == 200) {
-        print("Log is fetched successfully!!!!!!!!!!!!!");
+        printd("Log is fetched successfully!!!!!!!!!!!!!");
         final jsonBody = json.decode(utf8.decode(response.bodyBytes));
-        print('jsonBody: $jsonBody');
+        // printd('jsonBody: $jsonBody');
         // 로그가 없을 때
         if (jsonBody['status'] == APIResponseStatus.serviceLogEmpty.toCode()) {
           state = ServiceLogResponse(
@@ -264,36 +292,27 @@ class ServiceLogStateNotifier extends StateNotifier<ServiceLogResponse> {
           state = ServiceLogResponse(
               status: APIResponseStatus.serviceLogPhoneNumberFailure.toCode(),
               userLogs: []);
+          printd("해당하는 전화번호가 없음");
           return state;
         }
         // 로그가 있을 때
         else {
+          printd("로그가 있음");
           final result = ServiceLogResponse.fromJson(jsonBody);
           state = result;
-          print("state: $state");
-
-          // 연결성 보장을 위한 Websocket Provider들 재설정
-          if (result.userLogs.isNotEmpty) {
-            // 마지막 로그의 정보로 Websocket Provider 재설정
-            reconnectWebsocketProvider(result.userLogs.last);
-          } else {
-            print("로그 비어있음. storeWaitingRequestNotifierProvider 초기화");
-            ref
-                .read(storeWaitingRequestNotifierProvider.notifier)
-                .clearWaitingRequestList();
-          }
+          // printd("state: $state");
 
           return result;
         }
       } else {
-        print("Log is not fetched!!!!!!!!!!!!!");
+        printd("Log is not fetched!!!!!!!!!!!!!");
         state = ServiceLogResponse(
             status: APIResponseStatus.serviceLogPhoneNumberFailure.toCode(),
             userLogs: []);
         throw Exception('Failed to fetch Service Log');
       }
     } catch (error) {
-      print("Log Fetch Error : $error");
+      printd("Log Fetch Error : $error");
       state = ServiceLogResponse(
           status: APIResponseStatus.serviceLogPhoneNumberFailure.toCode(),
           userLogs: []);
@@ -302,29 +321,40 @@ class ServiceLogStateNotifier extends StateNotifier<ServiceLogResponse> {
   }
 
   void reconnectWebsocketProvider(UserLogs lastUserLog) {
-    print("reconnectWebsocketProvider");
-    ref.read(stompClientStateNotifierProvider.notifier).configureClient();
-    ref.read(stompClientStateNotifierProvider.notifier).state?.activate();
+    printd("reconnectWebsocketProvider");
 
     if (lastUserLog.status == StoreWaitingStatus.WAITING) {
+      printd("현재 웨이팅 중! : ${lastUserLog.status}");
       // 현재 웨이팅 중이었다면
 
       // waitingCancel 재구독
+      printd("이전 웨이팅 관련 구독 해제");
       ref
           .read(storeWaitingRequestNotifierProvider.notifier)
           .clearWaitingRequestList();
+
+      printd("웨이팅 취소 구독 시작");
       ref
           .read(storeWaitingRequestNotifierProvider.notifier)
           .subscribeToStoreWaitingCancelRequest(
               lastUserLog.storeCode, lastUserLog.userPhoneNumber.toString());
 
       // waitingCall 재구독
+      printd("유저 호출 구독 해제");
       ref.read(storeWaitingUserCallNotifierProvider.notifier).unSubscribe();
+
+      printd("유저 호출 구독 시작");
       ref
           .read(storeWaitingUserCallNotifierProvider.notifier)
           .subscribeToUserCall(lastUserLog.storeCode, lastUserLog.waiting);
+
+      // serviceLog를 기반으로 waiting state를 재구성
+      ref
+          .read(storeWaitingRequestNotifierProvider.notifier)
+          .repairStateByServiceLog(lastUserLog);
     } else if (lastUserLog.status == StoreWaitingStatus.CALLED) {
       // 웨이팅 중인데 호출되었다면
+      printd("현재 호출 중! : ${lastUserLog.status}");
 
       // waitingCancel 재구독
       ref
@@ -336,13 +366,25 @@ class ServiceLogStateNotifier extends StateNotifier<ServiceLogResponse> {
               lastUserLog.storeCode, lastUserLog.userPhoneNumber.toString());
 
       // waitingTimer 재설정
+      printd("유저 호출 시간 재설정");
+      // printd("lastUserLog.calledTimeOut: ${lastUserLog.calledTimeOut}");
+      final userCallTime = lastUserLog.calledTimeOut ?? DateTime.now();
       ref
           .read(waitingUserCallTimeListProvider.notifier)
-          .setUserCallTime(lastUserLog.calledTimeOut ?? DateTime.now());
+          .setUserCallTime(userCallTime);
+
+      // serviceLog를 기반으로 waiting state 및 UserCall를 재구성
+      ref
+          .read(storeWaitingRequestNotifierProvider.notifier)
+          .repairStateByServiceLog(lastUserLog);
+      ref
+          .read(storeWaitingUserCallNotifierProvider.notifier)
+          .repairUserCallStateByServiceLog(lastUserLog);
     } else if (lastUserLog.status == StoreWaitingStatus.USER_CANCELED ||
         lastUserLog.status == StoreWaitingStatus.STORE_CANCELED ||
         lastUserLog.status == StoreWaitingStatus.ENTERD) {
       // user나 store가 이미 취소했거나 입장했다면
+      printd("취소 됨! : ${lastUserLog.status}");
 
       // 모든 웨이팅 관련 Provider 초기화
       // waitingCancel 삭제
@@ -351,6 +393,11 @@ class ServiceLogStateNotifier extends StateNotifier<ServiceLogResponse> {
           .clearWaitingRequestList();
       // waitingCall 삭제
       ref.read(storeWaitingUserCallNotifierProvider.notifier).unSubscribe();
+
+      // serviceLog를 기반으로 waiting state를 재구성
+      ref
+          .read(storeWaitingRequestNotifierProvider.notifier)
+          .repairStateByServiceLog(lastUserLog);
     }
   }
 }
