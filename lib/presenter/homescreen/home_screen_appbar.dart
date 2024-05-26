@@ -5,9 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:orre/main.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/presenter/homescreen/setting_screen.dart';
-
-import '../../provider/home_screen/store_list_sort_type_provider.dart';
-import '../../provider/network/https/store_list_state_notifier.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 import '../../services/debug.services.dart';
@@ -19,17 +16,6 @@ class HomeScreenAppBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final params = StoreListParameters(
-        sortType: ref.watch(selectSortTypeProvider),
-        latitude: location.latitude,
-        longitude: location.longitude);
-    if (ref.read(storeListProvider.notifier).isExistRequest(params)) {
-      print("storeListProvider isExistRequest");
-    } else {
-      print("storeListProvider fetchStoreDetailInfo");
-      ref.read(storeListProvider.notifier).fetchStoreDetailInfo(params);
-    }
-
     return Container(
         height: 300,
         color: Colors.transparent,
