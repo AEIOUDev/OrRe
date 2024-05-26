@@ -73,7 +73,7 @@ Future<void> main() async {
   runApp(ProviderScope(child: OrreMain()));
 }
 
-final initStateProvider = StateProvider<int>((ref) => 3);
+final initStateProvider = StateProvider<int>((ref) => 1);
 
 final GoRouter _router = GoRouter(
   initialLocation: "/initial",
@@ -119,11 +119,9 @@ final GoRouter _router = GoRouter(
         final initState = int.parse(state.pathParameters['initState']!);
 
         List<Widget> nextScreen = [
-          OnboardingScreen(),
           LocationStateCheckWidget(),
-          WebsocketErrorScreen(),
           StompCheckScreen(),
-          ErrorScreen(),
+          OnboardingScreen(),
         ];
 
         return nextScreen[initState];

@@ -1,66 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/main.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/presenter/homescreen/home_screen_store_list.dart';
-import 'package:orre/provider/error_state_notifier.dart';
-import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
-import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import '../../provider/home_screen/store_category_provider.dart';
+import '../../provider/home_screen/store_list_sort_type_provider.dart';
 import '../../provider/location/location_securestorage_provider.dart';
 import '../../provider/network/https/store_list_state_notifier.dart';
 import '../../services/debug.services.dart';
 import 'home_screen_appbar.dart';
 import 'home_screen_category_widget.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   @override
-  // 위치 권한을 요청하고, 위치 정보를 불러오는 프로바이더를 사용하여 화면을 구성
-  Widget build(BuildContext context, WidgetRef ref) {
-    printd("\n\n HomeScreen 진입");
-    // 데이터가 정상적으로 로드되었을 때 UI를 표시
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  late LocationInfo nowLocation;
+
+  @override
+  void initState() {
+    printd("\n\nHomeScreen initState 진입");
+    super.initState();
+  }
+
+  @override
+  Future<void> didChangeDependencies() async {
+    printd("\n\nHomeScreen didChangeDependencies 진입");
+
+    // build 함수가 호출되기 전에 초기화 함수 실행
     final location = ref.watch(locationListProvider
         .select((value) => value.selectedLocation)); // 선택된 위치
-    final nowLocationName = location?.locationName;
-    print("nowLocationAsyncValue : " + (nowLocationName ?? ""));
-    return locationLoadedScreen(
-        context, ref, location ?? LocationInfo.nullValue());
-  }
+    nowLocation = location ?? LocationInfo.nullValue();
 
-  // 위치 데이터가 정상적으로 로드되었을 때 가게 목록을 요청하는 화면을 구성
-  Widget locationLoadedScreen(
-      BuildContext context, WidgetRef ref, LocationInfo location) {
-    printd("\n\nlocationLoadedScreen 진입");
-    final stomp = ref.watch(stompState);
+    print("nowLocationAsyncValue : " + (nowLocation.locationName));
 
-    if (stomp == StompStatus.CONNECTED) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        ref
-            .read(errorStateNotifierProvider.notifier)
-            .deleteError(Error.websocket);
-        if (ref.read(firstStoreWaitingListLoaded.notifier).state == true) {
-          print("reconnect and reload storeWaitingInfoList");
-          ref.read(storeWaitingInfoNotifierProvider.notifier).reconnect();
-        } else {
-          print("firstStoreWaitingListLoaded");
-          ref.read(firstStoreWaitingListLoaded.notifier).state = true;
-        }
-      });
-      print("stomp : ${stomp}");
+    final params = StoreListParameters(
+        sortType: ref.watch(selectSortTypeProvider),
+        latitude: nowLocation.latitude,
+        longitude: nowLocation.longitude);
+    if (ref.read(storeListProvider.notifier).isExistRequest(params)) {
+      print("storeListProvider isExistRequest");
     } else {
-      print("stomp : ${stomp}");
-      Future.delayed(Duration.zero, () {
-        ref.read(errorStateNotifierProvider.notifier).addError(Error.websocket);
-      });
-      return StompCheckScreen();
+      print("storeListProvider fetchStoreDetailInfo");
+      await ref.read(storeListProvider.notifier).fetchStoreDetailInfo(params);
     }
-    return stompLoadedScreen(context, ref, location);
+
+    super.didChangeDependencies();
   }
 
-  // 가게 데이터가 정상적으로 로드되어 화면을 구성
-  Widget stompLoadedScreen(
-      BuildContext context, WidgetRef ref, LocationInfo location) {
-    printd("\n\nstompLoadedScreen 진입");
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  // 위치 권한을 요청하고, 위치 정보를 불러오는 프로바이더를 사용하여 화면을 구성
+  Widget build(BuildContext context) {
+    printd("\n\nHomeScreen build 진입");
     final nowCategory = ref.watch(selectCategoryProvider);
     final storeList = ref
         .watch(storeListProvider)
@@ -70,17 +67,18 @@ class HomeScreen extends ConsumerWidget {
         .toList();
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xFFDFDFDF),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight),
-        child: HomeScreenAppBar(location: location),
+        child: HomeScreenAppBar(location: nowLocation),
       ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CategoryWidget(location: location),
+            CategoryWidget(location: nowLocation),
             SizedBox(height: 20),
             Container(
               color: Colors.white,
