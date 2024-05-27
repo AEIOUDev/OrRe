@@ -18,6 +18,7 @@ class NetworkErrorScreen extends ConsumerWidget {
                 ref.read(networkStateProvider).listen((event) {
                   if (event) {
                     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                      // ignore: unused_result
                       ref.refresh(stompClientStateNotifierProvider.notifier);
                     });
                   }

@@ -12,7 +12,6 @@ import '../../provider/network/websocket/store_waiting_info_request_state_notifi
 import '../../provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import '../../services/debug.services.dart';
 import '../../services/network/https_services.dart';
-import '../../widget/popup/alert_popup_widget.dart';
 
 final peopleNumberProvider = StateProvider<int>((ref) => 1);
 final waitingSuccessDialogProvider = StateProvider<bool?>((ref) => null);
