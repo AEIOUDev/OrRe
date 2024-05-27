@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:orre/presenter/user/onboarding_screen.dart';
 import 'package:orre/presenter/user/sign_up_reset_password_screen.dart';
@@ -137,17 +138,11 @@ class SettingScreen extends ConsumerWidget {
                                               .read(userInfoProvider.notifier)
                                               .clearUserInfo();
                                           print(
-                                              "로그아웃 후: ${ref.read(userInfoProvider.notifier).state}");
+                                              "로그아웃 후: ${ref.read(userInfoProvider)}");
 
                                           // 모든 화면을 pop한 후, OnboardingScreen으로 교체
-                                          Navigator.popUntil(context,
-                                              (route) => route.isFirst);
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    OnboardingScreen()),
-                                          );
+                                          context.pop();
+                                          context.go("/user/onboarding");
                                         });
                                       },
                                       buttonText: '확인',
@@ -182,14 +177,8 @@ class SettingScreen extends ConsumerWidget {
                                         print("회원탈퇴 결과: $value");
                                         if (value) {
                                           // 모든 화면을 pop한 후, OnboardingScreen으로 교체
-                                          Navigator.popUntil(context,
-                                              (route) => route.isFirst);
-                                          await Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    OnboardingScreen()),
-                                          );
+                                          context.pop();
+                                          context.go("/user/onboarding");
 
                                           // OnboardingScreen으로 전환이 완료된 후 다이얼로그 표시
                                           showDialog(
