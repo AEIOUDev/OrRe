@@ -36,13 +36,14 @@ class StoreListNotifier extends StateNotifier<List<StoreLocationInfo>> {
   StoreListNotifier() : super([]);
   final paramsMap = Map<StoreListParameters, List<StoreLocationInfo>>();
 
-  Future<void> fetchStoreDetailInfo(StoreListParameters params) async {
+  Future<List<StoreLocationInfo>> fetchStoreDetailInfo(
+      StoreListParameters params) async {
     try {
       if (paramsMap.containsKey(params)) {
         print(
             "Already requested!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         state = paramsMap[params]!;
-        return;
+        return state;
       } else {
         String sortType = params.sortType.toEn();
         double latitude = params.latitude;
@@ -74,6 +75,7 @@ class StoreListNotifier extends StateNotifier<List<StoreLocationInfo>> {
           print(
               "paramsMap: $paramsMap!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
           state = result;
+          return state;
         } else {
           print('response.statusCode: ${response.statusCode}');
           paramsMap.clear();
@@ -90,5 +92,9 @@ class StoreListNotifier extends StateNotifier<List<StoreLocationInfo>> {
 
   bool isExistRequest(StoreListParameters params) {
     return paramsMap.containsKey(params);
+  }
+
+  void clearRequest() {
+    paramsMap.clear();
   }
 }

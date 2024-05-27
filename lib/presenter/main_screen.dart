@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:orre/presenter/homescreen/home_screen.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
@@ -10,6 +11,7 @@ import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/services/debug.services.dart';
+import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 
 import '../model/location_model.dart';
 import '../provider/home_screen/store_list_sort_type_provider.dart';
@@ -87,9 +89,10 @@ class _MainScreenState extends ConsumerState<MainScreen>
       case AppLifecycleState.paused:
         // 앱이 일시 중지될 때
         printd("앱이 일시 중지될 때");
-        ref
-            .read(storeWaitingInfoNotifierProvider.notifier)
-            .clearWaitingInfoList();
+        // ref
+        //     .read(storeWaitingInfoNotifierProvider.notifier)
+        //     .clearWaitingInfoList();
+        ref.read(storeListProvider.notifier).clearRequest();
         break;
       case AppLifecycleState.detached:
         // 앱이 종료될 때
@@ -104,6 +107,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
 
   Future<void> refresh() async {
     printd("refresh 함수 시작");
+    context.loaderOverlay.show();
 
     final userSelectedLocation =
         ref.read(locationListProvider).selectedLocation;
@@ -117,11 +121,20 @@ class _MainScreenState extends ConsumerState<MainScreen>
     } else {
       // 현재 위치만 업데이트 하고, 이전 selectedLocation은 그대로
       printd("사용자가 선택한 위치와 현재 위치가 다름. 현재 위치만 업데이트");
+
+      // 이 때 사용자가 선택한 위치가 "현재 위치"로 설정되어 있을 경우, 현재 위치를 업데이트합니다.
       await ref.read(nowLocationProvider.notifier).updateNowLocation();
+      if (userNowLocation?.locationName == "현재 위치") {
+        printd("사용자가 선택한 위치가 현재 위치로 설정되어 있음. 현재 위치 업데이트");
+        ref.read(locationListProvider.notifier).selectLocationToNowLocation();
+      } else {
+        printd("사용자가 선택한 위치가 현재 위치로 설정되어 있지 않음. 현재 위치 업데이트 안함");
+      }
     }
 
     // selectedLocation으로 가게 정보를 다시 불러옵니다.
     final userLocation = ref.read(locationListProvider).selectedLocation;
+    printd("선택된 위치 : " + (userLocation?.locationName ?? "null"));
 
     if (userLocation != null) {
       printd("선택된 위치로 가게 정보 불러오기 시작");
@@ -163,24 +176,21 @@ class _MainScreenState extends ConsumerState<MainScreen>
     final userInfo = ref.read(userInfoProvider);
     if (userInfo != null) {
       printd("사용자 정보 있음. 서비스 로그 불러오기 시작");
-      await ref
+      ServiceLogResponse serviceLog = await ref
           .refresh(serviceLogProvider.notifier)
-          .fetchStoreServiceLog(userInfo.phoneNumber)
-          .then(
-        (value) {
-          printd("서비스 로그 불러오기 완료");
+          .fetchStoreServiceLog(userInfo.phoneNumber);
 
-          // 서비스 로그를 불러온 후, 재구독 로직 실행
-          if (value.userLogs.isNotEmpty) {
-            printd("서비스 로그 있음. 웹소켓 재연결");
-            ref
-                .read(serviceLogProvider.notifier)
-                .reconnectWebsocketProvider(value.userLogs.last);
-          } else {
-            printd("서비스 로그 없음. 웹소켓 재구독 안함");
-          }
-        },
-      );
+      printd("서비스 로그 불러오기 완료");
+
+      // 서비스 로그를 불러온 후, 재구독 로직 실행
+      if (serviceLog.userLogs.isNotEmpty) {
+        printd("서비스 로그 있음. 웹소켓 재연결");
+        ref
+            .read(serviceLogProvider.notifier)
+            .reconnectWebsocketProvider(serviceLog.userLogs.last);
+      } else {
+        printd("서비스 로그 없음. 웹소켓 재구독 안함");
+      }
     } else {
       // 사용자 정보가 없을 경우 로그인 페이지로 이동합니다.
       printd("사용자 정보 없음. 로그인 페이지로 이동");
@@ -188,6 +198,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
     }
 
     printd("refresh 함수 종료");
+    context.loaderOverlay.hide();
     return;
   }
 
@@ -197,7 +208,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
 
     if (_isLoading) {
       return Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        body: CustomLoadingIndicator(),
       );
     }
 

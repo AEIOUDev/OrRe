@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:orre/presenter/user/onboarding_screen.dart';
 import 'package:orre/presenter/user/sign_up_reset_password_screen.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';

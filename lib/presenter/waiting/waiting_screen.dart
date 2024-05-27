@@ -17,7 +17,6 @@ import 'package:orre/widget/text/text_widget.dart';
 
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import '../../services/debug.services.dart';
-import '../storeinfo/store_info_screen.dart';
 
 class WaitingScreen extends ConsumerStatefulWidget {
   @override
@@ -27,7 +26,7 @@ class WaitingScreen extends ConsumerStatefulWidget {
 class _WaitingScreenState extends ConsumerState<WaitingScreen> {
   @override
   Widget build(BuildContext context) {
-    print("!!!!!!!!!!!!!!!!!!!");
+    printd("\n\nWaitingScreen 진입");
 
     final listOfWaitingStoreProvider =
         ref.watch(storeWaitingRequestNotifierProvider);
@@ -113,13 +112,8 @@ class WaitingStoreItem extends ConsumerWidget {
             StoreInfoParams(storeWaitingRequest.token.storeCode, 0)),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Container(
-              width: 40,
-              height: 40,
-              child: Center(
-                child: CustomLoadingIndicator(),
-              ),
-            );
+            // return CustomLoadingIndicator();
+            return Container();
           } else if (snapshot.hasError) {
             return TextWidget('Error: ${snapshot.error}');
           } else {
@@ -128,11 +122,8 @@ class WaitingStoreItem extends ConsumerWidget {
               return TextWidget('가게 정보를 불러오지 못했습니다.');
             }
             return GestureDetector(
-              onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => StoreDetailInfoWidget(
-                          storeCode: storeWaitingRequest.token.storeCode))),
+              onTap: () =>
+                  context.push("/storeinfo/${storeDetailInfo.storeCode}"),
               child: Form(
                 key: _formKey,
                 child: Container(
