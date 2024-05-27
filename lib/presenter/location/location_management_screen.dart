@@ -22,11 +22,11 @@ class _LocationManagementScreenState
         content: TextWidget('선택한 위치를 삭제합니다.'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => context.pop(true),
             child: TextWidget('확인'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () => context.pop(false),
             child: TextWidget('취소'),
           ),
         ],
@@ -42,8 +42,12 @@ class _LocationManagementScreenState
   @override
   Widget build(BuildContext context) {
     printd("\n\nLocationManagementScreen 진입");
-    final userLocations = ref.watch(locationListProvider);
-    final selectedLocation = userLocations.selectedLocation;
+    final location = ref.watch(locationListProvider);
+    final customLocations = location.customLocations;
+    final selectedLocation = location.selectedLocation;
+    final nowLocation = location.nowLocation;
+
+    final isSame = selectedLocation == nowLocation;
 
     return Scaffold(
       backgroundColor: Color(0xFFDFDFDF),
@@ -86,18 +90,32 @@ class _LocationManagementScreenState
                     ref
                         .read(locationListProvider.notifier)
                         .selectLocationToNowLocation();
+                    context.pop();
                   },
-                  icon: Icon(Icons.my_location, color: Color(0xFF999999)),
+                  icon: Icon(Icons.my_location,
+                      color: isSame ? Color(0xFFFFFFBF52) : Color(0xFF999999)),
                   label: TextWidget(
-                    '현재 위치로 설정',
+                    isSame ? "현재 위치로 설정됨" : '현재 위치로 설정',
                     fontSize: 20,
-                    color: Color(0xFF999999),
+                    color: isSame ? Color(0xFFFFFFBF52) : Color(0xFF999999),
                   ),
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
                     alignment: Alignment.centerLeft,
                   ),
                 ),
+                // IconButton(
+                //     icon: Icon(Icons.table_rows_rounded,
+                //         color:
+                //             isSame ? Color(0xFFFFFFBF52) : Color(0xFF999999)),
+                //     onPressed: () {
+                //       printd(
+                //           "선택된 위치 : ${ref.read(locationListProvider.notifier).getSelectedLocation()}");
+                //       printd(
+                //           "현재 위치 : ${ref.read(locationListProvider.notifier).getNowLocation()}");
+                //       printd(
+                //           "사용자 위치 : ${ref.read(locationListProvider.notifier).getCustomLocations()}");
+                //     }),
               ],
             ),
           ),
@@ -110,22 +128,23 @@ class _LocationManagementScreenState
             child: Container(
               color: Colors.white,
               child: ListView.builder(
-                itemCount: userLocations.customLocations.length,
+                itemCount: customLocations.length,
                 itemBuilder: (context, index) {
-                  final location = userLocations.customLocations[index];
+                  final location = customLocations[index];
                   final isSelected =
-                      location.locationName == selectedLocation?.locationName;
+                      location.address == selectedLocation?.address;
                   return ListTile(
                     leading: Icon(Icons.location_on,
                         color: isSelected ? Color(0xFFFFFFBF52) : Colors.black),
-                    title: TextWidget(location.address,
+                    title: TextWidget(
+                        location.address + " (${location.locationName})",
                         color: isSelected ? Color(0xFFFFFFBF52) : Colors.black,
                         textAlign: TextAlign.left),
                     onTap: () {
                       ref
                           .read(locationListProvider.notifier)
                           .selectLocation(location);
-                      Navigator.of(context).pop();
+                      context.pop();
                     },
                     trailing: IconButton(
                       icon: Icon(Icons.delete,

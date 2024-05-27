@@ -85,7 +85,7 @@ class StoreWaitingInfoListNotifier
   }
 
   void unSubscribeAll() {
-    print("unSubscribeAll");
+    print("unSubscribe All of StoreWaitingInfoListNotifier");
     _subscriptions.forEach((storeCode, unsubscribeFn) {
       unsubscribeFn();
       print("unSubscribeAll/${storeCode} : unsubscribe!");
@@ -134,6 +134,18 @@ class StoreWaitingInfoListNotifier
       return state;
     }
     return [];
+  }
+
+  StoreWaitingInfo getStoreWaitingInfo(int storeCode) {
+    final storeWaitingInfo =
+        state.firstWhere((info) => info.storeCode == storeCode,
+            orElse: () => StoreWaitingInfo(
+                  storeCode: 0,
+                  waitingTeamList: [],
+                  enteringTeamList: [],
+                  estimatedWaitingTimePerTeam: 0,
+                ));
+    return storeWaitingInfo;
   }
 
   void reconnect() {

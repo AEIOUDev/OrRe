@@ -37,8 +37,9 @@ class LocationStateNotifier extends StateNotifier<LocationInfo?> {
         "nowLocationProvider : 현재 경도 : ${position.longitude}, 현재 위도 : ${position.latitude}");
 
     // 권한이 허용되었을 때 도로명 주소 변환 로직
-    String? placemarks = await getAddressFromLatLngLibrary(
+    final temp = await getAddressFromLatLngLibrary(
         position.latitude, position.longitude, 4, true);
+    String? placemarks = temp.first;
 
     // 내 도로명 주소를 불러올 수 없을 때의 상태 반환
     if (placemarks == null) {

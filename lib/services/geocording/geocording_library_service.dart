@@ -1,7 +1,9 @@
 import 'package:geocoding/geocoding.dart';
 
+import '../debug.services.dart';
+
 // 위도와 경도로부터 주소를 문자열로 반환하는 비동기 함수입니다.
-Future<String?> getAddressFromLatLngLibrary(
+Future<List<String?>> getAddressFromLatLngLibrary(
     double latitude, double longitude, int detail, bool includeArea1) async {
   try {
     // 주어진 위도와 경도로 Placemark 객체의 리스트를 비동기적으로 조회합니다.
@@ -16,7 +18,15 @@ Future<String?> getAddressFromLatLngLibrary(
       List<String> addressParts = [];
 
       // Debugging purposes
-      print(place);
+
+      printd("place.name : " + (place.name ?? ""));
+      printd("place.administrativeArea : " + place.administrativeArea!);
+      printd("place.locality : " + place.locality!);
+      printd("place.subLocality : " + place.subLocality!);
+      printd("place.street : " + place.street!);
+      printd("place.postalCode : " + place.postalCode!);
+      printd("place.country : " + place.country!);
+      printd("place.isoCountryCode : " + place.isoCountryCode!);
 
       // 행정구역 정보를 추가하는 조건입니다. includeArea1이 true이고, administrativeArea가 비어있지 않을 때 추가합니다.
       if (includeArea1 &&
@@ -56,14 +66,14 @@ Future<String?> getAddressFromLatLngLibrary(
       String address = addressParts.join(' ').trim();
 
       // 최종 주소 문자열을 반환합니다.
-      return address;
+      return [place.name, address];
     } else {
       // 조회된 Placemark 리스트가 비어 있는 경우, null을 반환합니다.
-      return null;
+      return [];
     }
   } catch (e) {
     // 오류 발생 시, 콘솔에 오류 메시지를 출력하고 null을 반환합니다.
     print('Error fetching address: $e');
-    return null;
+    return [];
   }
 }

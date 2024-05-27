@@ -8,8 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:internet_connectivity_checker/internet_connectivity_checker.dart';
-import 'package:internet_connectivity_checker/internet_connectivity_checker.dart';
-import 'package:orre/presenter/error/error_screen.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:orre/presenter/error/network_error_screen.dart';
 import 'package:orre/presenter/error/websocket_error_screen.dart';
 import 'package:orre/presenter/location/add_location_screen.dart';
@@ -18,8 +17,10 @@ import 'package:orre/presenter/user/sign_in_screen.dart';
 import 'package:orre/presenter/user/sign_up_reset_password_screen.dart';
 import 'package:orre/presenter/user/sign_up_screen.dart';
 import 'package:orre/provider/first_boot_future_provider.dart';
+import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
+import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -27,6 +28,7 @@ import 'firebase_options.dart'; // Firebase 초기화 옵션을 포함한 파일
 import 'package:go_router/go_router.dart';
 
 import 'presenter/homescreen/home_screen.dart';
+import 'presenter/permission/permission_request_location.dart';
 import 'presenter/storeinfo/store_info_screen.dart';
 import 'presenter/user/agreement_screen.dart';
 import 'presenter/user/onboarding_screen.dart';
@@ -99,9 +101,9 @@ final GoRouter _router = GoRouter(
       builder: (context, state) {
         printd(
             "Navigating to ReservationPage for Specific User, fullPath: ${state.fullPath}");
-        final storeCode = int.parse(state.pathParameters['storeCode']!);
-        final userPhoneNumber =
-            state.pathParameters['userPhoneNumber']!.replaceAll('-', '');
+        // final storeCode = int.parse(state.pathParameters['storeCode']!);
+        // final userPhoneNumber =
+        state.pathParameters['userPhoneNumber']!.replaceAll('-', '');
         return WaitingScreen();
       },
     ),
@@ -209,6 +211,11 @@ final GoRouter _router = GoRouter(
           return LocationManagementScreen();
         }),
     GoRoute(
+        path: '/permission/location',
+        builder: (context, state) {
+          return PermissionRequestLocationScreen();
+        }),
+    GoRoute(
         path: '/home',
         builder: (context, state) {
           return HomeScreen();
@@ -233,10 +240,17 @@ class OrreMain extends ConsumerWidget {
     return ScreenUtilInit(
       designSize: const Size(360, 800),
       builder: (context, _) => Builder(
-        builder: (context) => MaterialApp.router(
-          routerConfig: _router,
-          theme: ThemeData(
-            primarySwatch: Colors.orange,
+        builder: (context) => GlobalLoaderOverlay(
+          useDefaultLoading: false,
+          overlayWidgetBuilder: (progress) {
+            return CustomLoadingIndicator();
+          },
+          overlayColor: Colors.black.withOpacity(0.8),
+          child: MaterialApp.router(
+            routerConfig: _router,
+            theme: ThemeData(
+              primarySwatch: Colors.orange,
+            ),
           ),
         ),
       ),
@@ -307,6 +321,7 @@ class SplashScreen extends ConsumerWidget {
 class StompCheckScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     printd("\n\nStompCheckScreen 진입");
+    // ignore: unused_local_variable
     final stomp = ref.watch(stompClientStateNotifierProvider);
     final stompS = ref.watch(stompState);
 
@@ -362,17 +377,16 @@ class LocationStateCheckWidget extends ConsumerWidget {
             if (snapshot.data != null) {
               print("위치 정보 존재 : ${snapshot.data}");
               print("LoadServiceLogWidget() 호출");
+              ref.read(locationListProvider.notifier).init();
               return LoadServiceLogWidget();
             } else {
-              print("위치 정보 없음, LocationManagementScreen() 호출");
-              return LocationManagementScreen();
+              print("위치 정보 없음, PermissionRequestLocationScreen() 호출");
+              return PermissionRequestLocationScreen();
             }
           } else {
             print("위치 정보 로딩 중");
             return Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
+              body: CustomLoadingIndicator(),
             );
           }
         });
