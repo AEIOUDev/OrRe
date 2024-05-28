@@ -71,7 +71,7 @@ class StoreWaitingInfoListNotifier
       // print("StoreWaitingInfoList/${storeCode} : subscribe!");
       sendStoreCode(storeCode);
     } else {
-      // print("StoreWaitingInfoList/${storeCode} : already subscribed!");
+      print("StoreWaitingInfoList/${storeCode} : already subscribed!");
     }
   }
 
@@ -109,6 +109,8 @@ class StoreWaitingInfoListNotifier
   }
 
   void clearWaitingInfoList() {
+    printd("clearWaitingInfoList");
+    _subscriptions.clear();
     state = [];
     // saveState();
   }

@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,7 +10,7 @@ import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/widget/button/text_button_widget.dart';
-import 'package:orre/widget/popup/alert_popup_widget.dart';
+import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 import 'service_log_screen.dart';
@@ -21,6 +22,7 @@ class SettingScreen extends ConsumerWidget {
 
     return WaveformBackgroundWidget(
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(0.25.sh),
           child: StaticAppBarWidget(
@@ -28,7 +30,7 @@ class SettingScreen extends ConsumerWidget {
             leading: IconButton(
               icon: Icon(Icons.arrow_back_ios, color: Colors.white),
               onPressed: () {
-                Navigator.pop(context);
+                context.pop();
               },
             ),
           ),
@@ -66,10 +68,7 @@ class SettingScreen extends ConsumerWidget {
                       BigButtonWidget(
                         onPressed: () {
                           // 이용내역 확인 버튼 클릭 시 이용내역 확인 화면으로 이동
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ServiceLogScreen()));
+                          context.go("/setting/servicelog");
                         },
                         backgroundColor: Color(0xFFDFDFDF),
                         minimumSize: Size(double.infinity, 50),
@@ -97,11 +96,8 @@ class SettingScreen extends ConsumerWidget {
                       // ),
                       BigButtonWidget(
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      SignUpResetPasswordScreen()));
+                          // 비밀번호 변경 버튼 클릭 시 비밀번호 변경 화면으로 이동
+                          context.push('/user/resetpassword');
                         },
                         backgroundColor: Color(0xFFDFDFDF),
                         minimumSize: Size(double.infinity, 50),
@@ -122,32 +118,31 @@ class SettingScreen extends ConsumerWidget {
                             fontSize: 16,
                             textColor: Color(0xFFDFDFDF),
                             onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertPopupWidget(
-                                      title: '로그아웃',
-                                      subtitle: '로그아웃 하시겠습니까?',
-                                      onPressed: () {
-                                        print("로그아웃");
+                              AwesomeDialogWidget.showCustomDialogWithCancel(
+                                context: context,
+                                title: "로그아웃",
+                                desc: "로그아웃 하시겠습니까?",
+                                dialogType: DialogType.warning,
+                                onPressed: () {
+                                  print("로그아웃");
 
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback((_) {
-                                          ref
-                                              .read(userInfoProvider.notifier)
-                                              .clearUserInfo();
-                                          print(
-                                              "로그아웃 후: ${ref.read(userInfoProvider)}");
+                                  WidgetsBinding.instance
+                                      .addPostFrameCallback((_) {
+                                    ref
+                                        .read(userInfoProvider.notifier)
+                                        .clearUserInfo();
+                                    print(
+                                        "로그아웃 후: ${ref.read(userInfoProvider)}");
 
-                                          // 모든 화면을 pop한 후, OnboardingScreen으로 교체
-                                          context.pop();
-                                          context.go("/user/onboarding");
-                                        });
-                                      },
-                                      buttonText: '확인',
-                                      cancelButton: true,
-                                    );
+                                    // 모든 화면을 pop한 후, OnboardingScreen으로 교체
+                                    context.pop();
+                                    context.go("/user/onboarding");
                                   });
+                                },
+                                btnText: "로그아웃",
+                                onCancel: () {},
+                                cancelText: "취소",
+                              );
                             },
                           ),
                           SizedBox(width: 10),
@@ -162,42 +157,33 @@ class SettingScreen extends ConsumerWidget {
                             fontSize: 16,
                             textColor: Color(0xFFDFDFDF),
                             onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertPopupWidget(
-                                    title: '회원탈퇴',
-                                    subtitle: '회원탈퇴 하시겠습니까?',
-                                    onPressed: () {
-                                      ref
-                                          .read(userInfoProvider.notifier)
-                                          .withdraw()
-                                          .then((value) async {
-                                        print("회원탈퇴 결과: $value");
-                                        if (value) {
-                                          // 모든 화면을 pop한 후, OnboardingScreen으로 교체
-                                          context.pop();
-                                          context.go("/user/onboarding");
-
-                                          // OnboardingScreen으로 전환이 완료된 후 다이얼로그 표시
-                                          showDialog(
+                              AwesomeDialogWidget.showCustomDialogWithCancel(
+                                  context: context,
+                                  title: "회원탈퇴",
+                                  desc: "정말 회원탈퇴 하시겠습니까?",
+                                  dialogType: DialogType.warning,
+                                  onPressed: () {
+                                    ref
+                                        .read(userInfoProvider.notifier)
+                                        .withdraw()
+                                        .then((value) async {
+                                      print("회원탈퇴 결과: $value");
+                                      if (value) {
+                                        // 모든 화면을 pop한 후, OnboardingScreen으로 교체
+                                        context.pop();
+                                        context.go("/user/onboarding");
+                                      } else {
+                                        // 회원탈퇴 실패
+                                        AwesomeDialogWidget.showErrorDialog(
                                             context: context,
-                                            builder: (context) {
-                                              return AlertPopupWidget(
-                                                title: '회원탈퇴',
-                                                subtitle: '회원탈퇴가 완료되었습니다.',
-                                                buttonText: '확인',
-                                              );
-                                            },
-                                          );
-                                        }
-                                      });
-                                    },
-                                    buttonText: '확인',
-                                    cancelButton: true,
-                                  );
-                                },
-                              );
+                                            title: "회원탈퇴",
+                                            desc: "회원탈퇴에 실패했습니다.");
+                                      }
+                                    });
+                                  },
+                                  btnText: "탈퇴",
+                                  onCancel: () {},
+                                  cancelText: "취소");
                             },
                           ),
                         ],

@@ -12,6 +12,7 @@ enum StoreWaitingStatus {
   WAITING,
   USER_CANCELED,
   STORE_CANCELED,
+  STORE_CLOSED,
   CALLED,
   ENTERD,
   ETC,
@@ -26,6 +27,8 @@ extension StoreWaitingStatusExtension on StoreWaitingStatus {
         return 'user canceled';
       case StoreWaitingStatus.STORE_CANCELED:
         return 'store canceled';
+      case StoreWaitingStatus.STORE_CLOSED:
+        return 'store closed';
       case StoreWaitingStatus.CALLED:
         return 'called';
       case StoreWaitingStatus.ENTERD:
@@ -43,6 +46,8 @@ extension StoreWaitingStatusExtension on StoreWaitingStatus {
         return '사용자 취소';
       case StoreWaitingStatus.STORE_CANCELED:
         return '가게 취소';
+      case StoreWaitingStatus.STORE_CLOSED:
+        return '가게 영업 마감';
       case StoreWaitingStatus.CALLED:
         return '호출됨';
       case StoreWaitingStatus.ENTERD:
@@ -62,6 +67,8 @@ extension StoreWaitingStatusExtension on StoreWaitingStatus {
         return '1103';
       case StoreWaitingStatus.ENTERD:
         return '1105';
+      case StoreWaitingStatus.STORE_CLOSED:
+        return '1106';
       default:
         return 'etc';
     }
@@ -77,6 +84,8 @@ extension StoreWaitingStatusExtension on StoreWaitingStatus {
         return 1103;
       case StoreWaitingStatus.ENTERD:
         return 1105;
+      case StoreWaitingStatus.STORE_CLOSED:
+        return 1106;
       default:
         return 0;
     }
@@ -94,6 +103,8 @@ extension StoreWaitingStatusExtension on StoreWaitingStatus {
         return StoreWaitingStatus.CALLED;
       case 'entered':
         return StoreWaitingStatus.ENTERD;
+      case 'store closed':
+        return StoreWaitingStatus.STORE_CLOSED;
       default:
         return StoreWaitingStatus.ETC;
     }
@@ -381,7 +392,8 @@ class ServiceLogStateNotifier extends StateNotifier<ServiceLogResponse> {
           .repairUserCallStateByServiceLog(lastUserLog);
     } else if (lastUserLog.status == StoreWaitingStatus.USER_CANCELED ||
         lastUserLog.status == StoreWaitingStatus.STORE_CANCELED ||
-        lastUserLog.status == StoreWaitingStatus.ENTERD) {
+        lastUserLog.status == StoreWaitingStatus.ENTERD ||
+        lastUserLog.status == StoreWaitingStatus.STORE_CLOSED) {
       // user나 store가 이미 취소했거나 입장했다면
       printd("취소 됨! : ${lastUserLog.status}");
 

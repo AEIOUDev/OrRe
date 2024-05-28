@@ -11,7 +11,6 @@ import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/services/debug.services.dart';
-import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 
 import '../model/location_model.dart';
 import '../provider/home_screen/store_list_sort_type_provider.dart';
@@ -21,6 +20,10 @@ import 'waiting/waiting_screen.dart';
 
 final selectedIndexProvider = StateProvider<int>((ref) {
   return 1; // 기본적으로 '홈'을 선택 상태로 시작합니다.
+});
+
+final appLifeCycleStateProvider = StateProvider<AppLifecycleState>((ref) {
+  return AppLifecycleState.resumed;
 });
 
 enum pageIndex {
@@ -36,23 +39,18 @@ class MainScreen extends ConsumerStatefulWidget {
 
 class _MainScreenState extends ConsumerState<MainScreen>
     with WidgetsBindingObserver {
-  bool _isLoading = true;
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _initialize();
+    // _initialize();
   }
 
-  Future<void> _initialize() async {
-    printd("MainScreen 초기화 시작");
-    await refresh();
-    setState(() {
-      _isLoading = false;
-    });
-    printd("MainScreen 초기화 완료");
-  }
+  // Future<void> _initialize() async {
+  //   printd("MainScreen 초기화 시작");
+  //   await refresh();
+  //   printd("MainScreen 초기화 완료");
+  // }
 
   @override
   void dispose() {
@@ -65,10 +63,26 @@ class _MainScreenState extends ConsumerState<MainScreen>
     // 앱의 상태 변화에 따른 작업
     switch (state) {
       case AppLifecycleState.resumed:
-        // 앱이 다시 활성화될 때
         printd("앱이 다시 활성화될 때");
+        printd("provider isPaused? : ${ref.read(appLifeCycleStateProvider)}");
+        printd("state isPaused? : ${state}");
+        printd("isSame : ${ref.read(appLifeCycleStateProvider) == state}");
+        if (ref.read(appLifeCycleStateProvider) == state) {
+          printd("앱이 백그라운드에서 복귀했을 때");
+          ref.read(appLifeCycleStateProvider.notifier).state =
+              AppLifecycleState.resumed;
+          return;
+        }
+        ref.read(appLifeCycleStateProvider.notifier).state =
+            AppLifecycleState.resumed; // 앱이 다시 활성화될 때
+        // 앱이 다시 활성화될 때
         final userInfo = ref.read(userInfoProvider);
         final stomp = ref.read(stompClientStateNotifierProvider);
+        printd("stomp : " + stomp.toString());
+        printd("stomp.connected : " +
+            (stomp?.connected.toString() ?? "stomp is null"));
+        printd("stomp.active : " +
+            (stomp?.isActive.toString() ?? "stomp is null"));
         if (userInfo != null) {
           printd("사용자 정보가 있습니다.");
           if (stomp != null && stomp.connected) {
@@ -76,6 +90,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
             await refresh();
           } else {
             printd("Stomp 연결이 되어 있지 않습니다.");
+            await refresh();
           }
         } else {
           printd("사용자 정보가 없습니다.");
@@ -93,6 +108,8 @@ class _MainScreenState extends ConsumerState<MainScreen>
         //     .read(storeWaitingInfoNotifierProvider.notifier)
         //     .clearWaitingInfoList();
         ref.read(storeListProvider.notifier).clearRequest();
+        ref.read(appLifeCycleStateProvider.notifier).state =
+            AppLifecycleState.paused;
         break;
       case AppLifecycleState.detached:
         // 앱이 종료될 때
@@ -108,6 +125,8 @@ class _MainScreenState extends ConsumerState<MainScreen>
   Future<void> refresh() async {
     printd("refresh 함수 시작");
     context.loaderOverlay.show();
+
+    await ref.read(stompClientStateNotifierProvider.notifier).reactive();
 
     final userSelectedLocation =
         ref.read(locationListProvider).selectedLocation;
@@ -157,7 +176,10 @@ class _MainScreenState extends ConsumerState<MainScreen>
     // 해당 가게 정보로 대기 정보를 다시 불러옵니다.
     final storeList = ref.read(storeListProvider);
     if (storeList.isNotEmpty) {
-      printd("가게 정보 있음. 가게별 대기 정보 불러오기 시작");
+      printd("가게 정보 있음. 기존 대기정보 삭제하고, 가게별 대기 정보 다시 불러오기 시작");
+      ref
+          .read(storeWaitingInfoNotifierProvider.notifier)
+          .clearWaitingInfoList();
       storeList.forEach((element) {
         // 가게별 대기 정보를 불러옵니다.
         ref
@@ -205,12 +227,6 @@ class _MainScreenState extends ConsumerState<MainScreen>
   @override
   Widget build(BuildContext context) {
     printd("\n\nMainScreen build 진입");
-
-    if (_isLoading) {
-      return Scaffold(
-        body: CustomLoadingIndicator(),
-      );
-    }
 
     final selectedIndex = ref.watch(selectedIndexProvider);
     final nfcAvailable = ref.watch(nfcScanAvailableProvider);

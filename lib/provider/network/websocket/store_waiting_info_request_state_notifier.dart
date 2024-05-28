@@ -66,9 +66,9 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
     // loadWaitingRequestList();
   }
 
-  Future<bool> startSubscribe(
+  Future<APIResponseStatus> startSubscribe(
       int storeCode, String userPhoneNumber, int personNumber) async {
-    Completer<bool> completer = Completer<bool>();
+    Completer<APIResponseStatus> completer = Completer<APIResponseStatus>();
     printd("startSubscribe : $storeCode, $userPhoneNumber, $personNumber");
     if (_client != null) {
       if (state != null) {
@@ -80,7 +80,7 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
           .then((value) {
         if (value == APIResponseStatus.success) {
           printd("WaitingRequest waitingSubscribeComplete : Success");
-          completer.complete(true);
+          completer.complete(value);
           saveWaitingRequestList();
           subscribeToStoreWaitingCancelRequest(storeCode, userPhoneNumber);
           // if (cancel) {
@@ -92,12 +92,12 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
           // }
         } else {
           printd("WaitingRequest waitingSubscribeComplete : Fail 2");
-          completer.complete(false);
+          completer.complete(value);
         }
       });
     } else {
       printd("WaitingRequest waitingSubscribeComplete : Fail 3");
-      completer.complete(false);
+      completer.complete(APIResponseStatus.waitingJoinFailure);
     }
     return completer.future;
   }
@@ -202,6 +202,14 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
                     .read(waitingStatus.notifier)
                     .setWaitingStatus(StoreWaitingStatus.ENTERD);
                 completer.complete(true);
+              } else if (APIResponseStatus.waitingCancelByStoreCancel
+                  .isEqualTo(decodedBody['status'])) {
+                printd("가게 영업 마감!!");
+                waitingCancelProcess(true, storeCode, userPhoneNumber);
+                ref.read(cancelDialogStatus.notifier).state = 1106;
+                ref
+                    .read(waitingStatus.notifier)
+                    .setWaitingStatus(StoreWaitingStatus.STORE_CANCELED);
               } else {
                 printd("웨이팅 취소 실패!!");
                 waitingCancelProcess(false, storeCode, userPhoneNumber);
@@ -384,7 +392,8 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
 
     if (StoreWaitingStatus.USER_CANCELED == userLogs.status ||
         StoreWaitingStatus.STORE_CANCELED == userLogs.status ||
-        StoreWaitingStatus.ENTERD == userLogs.status) {
+        StoreWaitingStatus.ENTERD == userLogs.status ||
+        StoreWaitingStatus.STORE_CLOSED == userLogs.status) {
       // 현재 웨이팅 중이 아님
       state = null;
       printd("repairStateByServiceLog state is null");

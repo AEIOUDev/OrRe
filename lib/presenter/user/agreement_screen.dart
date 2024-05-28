@@ -71,7 +71,7 @@ class AgreementScreen extends ConsumerWidget {
               leading: IconButton(
                 icon: Icon(Icons.arrow_back_ios, color: Colors.white),
                 onPressed: () {
-                  Navigator.pop(context);
+                  context.pop();
                 },
               )),
         ),
