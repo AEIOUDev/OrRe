@@ -148,8 +148,6 @@ class WaitingStoreItem extends ConsumerWidget {
                                 borderRadius: BorderRadius.circular(10.0),
                               ),
                             ),
-                            placeholder: (context, url) =>
-                                CustomLoadingIndicator(),
                             errorWidget: (context, url, error) =>
                                 Icon(Icons.error),
                           ),
@@ -280,7 +278,8 @@ class LastStoreItem extends ConsumerWidget {
             } else {
               final serviceLog = snapshot.data;
               final storeCode = snapshot.data!.userLogs.last.storeCode;
-              if (serviceLog!.userLogs.isNotEmpty) {
+              printd("serviceLog: ${serviceLog!.userLogs.length}");
+              if (serviceLog.userLogs.isNotEmpty) {
                 return FutureBuilder(
                     future: fetchStoreDetailInfo(StoreInfoParams(storeCode, 0)),
                     builder: (context, snapshot) {
@@ -320,8 +319,6 @@ class LastStoreItem extends ConsumerWidget {
                                               BorderRadius.circular(10.0),
                                         ),
                                       ),
-                                      placeholder: (context, url) =>
-                                          CustomLoadingIndicator(),
                                       errorWidget: (context, url, error) =>
                                           Icon(Icons.error),
                                     ),
@@ -364,7 +361,7 @@ class LastStoreItem extends ConsumerWidget {
                       }
                     });
               } else {
-                return TextWidget('서비스 로그 없음.');
+                return TextWidget('서비스 로그 없음.', fontSize: 24);
               }
             }
           });

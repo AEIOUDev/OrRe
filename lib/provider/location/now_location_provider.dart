@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
+import '../../services/debug.services.dart';
 import '../../services/geocording/geocording_library_service.dart'; // 추가
 
 final nowLocationProvider =
@@ -15,23 +16,28 @@ class LocationStateNotifier extends StateNotifier<LocationInfo?> {
 
   Future<LocationInfo?> updateNowLocation() async {
     print("nowLocationProvider updateNowLocation");
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        // 권한 거부되었을 때의 상태 반환
-        print("위치 권한 거부 : $permission");
-        state = null;
-        return null;
-      } else if (permission == LocationPermission.whileInUse ||
-          permission == LocationPermission.always) {
-        print("위치 권한 허용 : $permission");
-      }
-    }
 
-    final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.bestForNavigation);
+    Position position = Position(
+      latitude: 37.5665,
+      longitude: 126.9780,
+      timestamp: DateTime.now(),
+      accuracy: 0,
+      altitude: 0,
+      heading: 0,
+      speed: 0,
+      speedAccuracy: 0,
+      altitudeAccuracy: 0,
+      headingAccuracy: 0,
+    );
+    printd(
+        "nowLocationProvider : 현재 경도 : ${position.longitude}, 현재 위도 : ${position.latitude}");
+    try {
+      position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+    } catch (e) {
+      print("nowLocationProvider Error : $e");
+      return null;
+    }
 
     print(
         "nowLocationProvider : 현재 경도 : ${position.longitude}, 현재 위도 : ${position.latitude}");

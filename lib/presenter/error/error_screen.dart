@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/presenter/error/network_error_screen.dart';
 import 'package:orre/presenter/error/server_error_screen.dart';
 import 'package:orre/presenter/error/websocket_error_screen.dart';
-import 'package:orre/presenter/main_screen.dart';
+import 'package:orre/presenter/main/main_screen.dart';
 import 'package:orre/presenter/permission/permission_request_location.dart';
 import 'package:orre/presenter/permission/permission_request_phone.dart';
 import 'package:orre/provider/error_state_notifier.dart';

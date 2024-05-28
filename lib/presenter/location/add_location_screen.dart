@@ -216,7 +216,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
                                           longitude: longitude,
                                           address: nameAndAddress.last ?? "",
                                         ));
-                                    Navigator.pop(context, marker.position);
+                                    context.pop(marker.position);
                                   } else {
                                     print("Failed to fetch address");
                                   }
