@@ -128,14 +128,14 @@ class SignInScreen extends ConsumerWidget {
                               if (value != null) {
                                 print("로그인 성공");
                                 context.go('/locationCheck');
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertPopupWidget(
-                                          title: '로그인 성공',
-                                          subtitle: '$value님, 환영합니다!',
-                                          buttonText: '확인');
-                                    });
+                                // showDialog(
+                                //     context: context,
+                                //     builder: (context) {
+                                //       return AlertPopupWidget(
+                                //           title: '로그인 성공',
+                                //           subtitle: '$value님, 환영합니다!',
+                                //           buttonText: '확인');
+                                //     });
                               } else {
                                 showDialog(
                                     context: context,
@@ -173,7 +173,8 @@ class SignInScreen extends ConsumerWidget {
                             fontSize: 16,
                             textColor: Color(0xFFFFBF52),
                             onPressed: () {
-                              context.push('/user/signup');
+                              FocusScope.of(context).unfocus();
+                              context.push('/user/agreement');
                             },
                           ),
                         ],

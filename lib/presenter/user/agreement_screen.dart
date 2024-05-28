@@ -76,154 +76,158 @@ class AgreementScreen extends ConsumerWidget {
               )),
         ),
         backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 16 * 5),
-                Row(
-                  children: [
-                    Icon(Icons.push_pin),
-                    SizedBox(width: 10),
-                    TextWidget(
-                      '오리 서비스 이용약관 요약',
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                Padding(
-                  padding: EdgeInsets.only(left: 35),
-                  child: Container(
-                    padding: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xffDFDFDF), width: 1.0),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: TextWidget(
-                                '수집 목적',
-                                fontSize: 16,
-                                textAlign: TextAlign.start,
-                                color: Color(0xFF999999),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 7,
-                              child: TextWidget(
-                                ': 서비스 이용',
-                                fontSize: 16,
-                                textAlign: TextAlign.start,
-                                color: Color(0xFF999999),
-                              ),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: TextWidget(
-                                '수집 항목',
-                                fontSize: 16,
-                                textAlign: TextAlign.start,
-                                color: Color(0xFF999999),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 7,
-                              child: TextWidget(
-                                ': 전화번호, 위치',
-                                fontSize: 16,
-                                textAlign: TextAlign.start,
-                                color: Color(0xFF999999),
-                              ),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: TextWidget(
-                                '보유 및 이용 기간',
-                                fontSize: 16,
-                                textAlign: TextAlign.start,
-                                color: Color(0xFF999999),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 7,
-                              child: TextWidget(
-                                ': 보유 및 이용하는 기간은 탈퇴 시까지',
-                                fontSize: 16,
-                                textAlign: TextAlign.start,
-                                color: Color(0xFF999999),
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 16 * 5),
+                  Row(
+                    children: [
+                      Icon(Icons.push_pin),
+                      SizedBox(width: 10),
+                      TextWidget(
+                        '오리 서비스 이용약관 요약',
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ],
                   ),
-                ),
-                SizedBox(height: 24),
-                Row(
-                  children: [
-                    Icon(Icons.push_pin),
-                    SizedBox(width: 10),
-                    TextWidget(
-                      '전체 이용약관 보기',
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                Padding(
-                  padding: EdgeInsets.only(left: 35),
-                  child: Container(
-                    padding: EdgeInsets.all(8.0),
-                    width: MediaQuery.sizeOf(context).width,
-                    height: MediaQuery.sizeOf(context).height * 0.3,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xffDFDFDF), width: 1.0),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: SingleChildScrollView(
-                      child: Text(
-                        agreement,
-                        style: TextStyle(
-                          fontFamily: 'Dovemayo_gothic',
-                          fontSize: 16,
-                          color: Color(0xFF999999),
-                        ),
-                        textAlign: TextAlign.justify,
+                  SizedBox(height: 16),
+                  Padding(
+                    padding: EdgeInsets.only(left: 35),
+                    child: Container(
+                      padding: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        border:
+                            Border.all(color: Color(0xffDFDFDF), width: 1.0),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: TextWidget(
+                                  '수집 목적',
+                                  fontSize: 16,
+                                  textAlign: TextAlign.start,
+                                  color: Color(0xFF999999),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 7,
+                                child: TextWidget(
+                                  ': 서비스 이용',
+                                  fontSize: 16,
+                                  textAlign: TextAlign.start,
+                                  color: Color(0xFF999999),
+                                ),
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: TextWidget(
+                                  '수집 항목',
+                                  fontSize: 16,
+                                  textAlign: TextAlign.start,
+                                  color: Color(0xFF999999),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 7,
+                                child: TextWidget(
+                                  ': 전화번호, 위치',
+                                  fontSize: 16,
+                                  textAlign: TextAlign.start,
+                                  color: Color(0xFF999999),
+                                ),
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: TextWidget(
+                                  '보유 및 이용 기간',
+                                  fontSize: 16,
+                                  textAlign: TextAlign.start,
+                                  color: Color(0xFF999999),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 7,
+                                child: TextWidget(
+                                  ': 보유 및 이용하는 기간은 탈퇴 시까지',
+                                  fontSize: 16,
+                                  textAlign: TextAlign.start,
+                                  color: Color(0xFF999999),
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ),
-                SizedBox(height: 16),
-                Center(
-                  child: BigButtonWidget(
-                    onPressed: () {
-                      print("이용약관에 동의하셨습니다.");
-                      context.push('/user/signup');
-                    },
-                    text: '동의합니다',
-                    textColor: Colors.white,
+                  SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Icon(Icons.push_pin),
+                      SizedBox(width: 10),
+                      TextWidget(
+                        '전체 이용약관 보기',
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                  SizedBox(height: 16),
+                  Padding(
+                    padding: EdgeInsets.only(left: 35),
+                    child: Container(
+                      padding: EdgeInsets.all(8.0),
+                      width: MediaQuery.sizeOf(context).width,
+                      height: MediaQuery.sizeOf(context).height * 0.3,
+                      decoration: BoxDecoration(
+                        border:
+                            Border.all(color: Color(0xffDFDFDF), width: 1.0),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: SingleChildScrollView(
+                        child: Text(
+                          agreement,
+                          style: TextStyle(
+                            fontFamily: 'Dovemayo_gothic',
+                            fontSize: 16,
+                            color: Color(0xFF999999),
+                          ),
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Center(
+                    child: BigButtonWidget(
+                      onPressed: () {
+                        print("이용약관에 동의하셨습니다.");
+                        context.push('/user/signup');
+                      },
+                      text: '동의합니다',
+                      textColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

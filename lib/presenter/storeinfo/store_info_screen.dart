@@ -41,17 +41,19 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
     printd("\n\nStoreDetailInfoWidget didChangeDependencies 진입");
     super.didChangeDependencies();
     WidgetsBinding.instance.addObserver(this);
-    var currentDetailInfo = ref.read(storeDetailInfoProvider);
-    if (currentDetailInfo == null ||
-        currentDetailInfo.storeCode != widget.storeCode) {
-      ref.read(storeDetailInfoProvider.notifier).clearStoreDetailInfo();
-      ref
-          .read(storeDetailInfoProvider.notifier)
-          .subscribeStoreDetailInfo(widget.storeCode);
-      ref
-          .read(storeDetailInfoProvider.notifier)
-          .sendStoreDetailInfoRequest(widget.storeCode);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var currentDetailInfo = ref.read(storeDetailInfoProvider);
+      if (currentDetailInfo == null ||
+          currentDetailInfo.storeCode != widget.storeCode) {
+        ref.read(storeDetailInfoProvider.notifier).clearStoreDetailInfo();
+        ref
+            .read(storeDetailInfoProvider.notifier)
+            .subscribeStoreDetailInfo(widget.storeCode);
+        ref
+            .read(storeDetailInfoProvider.notifier)
+            .sendStoreDetailInfoRequest(widget.storeCode);
+      }
+    });
   }
 
   @override
@@ -174,7 +176,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                             storeDetailInfo.storePhoneNumber);
                       } else {
                         print('Permission denied');
-                        context.go("/permission/phone");
+                        context.push("/permission/phone");
                       }
                     },
                   ),

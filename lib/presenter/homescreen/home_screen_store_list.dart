@@ -6,7 +6,6 @@ import 'package:orre/model/store_list_model.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
-import '../storeinfo/store_info_screen.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 class StoreListWidget extends ConsumerWidget {
@@ -63,7 +62,7 @@ class StoreItem extends ConsumerWidget {
     return InkWell(
       onTap: () {
         // 다음 페이지로 네비게이션
-        context.go("/storeinfo/${storeInfo.storeCode}");
+        context.push("/storeinfo/${storeInfo.storeCode}");
       },
       child: ListTile(
         leading: CachedNetworkImage(
