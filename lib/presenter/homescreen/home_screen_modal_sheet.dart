@@ -155,7 +155,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                     TextButtonWidget(
                       text: '닫기',
                       fontSize: 24,
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => context.pop(),
                     ),
                     SizedBox(
                       height: 10,

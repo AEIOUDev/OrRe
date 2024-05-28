@@ -352,5 +352,7 @@
 	<array>
 		<string>tel</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+		<string>QR code 스캔을 위해서 카메라 권한이 필요합니다</string>
 </dict>
 </plist>

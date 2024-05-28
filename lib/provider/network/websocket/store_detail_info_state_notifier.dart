@@ -67,11 +67,11 @@ class StoreDetailInfoStateNotifier extends StateNotifier<StoreDetailInfo?> {
   }
 
   void clearStoreDetailInfo() {
+    state = null;
     print("StoreDetailInfoStateNotifier clearStoreDetailInfo");
     _subscribeStoreInfo.forEach((key, value) {
       _subscribeStoreInfo[key](unsubscribeHeaders: <String, String>{});
     });
     _subscribeStoreInfo.clear();
-    state = null;
   }
 }

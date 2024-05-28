@@ -248,17 +248,17 @@ class SignUpScreen extends ConsumerWidget {
 
                               context.go('/main');
 
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertPopupWidget(
-                                    title: '회원가입 성공',
-                                    subtitle:
-                                        '${signUpUserInfo.nickname}님, 환영합니다!',
-                                    buttonText: '확인',
-                                  );
-                                },
-                              );
+                              // showDialog(
+                              //   context: context,
+                              //   builder: (context) {
+                              //     return AlertPopupWidget(
+                              //       title: '회원가입 성공',
+                              //       subtitle:
+                              //           '${signUpUserInfo.nickname}님, 환영합니다!',
+                              //       buttonText: '확인',
+                              //     );
+                              //   },
+                              // );
                             } else {
                               showDialog(
                                 context: context,

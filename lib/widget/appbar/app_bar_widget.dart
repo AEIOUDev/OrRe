@@ -22,7 +22,7 @@ class AppBarWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SliverAppBarBuilder(
-      backgroundColorAll: Colors.orange,
+      backgroundColorAll: Color(0xFFFFBF52),
       backgroundColorBar: Colors.transparent,
       debug: false,
       barHeight: 50,

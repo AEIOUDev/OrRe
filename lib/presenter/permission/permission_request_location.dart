@@ -32,7 +32,7 @@ class _PermissionRequestLocationScreenState
     if (status.isGranted) {
       // Location permission granted, do something
       print("Location permission granted");
-      context.go("/main");
+      context.pop();
     } else if (status.isDenied) {
       // Location permission denied, show error message or handle accordingly
       print("Location permission denied");

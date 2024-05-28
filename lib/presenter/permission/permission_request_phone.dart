@@ -19,7 +19,7 @@ class _PermissionRequestPhoneScreenState
     if (status.isGranted) {
       // Phone permission granted, do something
       print("Phone permission granted");
-      context.go("/main");
+      context.pop();
     } else if (status.isDenied) {
       // Phone permission denied, show error message or handle accordingly
       print("Phone permission denied");

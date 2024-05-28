@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:orre/presenter/homescreen/home_screen.dart';
@@ -11,12 +16,14 @@ import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/services/debug.services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-import '../model/location_model.dart';
-import '../provider/home_screen/store_list_sort_type_provider.dart';
-import '../services/nfc_services.dart';
-import 'order/order_prepare_screen.dart';
-import 'waiting/waiting_screen.dart';
+import '../../model/location_model.dart';
+import '../../provider/home_screen/store_list_sort_type_provider.dart';
+import '../../services/nfc_services.dart';
+import '../../widget/popup/awesome_dialog_widget.dart';
+import '../order/order_prepare_screen.dart';
+import '../waiting/waiting_screen.dart';
 
 final selectedIndexProvider = StateProvider<int>((ref) {
   return 1; // 기본적으로 '홈'을 선택 상태로 시작합니다.
@@ -38,11 +45,24 @@ class MainScreen extends ConsumerStatefulWidget {
 }
 
 class _MainScreenState extends ConsumerState<MainScreen>
-    with WidgetsBindingObserver {
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+  late Animation<double> _animation;
+  late AnimationController _animationController;
+
   @override
   void initState() {
-    super.initState();
     WidgetsBinding.instance.addObserver(this);
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 260),
+    );
+
+    final curvedAnimation =
+        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
+    _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+
+    super.initState();
     // _initialize();
   }
 
@@ -229,7 +249,6 @@ class _MainScreenState extends ConsumerState<MainScreen>
     printd("\n\nMainScreen build 진입");
 
     final selectedIndex = ref.watch(selectedIndexProvider);
-    final nfcAvailable = ref.watch(nfcScanAvailableProvider);
 
     // 탭에 따라 표시될 페이지 리스트
     final pages = [
@@ -239,45 +258,99 @@ class _MainScreenState extends ConsumerState<MainScreen>
     ];
 
     return Scaffold(
-      body: Center(
-        child: pages[selectedIndex], // 선택된 인덱스에 따른 페이지 표시
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag),
-            label: '주문',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '홈',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: '줄서기',
-          ),
-        ],
-        selectedItemColor: Color(0xFFFFFFBF52),
-        unselectedItemColor: Color(0xFFDFDFDF),
-        currentIndex: selectedIndex, // 현재 선택된 인덱스
-        onTap: (index) {
-          // 사용자가 탭을 선택할 때 상태 업데이트
-          ref.read(selectedIndexProvider.notifier).state = index;
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (nfcAvailable) {
-            startNFCScan(ref, context);
-          } else {
-            print(nfcAvailable);
-          }
-        },
-        child: Icon(Icons.nfc),
-        backgroundColor: (nfcAvailable
-            ? Color.fromRGBO(255, 255, 255, 100)
-            : Color.fromRGBO(0, 0, 0, 100)),
-      ),
-    );
+        body: Center(
+          child: pages[selectedIndex], // 선택된 인덱스에 따른 페이지 표시
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_bag),
+              label: '주문',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: '홈',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.people),
+              label: '줄서기',
+            ),
+          ],
+          selectedItemColor: Color(0xFFFFFFBF52),
+          unselectedItemColor: Color(0xFFDFDFDF),
+          currentIndex: selectedIndex, // 현재 선택된 인덱스
+          onTap: (index) {
+            // 사용자가 탭을 선택할 때 상태 업데이트
+            ref.read(selectedIndexProvider.notifier).state = index;
+          },
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
+        //Init Floating Action Bubble
+        floatingActionButton: FloatingActionBubble(
+          // Menu items
+          items: <Bubble>[
+            // Floating action menu item
+            if (Platform.isIOS)
+              Bubble(
+                title: "NFC 스캔",
+                iconColor: Colors.white,
+                bubbleColor: Color(0xFFFFBF52),
+                icon: Icons.phonelink_ring_rounded,
+                titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+                onPress: () {
+                  startNFCScan(ref, context);
+                  _animationController.reverse();
+                },
+              ),
+            //Floating action menu item
+            Bubble(
+              title: "QR 스캔",
+              iconColor: Colors.white,
+              bubbleColor: Color(0xFFFFBF52),
+              icon: Icons.qr_code_scanner_rounded,
+              titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+              onPress: () {
+                Permission.camera.request().then((value) {
+                  if (value.isGranted) {
+                    context.push('/main/qrscanner');
+                  } else {
+                    // 카메라 권한이 없을 경우, 권한 요청
+                    AwesomeDialogWidget.showCustomDialogWithCancel(
+                      context: context,
+                      title: "카메라 권한",
+                      desc: "카메라 권한이 없습니다. 설정으로 이동하여 권한을 허용해주세요.",
+                      dialogType: DialogType.warning,
+                      onPressed: () {
+                        openAppSettings();
+                      },
+                      btnText: "설정으로 이동",
+                      onCancel: () {
+                        context.go("/main");
+                      },
+                      cancelText: "취소",
+                    );
+                  }
+                  _animationController.reverse();
+                });
+              },
+            ),
+          ],
+
+          // animation controller
+          animation: _animation,
+
+          // On pressed change animation state
+          onPress: () => _animationController.isCompleted
+              ? _animationController.reverse()
+              : _animationController.forward(),
+
+          // Floating Action button Icon color
+          iconColor: Colors.white,
+
+          // Flaoting Action button Icon
+          iconData: Icons.menu,
+          backGroundColor: Color(0xFFFFBF52),
+        ));
   }
 }

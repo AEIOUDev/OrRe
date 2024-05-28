@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:orre/presenter/user/sign_up_reset_password_screen.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
@@ -12,8 +11,6 @@ import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/widget/button/text_button_widget.dart';
 import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
-
-import 'service_log_screen.dart';
 
 class SettingScreen extends ConsumerWidget {
   @override
@@ -68,7 +65,7 @@ class SettingScreen extends ConsumerWidget {
                       BigButtonWidget(
                         onPressed: () {
                           // 이용내역 확인 버튼 클릭 시 이용내역 확인 화면으로 이동
-                          context.go("/setting/servicelog");
+                          context.push("/setting/servicelog");
                         },
                         backgroundColor: Color(0xFFDFDFDF),
                         minimumSize: Size(double.infinity, 50),
