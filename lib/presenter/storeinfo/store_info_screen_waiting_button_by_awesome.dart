@@ -183,8 +183,7 @@ class WaitingButtonAwesome extends ConsumerWidget {
 
     final waitingResult = await ref
         .read(storeWaitingRequestNotifierProvider.notifier)
-        .subscribeToStoreWaitingRequest(
-            storeCode, phoneNumber, int.parse(numberOfPersons));
+        .startSubscribe(storeCode, phoneNumber, int.parse(numberOfPersons));
 
     printd("웨이팅 성공 여부: $waitingResult");
     // 웨이팅 성공 여부에 따라

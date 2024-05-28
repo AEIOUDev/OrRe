@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
@@ -42,7 +43,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
           icon: Icon(Icons.arrow_back_ios), // 뒤로 가기 아이콘
           color: Color(0xFFFFB74D),
           onPressed: () {
-            Navigator.pop(context); // 현재 화면을 종료하고 이전 화면으로 돌아갑니다.
+            context.pop(); // 현재 화면을 종료하고 이전 화면으로 돌아갑니다.
           },
         ),
         elevation: 0,

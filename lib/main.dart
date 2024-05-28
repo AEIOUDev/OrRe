@@ -11,6 +11,7 @@ import 'package:internet_connectivity_checker/internet_connectivity_checker.dart
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:orre/presenter/error/network_error_screen.dart';
 import 'package:orre/presenter/error/websocket_error_screen.dart';
+import 'package:orre/presenter/homescreen/service_log_screen.dart';
 import 'package:orre/presenter/location/add_location_screen.dart';
 import 'package:orre/presenter/location/location_management_screen.dart';
 import 'package:orre/presenter/user/sign_in_screen.dart';
@@ -28,7 +29,9 @@ import 'firebase_options.dart'; // Firebase 초기화 옵션을 포함한 파일
 import 'package:go_router/go_router.dart';
 
 import 'presenter/homescreen/home_screen.dart';
+import 'presenter/homescreen/setting_screen.dart';
 import 'presenter/permission/permission_request_location.dart';
+import 'presenter/permission/permission_request_phone.dart';
 import 'presenter/storeinfo/store_info_screen.dart';
 import 'presenter/user/agreement_screen.dart';
 import 'presenter/user/onboarding_screen.dart';
@@ -211,11 +214,6 @@ final GoRouter _router = GoRouter(
           return LocationManagementScreen();
         }),
     GoRoute(
-        path: '/permission/location',
-        builder: (context, state) {
-          return PermissionRequestLocationScreen();
-        }),
-    GoRoute(
         path: '/home',
         builder: (context, state) {
           return HomeScreen();
@@ -225,6 +223,26 @@ final GoRouter _router = GoRouter(
         builder: (context, state) {
           final storeCode = int.parse(state.pathParameters['storeCode']!);
           return StoreDetailInfoWidget(storeCode: storeCode);
+        }),
+    GoRoute(
+        path: "/setting",
+        builder: (context, state) {
+          return SettingScreen();
+        }),
+    GoRoute(
+        path: "/setting/sevicelog",
+        builder: (context, state) {
+          return ServiceLogScreen();
+        }),
+    GoRoute(
+        path: "/permission/phone",
+        builder: (context, state) {
+          return PermissionRequestPhoneScreen();
+        }),
+    GoRoute(
+        path: "/permission/location",
+        builder: (context, state) {
+          return PermissionRequestLocationScreen();
         }),
   ],
   errorBuilder: (context, state) {
