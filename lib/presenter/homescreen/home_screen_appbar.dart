@@ -62,8 +62,7 @@ class HomeScreenAppBar extends ConsumerWidget {
               ),
               onPressed: () {
                 // 설정 페이지로 이동
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SettingScreen()));
+                context.push("/setting");
               },
             ),
           ],

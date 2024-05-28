@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:orre/presenter/user/sign_up_reset_password_screen.dart';
-import 'package:orre/presenter/user/sign_up_screen.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
@@ -40,7 +38,7 @@ class SignInScreen extends ConsumerWidget {
       },
       child: WaveformBackgroundWidget(
         child: Scaffold(
-          resizeToAvoidBottomInset: false,
+          resizeToAvoidBottomInset: true,
           appBar: PreferredSize(
             preferredSize: Size(0.25.sh, 1.sw),
             child: StaticAppBarWidget(
@@ -48,7 +46,7 @@ class SignInScreen extends ConsumerWidget {
                 leading: IconButton(
                   icon: Icon(Icons.arrow_back_ios, color: Colors.white),
                   onPressed: () {
-                    Navigator.pop(context);
+                    context.pop();
                   },
                 )),
           ),
@@ -160,10 +158,7 @@ class SignInScreen extends ConsumerWidget {
                             fontSize: 16,
                             textColor: Color(0xFFDFDFDF),
                             onPressed: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return SignUpResetPasswordScreen();
-                              }));
+                              context.push('/user/resetpassword');
                             },
                           ),
                           SizedBox(width: 10), // 여기서 간격을 조절해요
@@ -178,10 +173,7 @@ class SignInScreen extends ConsumerWidget {
                             fontSize: 16,
                             textColor: Color(0xFFFFBF52),
                             onPressed: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return SignUpScreen();
-                              }));
+                              context.push('/user/signup');
                             },
                           ),
                         ],

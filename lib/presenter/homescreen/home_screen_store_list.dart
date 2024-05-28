@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/model/store_list_model.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
@@ -62,11 +63,7 @@ class StoreItem extends ConsumerWidget {
     return InkWell(
       onTap: () {
         // 다음 페이지로 네비게이션
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    StoreDetailInfoWidget(storeCode: storeInfo.storeCode)));
+        context.go("/storeinfo/${storeInfo.storeCode}");
       },
       child: ListTile(
         leading: CachedNetworkImage(

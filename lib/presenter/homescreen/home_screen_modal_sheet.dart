@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/widget/button/text_button_widget.dart';
 import '../../provider/home_screen/store_list_sort_type_provider.dart';
@@ -71,28 +72,28 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                         ref
                             .read(storeListProvider.notifier)
                             .fetchStoreDetailInfo(params);
-                        Navigator.pop(context);
+                        context.pop();
                       },
                     ),
                     // 아직 기능 안 함
-                    ListTile(
-                      title: TextWidget(
-                        StoreListSortType.popular.toKoKr(),
-                        color: nowSortType == StoreListSortType.popular
-                            ? Color(0xFFFFBF52)
-                            : Colors.black,
-                        textAlign: TextAlign.start,
-                      ),
-                      trailing: nowSortType == StoreListSortType.popular
-                          ? Icon(Icons.check, color: Color(0xFFFFBF52))
-                          : Icon(Icons.check,
-                              color: Color(0xFFFFFFFF).withOpacity(1)),
-                      onTap: () {
-                        ref.read(selectSortTypeProvider.notifier).state =
-                            StoreListSortType.popular;
-                        Navigator.pop(context);
-                      },
-                    ),
+                    // ListTile(
+                    //   title: TextWidget(
+                    //     StoreListSortType.popular.toKoKr(),
+                    //     color: nowSortType == StoreListSortType.popular
+                    //         ? Color(0xFFFFBF52)
+                    //         : Colors.black,
+                    //     textAlign: TextAlign.start,
+                    //   ),
+                    //   trailing: nowSortType == StoreListSortType.popular
+                    //       ? Icon(Icons.check, color: Color(0xFFFFBF52))
+                    //       : Icon(Icons.check,
+                    //           color: Color(0xFFFFFFFF).withOpacity(1)),
+                    //   onTap: () {
+                    //     ref.read(selectSortTypeProvider.notifier).state =
+                    //         StoreListSortType.popular;
+                    //     context.pop();
+                    //   },
+                    // ),
                     ListTile(
                       title: TextWidget(
                         StoreListSortType.nearest.toKoKr(),
@@ -115,31 +116,31 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                         ref
                             .read(storeListProvider.notifier)
                             .fetchStoreDetailInfo(params);
-                        Navigator.pop(context);
+                        context.pop();
                       },
                     ),
                     // 아직 기능 안 함
-                    ListTile(
-                      title: TextWidget(
-                        StoreListSortType.fast.toKoKr(),
-                        color: nowSortType == StoreListSortType.fast
-                            ? Color(0xFFFFBF52)
-                            : Colors.black,
-                        textAlign: TextAlign.start,
-                      ),
-                      trailing: nowSortType == StoreListSortType.fast
-                          ? Icon(
-                              Icons.check,
-                              color: Color(0xFFFFBF52),
-                            )
-                          : Icon(Icons.check,
-                              color: Color(0xFFFFFFFF).withOpacity(1)),
-                      onTap: () {
-                        ref.read(selectSortTypeProvider.notifier).state =
-                            StoreListSortType.fast;
-                        Navigator.pop(context);
-                      },
-                    ),
+                    // ListTile(
+                    //   title: TextWidget(
+                    //     StoreListSortType.fast.toKoKr(),
+                    //     color: nowSortType == StoreListSortType.fast
+                    //         ? Color(0xFFFFBF52)
+                    //         : Colors.black,
+                    //     textAlign: TextAlign.start,
+                    //   ),
+                    //   trailing: nowSortType == StoreListSortType.fast
+                    //       ? Icon(
+                    //           Icons.check,
+                    //           color: Color(0xFFFFBF52),
+                    //         )
+                    //       : Icon(Icons.check,
+                    //           color: Color(0xFFFFFFFF).withOpacity(1)),
+                    //   onTap: () {
+                    //     ref.read(selectSortTypeProvider.notifier).state =
+                    //         StoreListSortType.fast;
+                    //     context.pop();
+                    //   },
+                    // ),
                     SizedBox(
                       height: 10,
                     ),

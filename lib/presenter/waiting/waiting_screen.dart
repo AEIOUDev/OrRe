@@ -148,13 +148,8 @@ class WaitingStoreItem extends ConsumerWidget {
                                 borderRadius: BorderRadius.circular(10.0),
                               ),
                             ),
-                            placeholder: (context, url) => Container(
-                              width: 40,
-                              height: 40,
-                              child: Center(
-                                child: CustomLoadingIndicator(),
-                              ),
-                            ),
+                            placeholder: (context, url) =>
+                                CustomLoadingIndicator(),
                             errorWidget: (context, url, error) =>
                                 Icon(Icons.error),
                           ),
@@ -189,13 +184,7 @@ class WaitingStoreItem extends ConsumerWidget {
                                   builder: ((context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
-                                      return Container(
-                                        width: 40,
-                                        height: 40,
-                                        child: Center(
-                                          child: CustomLoadingIndicator(),
-                                        ),
-                                      );
+                                      return CustomLoadingIndicator();
                                     } else if (snapshot.hasError) {
                                       return TextWidget(
                                           'Error: ${snapshot.error}');
@@ -285,13 +274,7 @@ class LastStoreItem extends ConsumerWidget {
               .fetchStoreServiceLog(userInfo.phoneNumber),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Container(
-                width: 40,
-                height: 40,
-                child: Center(
-                  child: CustomLoadingIndicator(),
-                ),
-              );
+              return CustomLoadingIndicator();
             } else if (snapshot.hasError || snapshot.data == null) {
               return TextWidget('Error: ${snapshot.error}');
             } else {
@@ -302,13 +285,7 @@ class LastStoreItem extends ConsumerWidget {
                     future: fetchStoreDetailInfo(StoreInfoParams(storeCode, 0)),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Container(
-                          width: 40,
-                          height: 40,
-                          child: Center(
-                            child: CustomLoadingIndicator(),
-                          ),
-                        );
+                        return CustomLoadingIndicator();
                       } else if (snapshot.hasError) {
                         return TextWidget('Error: ${snapshot.error}');
                       } else {
@@ -343,13 +320,8 @@ class LastStoreItem extends ConsumerWidget {
                                               BorderRadius.circular(10.0),
                                         ),
                                       ),
-                                      placeholder: (context, url) => Container(
-                                        width: 40,
-                                        height: 40,
-                                        child: Center(
-                                          child: CustomLoadingIndicator(),
-                                        ),
-                                      ),
+                                      placeholder: (context, url) =>
+                                          CustomLoadingIndicator(),
                                       errorWidget: (context, url, error) =>
                                           Icon(Icons.error),
                                     ),

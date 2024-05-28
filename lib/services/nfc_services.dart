@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import '../presenter/main_screen.dart';
 import '../presenter/storeinfo/store_info_screen.dart';
@@ -80,11 +81,7 @@ String uriSwitcher(String uri, WidgetRef ref, BuildContext context) {
         pageIndex.waitingScreen.index;
     // 'waiting'을 포함하는 경우, 'w'을 붙여 반환합니다.
 
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) =>
-                StoreDetailInfoWidget(storeCode: int.parse(identifier))));
+    context.go("/storeinfo/${identifier}");
     // ref.read(storeWaitingListProvider.notifier).sendStoreCode(identifier);
     // ref.read(myWaitingsProvider.notifier).requestWaiting(
     //     identifier,
