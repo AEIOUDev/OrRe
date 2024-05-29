@@ -70,6 +70,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '171129567626',
     projectId: 'orre-be',
     storageBucket: 'orre-be.appspot.com',
-    iosBundleId: 'com.example.orre',
+    iosBundleId: 'com.aeioudev.orre',
   );
 }
