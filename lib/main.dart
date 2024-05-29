@@ -8,18 +8,20 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:internet_connectivity_checker/internet_connectivity_checker.dart';
-import 'package:internet_connectivity_checker/internet_connectivity_checker.dart';
-import 'package:orre/presenter/error/error_screen.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:orre/presenter/error/network_error_screen.dart';
 import 'package:orre/presenter/error/websocket_error_screen.dart';
+import 'package:orre/presenter/homescreen/service_log_screen.dart';
 import 'package:orre/presenter/location/add_location_screen.dart';
 import 'package:orre/presenter/location/location_management_screen.dart';
 import 'package:orre/presenter/user/sign_in_screen.dart';
 import 'package:orre/presenter/user/sign_up_reset_password_screen.dart';
 import 'package:orre/presenter/user/sign_up_screen.dart';
 import 'package:orre/provider/first_boot_future_provider.dart';
+import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
+import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -27,11 +29,16 @@ import 'firebase_options.dart'; // Firebase 초기화 옵션을 포함한 파일
 import 'package:go_router/go_router.dart';
 
 import 'presenter/homescreen/home_screen.dart';
+import 'presenter/homescreen/setting_screen.dart';
+import 'presenter/main/main_qr_scanner_screen.dart';
+import 'presenter/permission/permission_checker_screen.dart';
+import 'presenter/permission/permission_request_location.dart';
+import 'presenter/permission/permission_request_phone.dart';
 import 'presenter/storeinfo/store_info_screen.dart';
 import 'presenter/user/agreement_screen.dart';
 import 'presenter/user/onboarding_screen.dart';
 
-import 'presenter/main_screen.dart';
+import 'presenter/main/main_screen.dart';
 
 import 'presenter/waiting/waiting_screen.dart';
 import 'provider/userinfo/user_info_state_notifier.dart';
@@ -57,7 +64,7 @@ Future<void> main() async {
   ); // Firebase를 현재 플랫폼에 맞게 초기화
 
   initializeFirebaseMessaging(); // Firebase 메시징 초기화
-  requestPermission(); // 권한 요청
+  // requestPermission(); // 권한 요청
 
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp]); // 화면 방향을 세로로 고정
@@ -76,14 +83,19 @@ Future<void> main() async {
 final initStateProvider = StateProvider<int>((ref) => 1);
 
 final GoRouter _router = GoRouter(
-  initialLocation: "/initial",
+  initialLocation: "/permission",
   observers: [RouterObserver()],
   routes: [
     GoRoute(
+        path: "/permission",
+        builder: (context, state) {
+          return PermissionCheckerScreen();
+        }),
+    GoRoute(
       path: '/initial',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         printd("Navigating to InitialScreen, fullPath: ${state.fullPath}");
-        return InitialScreen();
+        return NoTransitionPage(child: InitialScreen());
       },
     ),
     GoRoute(
@@ -99,9 +111,9 @@ final GoRouter _router = GoRouter(
       builder: (context, state) {
         printd(
             "Navigating to ReservationPage for Specific User, fullPath: ${state.fullPath}");
-        final storeCode = int.parse(state.pathParameters['storeCode']!);
-        final userPhoneNumber =
-            state.pathParameters['userPhoneNumber']!.replaceAll('-', '');
+        // final storeCode = int.parse(state.pathParameters['storeCode']!);
+        // final userPhoneNumber =
+        state.pathParameters['userPhoneNumber']!.replaceAll('-', '');
         return WaitingScreen();
       },
     ),
@@ -191,7 +203,15 @@ final GoRouter _router = GoRouter(
         builder: (context, state) {
           printd("Navigating to MainScreen, fullPath: ${state.fullPath}");
           return MainScreen();
-        }),
+        },
+        routes: [
+          GoRoute(
+            path: 'qrscanner',
+            builder: (context, state) {
+              return QRScannerScreen();
+            },
+          ),
+        ]),
     GoRoute(
         path: '/waiting',
         builder: (context, state) {
@@ -219,6 +239,26 @@ final GoRouter _router = GoRouter(
           final storeCode = int.parse(state.pathParameters['storeCode']!);
           return StoreDetailInfoWidget(storeCode: storeCode);
         }),
+    GoRoute(
+        path: "/setting",
+        builder: (context, state) {
+          return SettingScreen();
+        }),
+    GoRoute(
+        path: "/setting/servicelog",
+        builder: (context, state) {
+          return ServiceLogScreen();
+        }),
+    GoRoute(
+        path: "/permission/phone",
+        builder: (context, state) {
+          return PermissionRequestPhoneScreen();
+        }),
+    GoRoute(
+        path: "/permission/location",
+        builder: (context, state) {
+          return PermissionRequestLocationScreen();
+        }),
   ],
   errorBuilder: (context, state) {
     printd('Error: ${state.error}');
@@ -233,10 +273,28 @@ class OrreMain extends ConsumerWidget {
     return ScreenUtilInit(
       designSize: const Size(360, 800),
       builder: (context, _) => Builder(
-        builder: (context) => MaterialApp.router(
-          routerConfig: _router,
-          theme: ThemeData(
-            primarySwatch: Colors.orange,
+        builder: (context) => GlobalLoaderOverlay(
+          useDefaultLoading: false,
+          overlayWidgetBuilder: (progress) {
+            return CustomLoadingIndicator();
+          },
+          overlayColor: Colors.black.withOpacity(0.8),
+          child: MaterialApp.router(
+            routerConfig: _router,
+            theme: ThemeData(
+              primarySwatch: MaterialColor(0xFFFFBF52, {
+                50: Color(0xFFFFBF52),
+                100: Color(0xFFFFBF52),
+                200: Color(0xFFFFBF52),
+                300: Color(0xFFFFBF52),
+                400: Color(0xFFFFBF52),
+                500: Color(0xFFFFBF52),
+                600: Color(0xFFFFBF52),
+                700: Color(0xFFFFBF52),
+                800: Color(0xFFFFBF52),
+                900: Color(0xFFFFBF52),
+              }),
+            ),
           ),
         ),
       ),
@@ -307,6 +365,7 @@ class SplashScreen extends ConsumerWidget {
 class StompCheckScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     printd("\n\nStompCheckScreen 진입");
+    // ignore: unused_local_variable
     final stomp = ref.watch(stompClientStateNotifierProvider);
     final stompS = ref.watch(stompState);
 
@@ -355,27 +414,31 @@ class LocationStateCheckWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     printd("\n\nLocationStateCheckWidget 진입");
 
-    return FutureBuilder(
-        future: ref.watch(nowLocationProvider.notifier).updateNowLocation(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.data != null) {
-              print("위치 정보 존재 : ${snapshot.data}");
-              print("LoadServiceLogWidget() 호출");
-              return LoadServiceLogWidget();
+    try {
+      return FutureBuilder(
+          future: ref.watch(nowLocationProvider.notifier).updateNowLocation(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.data != null) {
+                print("위치 정보 존재 : ${snapshot.data}");
+                print("LoadServiceLogWidget() 호출");
+                ref.read(locationListProvider.notifier).init();
+                return LoadServiceLogWidget();
+              } else {
+                print("위치 정보 없음, PermissionRequestLocationScreen() 호출");
+                return PermissionRequestLocationScreen();
+              }
             } else {
-              print("위치 정보 없음, LocationManagementScreen() 호출");
-              return LocationManagementScreen();
+              print("위치 정보 로딩 중");
+              return Scaffold(
+                body: CustomLoadingIndicator(),
+              );
             }
-          } else {
-            print("위치 정보 로딩 중");
-            return Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-        });
+          });
+    } catch (e) {
+      print("\n\nLocationStateCheckWidget : ${e}");
+      return LoadServiceLogWidget();
+    }
   }
 }
 

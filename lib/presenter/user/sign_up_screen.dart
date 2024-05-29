@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:orre/main.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/services/network/https_services.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
@@ -55,9 +55,9 @@ class SignUpScreen extends ConsumerWidget {
             child: StaticAppBarWidget(
               title: '회원 가입',
               leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios),
+                icon: Icon(Icons.arrow_back_ios, color: Colors.white),
                 onPressed: () {
-                  Navigator.pop(context);
+                  context.pop();
                 },
               ),
             ),
@@ -246,22 +246,19 @@ class SignUpScreen extends ConsumerWidget {
                                     );
                               });
 
-                              await Navigator.pushReplacement(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return LocationStateCheckWidget();
-                              }));
+                              context.go('/main');
 
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertPopupWidget(
-                                    title: '회원가입 성공',
-                                    subtitle:
-                                        '${signUpUserInfo.nickname}님, 환영합니다!',
-                                    buttonText: '확인',
-                                  );
-                                },
-                              );
+                              // showDialog(
+                              //   context: context,
+                              //   builder: (context) {
+                              //     return AlertPopupWidget(
+                              //       title: '회원가입 성공',
+                              //       subtitle:
+                              //           '${signUpUserInfo.nickname}님, 환영합니다!',
+                              //       buttonText: '확인',
+                              //     );
+                              //   },
+                              // );
                             } else {
                               showDialog(
                                 context: context,

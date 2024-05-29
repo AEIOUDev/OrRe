@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/widget/button/small_button_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
@@ -50,7 +51,7 @@ class AlertPopupWidget extends StatelessWidget {
               minSize: Size(double.infinity, 50),
               text: '취소',
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
             ),
             margin: EdgeInsets.only(bottom: 8),
@@ -64,7 +65,7 @@ class AlertPopupWidget extends StatelessWidget {
               if (onPressed != null) {
                 onPressed!();
               }
-              if (autoPop) Navigator.of(context).pop();
+              if (autoPop) context.pop();
             },
           ),
         ),

@@ -10,7 +10,7 @@ import '../../provider/network/websocket/store_waiting_usercall_list_state_notif
 import '../../provider/waiting_usercall_time_list_state_notifier.dart';
 import '../../services/debug.services.dart';
 
-class WaitingStatusWidget extends ConsumerWidget {
+class WaitingStatusWidget extends ConsumerStatefulWidget {
   final int storeCode;
   final StoreWaitingRequest? myWaitingInfo;
   final LocationInfo locationInfo;
@@ -21,11 +21,38 @@ class WaitingStatusWidget extends ConsumerWidget {
       required this.locationInfo});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _WaitingStatusWidgetState createState() => _WaitingStatusWidgetState();
+}
+
+class _WaitingStatusWidgetState extends ConsumerState<WaitingStatusWidget> {
+  @override
+  void didChangeDependencies() {
+    printd("\n\nWaitingStatusWidgetState 진입");
+    super.didChangeDependencies();
+
+    final storeWaitingInfo = ref.watch(storeWaitingInfoNotifierProvider);
+
+    if (storeWaitingInfo.isEmpty) {
+      printd("storeWaitingInfo가 비어있음");
+      ref
+          .read(storeWaitingInfoNotifierProvider.notifier)
+          .subscribeToStoreWaitingInfo(widget.storeCode);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    printd("\n\nWaitingStatusWidget 진입");
+
+    final allWaitingInfo = ref.watch(storeWaitingInfoNotifierProvider);
+    if (allWaitingInfo.isEmpty) {
+      return SliverToBoxAdapter(
+        child: TextWidget('대기 중인 가게가 없습니다.'),
+      );
+    }
     final storeWaitingInfo = ref
-        .watch(storeWaitingInfoNotifierProvider.select((value) =>
-            value.where((element) => element.storeCode == storeCode)))
-        .first;
+        .read(storeWaitingInfoNotifierProvider.notifier)
+        .getStoreWaitingInfo(widget.storeCode);
     storeWaitingInfo.waitingTeamList.forEach((element) {
       print("waitingTeamList: $element");
     });
@@ -33,11 +60,11 @@ class WaitingStatusWidget extends ConsumerWidget {
     final myUserCall = ref.watch(storeWaitingUserCallNotifierProvider);
     final remainingTime = ref.watch(waitingUserCallTimeListProvider);
     return SliverToBoxAdapter(
-      child:
-          (myWaitingInfo != null && myWaitingInfo?.token.storeCode == storeCode)
-              ? buildMyWaitingStatus(
-                  myWaitingInfo!, storeWaitingInfo, myUserCall, remainingTime)
-              : buildGeneralWaitingStatus(storeWaitingInfo, ref),
+      child: (widget.myWaitingInfo != null &&
+              widget.myWaitingInfo?.token.storeCode == widget.storeCode)
+          ? buildMyWaitingStatus(widget.myWaitingInfo!, storeWaitingInfo,
+              myUserCall, remainingTime)
+          : buildGeneralWaitingStatus(storeWaitingInfo, ref),
     );
   }
 
@@ -165,7 +192,7 @@ class WaitingStatusWidget extends ConsumerWidget {
     if (nowLocation == null) {
       distance = '위치 정보를 불러오는 중입니다.';
     } else {
-      distance = '${nowLocation - locationInfo}m';
+      distance = '${nowLocation - widget.locationInfo}m';
     }
 
     return Column(

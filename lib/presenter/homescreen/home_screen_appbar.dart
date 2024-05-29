@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orre/main.dart';
 import 'package:orre/model/location_model.dart';
-import 'package:orre/presenter/homescreen/setting_screen.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 import '../../services/debug.services.dart';
@@ -62,8 +61,7 @@ class HomeScreenAppBar extends ConsumerWidget {
               ),
               onPressed: () {
                 // 설정 페이지로 이동
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SettingScreen()));
+                context.push("/setting");
               },
             ),
           ],

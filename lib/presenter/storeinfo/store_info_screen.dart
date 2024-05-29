@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:orre/presenter/permission/permission_request_phone.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_category_list_widget.dart';
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import 'package:orre/services/debug.services.dart';
@@ -41,17 +41,19 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
     printd("\n\nStoreDetailInfoWidget didChangeDependencies 진입");
     super.didChangeDependencies();
     WidgetsBinding.instance.addObserver(this);
-    var currentDetailInfo = ref.read(storeDetailInfoProvider);
-    if (currentDetailInfo == null ||
-        currentDetailInfo.storeCode != widget.storeCode) {
-      ref.read(storeDetailInfoProvider.notifier).clearStoreDetailInfo();
-      ref
-          .read(storeDetailInfoProvider.notifier)
-          .subscribeStoreDetailInfo(widget.storeCode);
-      ref
-          .read(storeDetailInfoProvider.notifier)
-          .sendStoreDetailInfoRequest(widget.storeCode);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var currentDetailInfo = ref.read(storeDetailInfoProvider);
+      if (currentDetailInfo == null ||
+          currentDetailInfo.storeCode != widget.storeCode) {
+        ref.read(storeDetailInfoProvider.notifier).clearStoreDetailInfo();
+        ref
+            .read(storeDetailInfoProvider.notifier)
+            .subscribeStoreDetailInfo(widget.storeCode);
+        ref
+            .read(storeDetailInfoProvider.notifier)
+            .sendStoreDetailInfoRequest(widget.storeCode);
+      }
+    });
   }
 
   @override
@@ -155,7 +157,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                   // 왼쪽 상단 뒤로가기 아이콘
                   icon: Icon(Icons.arrow_back, color: Colors.white),
                   onPressed: () {
-                    Navigator.pop(context);
+                    context.pop();
                   },
                 ),
                 actions: [
@@ -174,13 +176,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                             storeDetailInfo.storePhoneNumber);
                       } else {
                         print('Permission denied');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                PermissionRequestPhoneScreen(),
-                          ),
-                        );
+                        context.push("/permission/phone");
                       }
                     },
                   ),

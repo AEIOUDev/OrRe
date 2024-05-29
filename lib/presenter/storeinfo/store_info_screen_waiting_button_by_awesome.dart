@@ -2,7 +2,7 @@ import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:orre/presenter/main_screen.dart';
+import 'package:orre/presenter/main/main_screen.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
@@ -12,7 +12,6 @@ import '../../provider/network/websocket/store_waiting_info_request_state_notifi
 import '../../provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import '../../services/debug.services.dart';
 import '../../services/network/https_services.dart';
-import '../../widget/popup/alert_popup_widget.dart';
 
 final peopleNumberProvider = StateProvider<int>((ref) => 1);
 final waitingSuccessDialogProvider = StateProvider<bool?>((ref) => null);
@@ -184,8 +183,7 @@ class WaitingButtonAwesome extends ConsumerWidget {
 
     final waitingResult = await ref
         .read(storeWaitingRequestNotifierProvider.notifier)
-        .subscribeToStoreWaitingRequest(
-            storeCode, phoneNumber, int.parse(numberOfPersons));
+        .startSubscribe(storeCode, phoneNumber, int.parse(numberOfPersons));
 
     printd("웨이팅 성공 여부: $waitingResult");
     // 웨이팅 성공 여부에 따라

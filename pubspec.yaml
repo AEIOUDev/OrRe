@@ -18,6 +18,7 @@ dependencies:
   firebase_analytics: ^10.10.5
   firebase_core: ^2.25.5
   firebase_messaging: ^14.7.17
+  floating_action_bubble: ^1.1.4
   flutter:
     sdk: flutter
   flutter_local_notifications: ^14.0.0+1
@@ -36,10 +37,12 @@ dependencies:
   http: ^1.2.0
   internet_connectivity_checker: ^1.0.2
   live_activities: ^1.9.1+1
+  loader_overlay: ^4.0.0
   mockito: ^5.4.4
   nfc_manager: ^3.4.0
   permission_handler: ^11.3.1
   photo_view: ^0.15.0
+  qr_code_scanner: ^1.0.1
   riverpod_annotation: ^2.3.4
   shared_preferences: ^2.2.3
   sliver_app_bar_builder: ^1.1.0

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -70,7 +71,7 @@ class PopupDialog {
                 ),
                 ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.pop(context);
+                    context.pop();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFFBF52),

@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/main.dart';
-import 'package:orre/presenter/error/websocket_error_screen.dart';
+import 'package:get/get.dart';
 import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/provider/network/https/get_service_log_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_detail_info_state_notifier.dart';
@@ -14,6 +12,8 @@ import 'package:orre/services/network/websocket_services.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
+
+import '../../../services/debug.services.dart';
 
 final stompErrorStack = StateProvider<int>((ref) => 0);
 final firstStompSetup = StateProvider<bool>((ref) => false);
@@ -39,7 +39,7 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
   StompClientStateNotifier(this.ref) : super(null) {}
 
   Stream<StompStatus> configureClient() {
-    print("configureClient");
+    printd("configureClient");
     final streamController = StreamController<StompStatus>.broadcast();
 
     if (state != null) {
@@ -50,36 +50,37 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
         config: StompConfig(
           url: WebSocketService.url,
           onConnect: (StompFrame frame) {
+            printd("websocket connected");
             final firstBoot = ref.read(firstStompSetup.notifier).state;
             ref.read(stompState.notifier).state = StompStatus.CONNECTED;
             streamController.add(StompStatus.CONNECTED);
             if (firstBoot == true) {
-              print("already firstboot, fetchStoreServiceLog start");
-              ref.read(serviceLogProvider.notifier).fetchStoreServiceLog(
-                  ref.read(userInfoProvider)!.phoneNumber);
+              printd("already firstboot, fetchStoreServiceLog start");
+              // ref.read(serviceLogProvider.notifier).fetchStoreServiceLog(
+              //     ref.read(userInfoProvider)!.phoneNumber);
               ref.read(stompErrorStack.notifier).state = 0;
             } else {
               onConnectCallback(frame);
             }
           },
           onWebSocketError: (dynamic error) {
-            print("websocket error: $error");
+            printd("websocket error: $error");
             // 연결 실패 시 0.5초 후 재시도
             streamController.add(reconnectionCallback(StompStatus.ERROR));
           },
           onDisconnect: (_) {
-            print('disconnected');
+            printd('websocket disconnected');
             // 연결 끊김 시 0.5초 후 재시도
             streamController.add(reconnectionCallback(StompStatus.ERROR));
           },
           onStompError: (p0) {
-            print("stomp error: $p0");
+            printd("websocket stomp error: $p0");
             // 연결 실패 시 0.5초 후 재시도
             streamController.add(reconnectionCallback(StompStatus.ERROR));
           },
           onWebSocketDone: () {
             ref.read(stompState.notifier).state = StompStatus.DISCONNECTED;
-            print("websocket done");
+            printd("websocket done");
             // 연결 끊김 시 재시도 로직
             if (ref
                 .read(errorStateNotifierProvider.notifier)
@@ -87,7 +88,12 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
                 .contains(Error.network)) {
               return;
             }
+            // 연결 실패 시 0.5초 후 재시도
+            // streamController.add(reconnectionCallback(StompStatus.ERROR));
           },
+          onDebugMessage: ((p0) {
+            printd("websocket debug message: $p0");
+          }),
         ),
       );
 
@@ -100,7 +106,7 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
   }
 
   void onConnectCallback(StompFrame connectFrame) {
-    print("웹소켓 연결 성공");
+    printd("웹소켓 연결 성공");
     ref.read(stompErrorStack.notifier).state = 0;
     ref.read(firstStompSetup.notifier).state = true;
 
@@ -113,7 +119,7 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
   }
 
   // void reconnect() {
-  //   print("reconnected");
+  //   printd("reconnected");
   //   // 재시도 시, 구독 로직을 다시 실행
   //   if (ref
   //       .read(errorStateNotifierProvider.notifier)
@@ -128,7 +134,7 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
   // }
 
   StompStatus reconnectionCallback(StompStatus status) {
-    print("reconnectionCallback");
+    printd("reconnectionCallback");
     if (ref
         .read(errorStateNotifierProvider.notifier)
         .state
@@ -141,11 +147,17 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
     ref.read(stompState.notifier).state = status;
 
     Future.delayed(Duration(milliseconds: 500), () {
-      print("웹소켓 재시도");
+      printd("웹소켓 재시도");
       state?.activate();
       ref.read(stompErrorStack.notifier).state++;
     });
     return status;
+  }
+
+  Future<void> reactive() async {
+    printd("websocket reactive");
+    state?.deactivate();
+    state?.activate();
   }
 
   Future<void> disconnect() async {

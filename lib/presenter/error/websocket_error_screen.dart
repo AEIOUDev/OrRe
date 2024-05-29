@@ -40,10 +40,7 @@ class WebsocketErrorScreen extends ConsumerWidget {
               onPressed: () {
                 print("다시 시도하기");
                 ref.read(stompErrorStack.notifier).state = 0;
-                ref
-                    .read(stompClientStateNotifierProvider.notifier)
-                    .state
-                    ?.activate();
+                ref.read(stompClientStateNotifierProvider)?.activate();
                 context.go("/stompCheck");
               },
               child: TextWidget('다시 시도하기'),

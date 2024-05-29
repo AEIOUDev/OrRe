@@ -17,7 +17,6 @@ import 'package:orre/widget/text/text_widget.dart';
 
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import '../../services/debug.services.dart';
-import '../storeinfo/store_info_screen.dart';
 
 class WaitingScreen extends ConsumerStatefulWidget {
   @override
@@ -27,7 +26,7 @@ class WaitingScreen extends ConsumerStatefulWidget {
 class _WaitingScreenState extends ConsumerState<WaitingScreen> {
   @override
   Widget build(BuildContext context) {
-    print("!!!!!!!!!!!!!!!!!!!");
+    printd("\n\nWaitingScreen 진입");
 
     final listOfWaitingStoreProvider =
         ref.watch(storeWaitingRequestNotifierProvider);
@@ -113,13 +112,8 @@ class WaitingStoreItem extends ConsumerWidget {
             StoreInfoParams(storeWaitingRequest.token.storeCode, 0)),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Container(
-              width: 40,
-              height: 40,
-              child: Center(
-                child: CustomLoadingIndicator(),
-              ),
-            );
+            // return CustomLoadingIndicator();
+            return Container();
           } else if (snapshot.hasError) {
             return TextWidget('Error: ${snapshot.error}');
           } else {
@@ -128,11 +122,8 @@ class WaitingStoreItem extends ConsumerWidget {
               return TextWidget('가게 정보를 불러오지 못했습니다.');
             }
             return GestureDetector(
-              onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => StoreDetailInfoWidget(
-                          storeCode: storeWaitingRequest.token.storeCode))),
+              onTap: () =>
+                  context.push("/storeinfo/${storeDetailInfo.storeCode}"),
               child: Form(
                 key: _formKey,
                 child: Container(
@@ -155,13 +146,6 @@ class WaitingStoreItem extends ConsumerWidget {
                                   fit: BoxFit.cover,
                                 ),
                                 borderRadius: BorderRadius.circular(10.0),
-                              ),
-                            ),
-                            placeholder: (context, url) => Container(
-                              width: 40,
-                              height: 40,
-                              child: Center(
-                                child: CustomLoadingIndicator(),
                               ),
                             ),
                             errorWidget: (context, url, error) =>
@@ -198,13 +182,7 @@ class WaitingStoreItem extends ConsumerWidget {
                                   builder: ((context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
-                                      return Container(
-                                        width: 40,
-                                        height: 40,
-                                        child: Center(
-                                          child: CustomLoadingIndicator(),
-                                        ),
-                                      );
+                                      return CustomLoadingIndicator();
                                     } else if (snapshot.hasError) {
                                       return TextWidget(
                                           'Error: ${snapshot.error}');
@@ -294,30 +272,19 @@ class LastStoreItem extends ConsumerWidget {
               .fetchStoreServiceLog(userInfo.phoneNumber),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Container(
-                width: 40,
-                height: 40,
-                child: Center(
-                  child: CustomLoadingIndicator(),
-                ),
-              );
+              return CustomLoadingIndicator();
             } else if (snapshot.hasError || snapshot.data == null) {
               return TextWidget('Error: ${snapshot.error}');
             } else {
               final serviceLog = snapshot.data;
               final storeCode = snapshot.data!.userLogs.last.storeCode;
-              if (serviceLog!.userLogs.isNotEmpty) {
+              printd("serviceLog: ${serviceLog!.userLogs.length}");
+              if (serviceLog.userLogs.isNotEmpty) {
                 return FutureBuilder(
                     future: fetchStoreDetailInfo(StoreInfoParams(storeCode, 0)),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Container(
-                          width: 40,
-                          height: 40,
-                          child: Center(
-                            child: CustomLoadingIndicator(),
-                          ),
-                        );
+                        return CustomLoadingIndicator();
                       } else if (snapshot.hasError) {
                         return TextWidget('Error: ${snapshot.error}');
                       } else {
@@ -350,13 +317,6 @@ class LastStoreItem extends ConsumerWidget {
                                           ),
                                           borderRadius:
                                               BorderRadius.circular(10.0),
-                                        ),
-                                      ),
-                                      placeholder: (context, url) => Container(
-                                        width: 40,
-                                        height: 40,
-                                        child: Center(
-                                          child: CustomLoadingIndicator(),
                                         ),
                                       ),
                                       errorWidget: (context, url, error) =>
@@ -401,7 +361,7 @@ class LastStoreItem extends ConsumerWidget {
                       }
                     });
               } else {
-                return TextWidget('서비스 로그 없음.');
+                return TextWidget('서비스 로그 없음.', fontSize: 24);
               }
             }
           });

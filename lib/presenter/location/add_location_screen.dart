@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
@@ -15,6 +16,7 @@ import '../../services/debug.services.dart';
 
 // 마커 상태를 관리하는 프로바이더를 정의합니다. 처음에는 마커가 없으므로 null로 초기화합니다.
 final markerProvider = StateProvider<NMarker?>((ref) => null);
+final addressProvider = StateProvider<String>((ref) => "");
 
 // ConsumerStatefulWidget을 상속받는 AddLocationScreen 클래스를 정의합니다.
 class AddLocationScreen extends ConsumerStatefulWidget {
@@ -41,7 +43,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
           icon: Icon(Icons.arrow_back_ios), // 뒤로 가기 아이콘
           color: Color(0xFFFFB74D),
           onPressed: () {
-            Navigator.pop(context); // 현재 화면을 종료하고 이전 화면으로 돌아갑니다.
+            context.pop(); // 현재 화면을 종료하고 이전 화면으로 돌아갑니다.
           },
         ),
         elevation: 0,
@@ -161,14 +163,27 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
             child: Consumer(
               builder: (context, ref, child) {
                 final marker = ref.watch(markerProvider); // 현재 마커 상태를 가져옵니다.
+                // final address = ref.watch(addressProvider); // 현재 주소 상태를 가져옵니다.
+
+                String tempAddr = "";
+
+                // if (marker != null) {
+                //   getAddressFromLatLngLibrary(marker.position.latitude,
+                //           marker.position.longitude, 4, true)
+                //       .then((value) {
+                //     if (value != null) {
+                //       tempAddr = value;
+                //     }
+                //   });
+                // }
+                ref.read(addressProvider.notifier).state = tempAddr;
                 return Padding(
                   padding: EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // TODO : 엄마 여기 위치 추가되면 마커된 주소 가져와서 보여줘.
-                      TextWidget(marker != null ? "경기도 용인시 죽전로 152" : " ",
-                          fontSize: 20),
+                      // TODO : 엄마 여기 위치 추가되면 마커된 주소 가져와서 보여줘. <- 일단 보류
+                      // TextWidget(address, fontSize: 20),
                       SizedBox(height: 8),
                       Container(
                         width: MediaQuery.sizeOf(context).width,
@@ -183,26 +198,25 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
                                       .customLocations
                                       .length;
 
-                                  String? nameLibrary =
+                                  List<String?> nameAndAddress =
                                       await getAddressFromLatLngLibrary(
-                                          latitude, longitude, 3, false);
-                                  String? addressLibrary =
-                                      await getAddressFromLatLngLibrary(
-                                          latitude, longitude, 4, true);
-                                  print("Marker name: $nameLibrary");
-                                  print("Marker Address: $addressLibrary");
+                                          latitude, longitude, 4, false);
 
-                                  if (addressLibrary != null) {
+                                  print("Marker name: ${nameAndAddress.first}");
+                                  print(
+                                      "Marker Address: ${nameAndAddress.last}");
+
+                                  if (nameAndAddress.first != null) {
                                     ref
                                         .read(locationListProvider.notifier)
                                         .addLocation(LocationInfo(
-                                          locationName: nameLibrary ??
+                                          locationName: nameAndAddress.first ??
                                               "즐겨찾기" + length.toString(),
                                           latitude: latitude,
                                           longitude: longitude,
-                                          address: addressLibrary,
+                                          address: nameAndAddress.last ?? "",
                                         ));
-                                    Navigator.pop(context, marker.position);
+                                    context.pop(marker.position);
                                   } else {
                                     print("Failed to fetch address");
                                   }
