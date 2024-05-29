@@ -400,9 +400,7 @@ class UserInfoCheckWidget extends ConsumerWidget {
           } else {
             print("유저 정보 로딩 중");
             return Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
+              body: CustomLoadingIndicator(),
             );
           }
         });
@@ -456,9 +454,7 @@ class LoadServiceLogWidget extends ConsumerWidget {
         context.go('/userinfo_check');
       });
       return Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: CustomLoadingIndicator(),
       );
     } else {
       // 유저 정보 있음
@@ -474,9 +470,7 @@ class LoadServiceLogWidget extends ConsumerWidget {
             // 데이터 로딩 중
             print("서비스 정보 로딩 중");
             return Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
+              body: CustomLoadingIndicator(),
             );
           } else if (snapshot.hasData) {
             if (APIResponseStatus.serviceLogPhoneNumberFailure
@@ -501,9 +495,7 @@ class LoadServiceLogWidget extends ConsumerWidget {
             print("서비스 정보 로딩 중");
           }
           return Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: CustomLoadingIndicator(),
           );
         },
       );

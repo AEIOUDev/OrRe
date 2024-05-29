@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -29,9 +30,31 @@ class PopupDialog {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PhotoView(
-                          imageProvider: imageProvider,
-                        ),
+                        builder: (context) {
+                          return Scaffold(
+                            appBar: PreferredSize(
+                              preferredSize: Size.fromHeight(0.25.sh),
+                              child: StaticAppBarWidget(
+                                title: title,
+                                leading: IconButton(
+                                  icon: const Icon(
+                                    Icons.arrow_back_ios,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    context.pop();
+                                  },
+                                ),
+                                backgroundColor: Color(0xFFFFBF52),
+                              ),
+                            ),
+                            body: Container(
+                              child: PhotoView(
+                                imageProvider: imageProvider,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     );
                   },

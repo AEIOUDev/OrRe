@@ -76,7 +76,6 @@ class StoreItem extends ConsumerWidget {
           ),
           width: 50,
           height: 50,
-          placeholder: (context, url) => CustomLoadingIndicator(),
           errorWidget: (context, url, error) => Icon(Icons.error),
         ),
         //title: TextWidget('가게 ${storeInfo.storeCode}: ${storeInfo.storeName}'),
