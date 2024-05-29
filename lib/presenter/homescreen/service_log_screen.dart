@@ -29,9 +29,7 @@ class ServiceLogScreen extends ConsumerWidget {
             .fetchStoreServiceLog(userInfo.phoneNumber),
         builder: (context, snapshot) {
           if (snapshot.data == null) {
-            return Center(
-              child: CustomLoadingIndicator(),
-            );
+            return CustomLoadingIndicator();
           }
           return WaveformBackgroundWidget(
             child: Scaffold(
