@@ -65,7 +65,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
 
     if (storeDetailInfo == null) {
       return Scaffold(
-        body: Center(child: CustomLoadingIndicator()),
+        body: CustomLoadingIndicator(),
       );
     } else {
       return buildScaffold(context, storeDetailInfo);
@@ -136,7 +136,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
     final myWaitingInfo = ref.watch(storeWaitingRequestNotifierProvider);
     if (storeDetailInfo == null || storeDetailInfo.storeCode == 0) {
       return Scaffold(
-        body: Center(child: CustomLoadingIndicator()),
+        body: CustomLoadingIndicator(),
       );
     } else {
       return Scaffold(

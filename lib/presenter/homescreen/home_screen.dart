@@ -7,6 +7,7 @@ import '../../provider/home_screen/store_list_sort_type_provider.dart';
 import '../../provider/location/location_securestorage_provider.dart';
 import '../../provider/network/https/store_list_state_notifier.dart';
 import '../../services/debug.services.dart';
+import '../../widget/loading_indicator/coustom_loading_indicator.dart';
 import 'home_screen_appbar.dart';
 import 'home_screen_category_widget.dart';
 
@@ -84,7 +85,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           if (snapshot.connectionState == ConnectionState.done) {
             return _buildHomeScreen(snapshot.data as List<StoreLocationInfo>);
           } else {
-            return CircularProgressIndicator();
+            return CustomLoadingIndicator();
           }
         });
   }
