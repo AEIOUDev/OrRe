@@ -172,9 +172,11 @@ class SettingScreen extends ConsumerWidget {
                                       } else {
                                         // 회원탈퇴 실패
                                         AwesomeDialogWidget.showErrorDialog(
-                                            context: context,
-                                            title: "회원탈퇴",
-                                            desc: "회원탈퇴에 실패했습니다.");
+                                          context: context,
+                                          title: "회원탈퇴",
+                                          desc: "회원탈퇴에 실패했습니다.",
+                                          onPressed: () {},
+                                        );
                                       }
                                     });
                                   },

@@ -7,6 +7,7 @@ class AwesomeDialogWidget {
     required BuildContext context,
     required String title,
     required String desc,
+    required Function() onPressed,
   }) {
     AwesomeDialog(
       context: context,
@@ -16,8 +17,10 @@ class AwesomeDialogWidget {
       desc: desc,
       titleTextStyle: TextStyle(fontSize: 20.sp, fontFamily: 'Dovemayo_gothic'),
       descTextStyle: TextStyle(fontSize: 16.sp, fontFamily: 'Dovemayo_gothic'),
-      btnOkOnPress: () {},
-      btnOkColor: Color(0xFFFFB74D),
+      btnOkOnPress: () {
+        onPressed();
+      },
+      btnOkColor: Colors.orange,
       btnOkText: "확인",
       buttonsTextStyle: TextStyle(
           fontSize: 16.sp, fontFamily: 'Dovemayo_gothic', color: Colors.white),
@@ -27,7 +30,8 @@ class AwesomeDialogWidget {
   static void showInfoDialog(
       {required BuildContext context,
       required String title,
-      required String desc}) {
+      required String desc,
+      required Function() onPressed}) {
     AwesomeDialog(
       context: context,
       dialogType: DialogType.info,
@@ -36,18 +40,22 @@ class AwesomeDialogWidget {
       desc: desc,
       titleTextStyle: TextStyle(fontSize: 20.sp, fontFamily: 'Dovemayo_gothic'),
       descTextStyle: TextStyle(fontSize: 16.sp, fontFamily: 'Dovemayo_gothic'),
-      btnOkOnPress: () {},
-      btnOkColor: Color(0xFFFFB74D),
+      btnOkOnPress: () {
+        onPressed();
+      },
+      btnOkColor: Colors.blue,
       btnOkText: "확인",
       buttonsTextStyle: TextStyle(
           fontSize: 16.sp, fontFamily: 'Dovemayo_gothic', color: Colors.white),
     ).show();
   }
 
-  static void showSuccessDialog(
-      {required BuildContext context,
-      required String title,
-      required String desc}) {
+  static void showSuccessDialog({
+    required BuildContext context,
+    required String title,
+    required String desc,
+    required Function() onPressed,
+  }) {
     AwesomeDialog(
       context: context,
       dialogType: DialogType.success,
@@ -56,18 +64,23 @@ class AwesomeDialogWidget {
       desc: desc,
       titleTextStyle: TextStyle(fontSize: 20.sp, fontFamily: 'Dovemayo_gothic'),
       descTextStyle: TextStyle(fontSize: 16.sp, fontFamily: 'Dovemayo_gothic'),
-      btnOkOnPress: () {},
-      btnOkColor: Color(0xFFFFB74D),
+      btnOkIcon: Icons.check_circle,
+      btnOkOnPress: () {
+        onPressed();
+      },
+      btnOkColor: Colors.green,
       btnOkText: "확인",
       buttonsTextStyle: TextStyle(
           fontSize: 16.sp, fontFamily: 'Dovemayo_gothic', color: Colors.white),
     ).show();
   }
 
-  static void showErrorDialog(
-      {required BuildContext context,
-      required String title,
-      required String desc}) {
+  static void showErrorDialog({
+    required BuildContext context,
+    required String title,
+    required String desc,
+    required Function() onPressed,
+  }) {
     AwesomeDialog(
       context: context,
       dialogType: DialogType.error,
@@ -76,9 +89,12 @@ class AwesomeDialogWidget {
       desc: desc,
       titleTextStyle: TextStyle(fontSize: 20.sp, fontFamily: 'Dovemayo_gothic'),
       descTextStyle: TextStyle(fontSize: 16.sp, fontFamily: 'Dovemayo_gothic'),
-      btnOkOnPress: () {},
-      btnOkColor: Color(0xFFFFB74D),
+      btnOkOnPress: () {
+        onPressed();
+      },
+      btnOkColor: Colors.red,
       btnOkText: "확인",
+      btnOkIcon: Icons.cancel,
       buttonsTextStyle: TextStyle(
           fontSize: 16.sp, fontFamily: 'Dovemayo_gothic', color: Colors.white),
     ).show();
@@ -153,12 +169,14 @@ class AwesomeDialogWidget {
       },
       btnOkColor: Color(0xFFFFB74D),
       btnOkText: btnText,
+      btnOkIcon: Icons.check_circle,
       btnCancelOnPress: () {
         onCancel();
       },
       buttonsTextStyle: TextStyle(
           fontSize: 16.sp, fontFamily: 'Dovemayo_gothic', color: Colors.white),
       btnCancelColor: Color(0xFFFFB74D),
+      btnCancelIcon: Icons.cancel,
       btnCancelText: cancelText,
       body: body,
     ).show();

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +13,7 @@ import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/text_button_widget.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
+import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 
 import 'package:orre/widget/text_field/text_input_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
@@ -170,18 +172,11 @@ class SignUpScreen extends ConsumerWidget {
                                         FocusScope.of(context)
                                             .requestFocus(authCodeFocusNode);
                                       } else {
-                                        showDialog(
+                                        AwesomeDialogWidget.showWarningDialog(
                                             context: context,
-                                            builder: (context) => Builder(
-                                                  builder:
-                                                      (BuildContext context) =>
-                                                          AlertPopupWidget(
-                                                    title: '인증번호 요청 실패',
-                                                    subtitle:
-                                                        '입력하신 전화번호가 이미 가입되어 있습니다.',
-                                                    buttonText: '확인',
-                                                  ),
-                                                ));
+                                            title: '인증번호 요청 실패',
+                                            desc: '입력하신 전화번호가 이미 가입되어 있습니다.',
+                                            onPressed: () {});
                                       }
                                     });
                                   }
@@ -248,25 +243,17 @@ class SignUpScreen extends ConsumerWidget {
 
                               context.go('/main');
 
-                              // showDialog(
-                              //   context: context,
-                              //   builder: (context) {
-                              //     return AlertPopupWidget(
-                              //       title: '회원가입 성공',
-                              //       subtitle:
-                              //           '${signUpUserInfo.nickname}님, 환영합니다!',
-                              //       buttonText: '확인',
-                              //     );
-                              //   },
-                              // );
+                              AwesomeDialogWidget.showSuccessDialog(
+                                  context: context,
+                                  title: '회원가입 성공',
+                                  desc: '${signUpUserInfo.nickname}님, 환영합니다!',
+                                  onPressed: () {});
                             } else {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertPopupWidget(
+                              AwesomeDialogWidget.showWarningDialog(
+                                  context: context,
                                   title: '회원가입 실패',
-                                  buttonText: '확인',
-                                ),
-                              );
+                                  desc: '입력하신 정보를 다시 확인해주세요.',
+                                  onPressed: () {});
                             }
                           });
                         },

@@ -45,7 +45,8 @@ class BottomButtonSelector extends ConsumerWidget {
                     AwesomeDialogWidget.showWarningDialog(
                         context: context,
                         title: '예약 불가',
-                        desc: '현재 예약이 불가능한 가게입니다.');
+                        desc: '현재 예약이 불가능한 가게입니다.',
+                        onPressed: () {});
                   },
                   label: TextWidget('예약 불가'))),
         );
@@ -75,6 +76,7 @@ class BottomButtonSelector extends ConsumerWidget {
                   onPressed: () {
                     AwesomeDialogWidget.showCustomDialog(
                       context: context,
+                      dialogType: DialogType.warning,
                       title: '중복 예약 불가',
                       desc: '이미 다른 가게에서 웨이팅 중입니다.',
                       btnText: '해당 가게로 이동',
@@ -82,7 +84,6 @@ class BottomButtonSelector extends ConsumerWidget {
                         context
                             .go('/storeinfo/${myWaitingInfo.token.storeCode}');
                       },
-                      dialogType: DialogType.info,
                     );
                   },
                   label: TextWidget('중복 예약 불가'))),

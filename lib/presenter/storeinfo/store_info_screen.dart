@@ -11,6 +11,7 @@ import 'package:orre/provider/network/websocket/store_waiting_usercall_list_stat
 import 'package:orre/services/debug.services.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
+import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -82,29 +83,19 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
               .read(storeWaitingRequestNotifierProvider.notifier)
               .unSubscribe(widget.storeCode);
           ref.read(cancelDialogStatus.notifier).state = null;
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertPopupWidget(
-                title: '웨이팅 취소',
-                subtitle: cancelState == 1103
-                    ? '웨이팅이 가게에 의해 취소되었습니다.'
-                    : '웨이팅을 취소했습니다.',
-                buttonText: '확인',
-              );
-            },
-          );
+          AwesomeDialogWidget.showWarningDialog(
+              context: context,
+              title: '웨이팅 취소',
+              desc:
+                  cancelState == 1103 ? '웨이팅이 가게에 의해 취소되었습니다.' : '웨이팅을 취소했습니다.',
+              onPressed: () {});
         } else if (cancelState == 1102) {
           ref.read(cancelDialogStatus.notifier).state = null;
-          showDialog(
+          AwesomeDialogWidget.showErrorDialog(
             context: context,
-            builder: (context) {
-              return AlertPopupWidget(
-                title: '웨이팅 취소 실패',
-                subtitle: '가게에 문의해주세요.',
-                buttonText: '확인',
-              );
-            },
+            title: '웨이팅 취소 실패',
+            desc: '가게에 문의해주세요.',
+            onPressed: () {},
           );
         }
       });
@@ -116,17 +107,11 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
     if (userCallAlert) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(userCallAlertProvider.notifier).state = false;
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertPopupWidget(
-              title: '입장 알림',
-              subtitle:
-                  "제한 시간 이내에 매장에 입장해주세요!\n입장 시간이 지나면 다음 대기자에게 넘어갈 수 있습니다.",
-              buttonText: '빨리 갈게요!',
-            );
-          },
-        );
+        AwesomeDialogWidget.showInfoDialog(
+            context: context,
+            title: '입장 알림',
+            desc: "제한 시간 이내에 매장에 입장해주세요!\n입장 시간이 지나면 다음 대기자에게 넘어갈 수 있습니다.",
+            onPressed: () {});
       });
     }
   }

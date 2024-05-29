@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +9,7 @@ import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/text_button_widget.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:go_router/go_router.dart';
+import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 
 import 'package:orre/widget/text_field/text_input_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
@@ -128,23 +130,17 @@ class SignInScreen extends ConsumerWidget {
                               if (value != null) {
                                 print("로그인 성공");
                                 context.go('/locationCheck');
-                                // showDialog(
-                                //     context: context,
-                                //     builder: (context) {
-                                //       return AlertPopupWidget(
-                                //           title: '로그인 성공',
-                                //           subtitle: '$value님, 환영합니다!',
-                                //           buttonText: '확인');
-                                //     });
-                              } else {
-                                showDialog(
+                                AwesomeDialogWidget.showSuccessDialog(
                                     context: context,
-                                    builder: (context) {
-                                      return AlertPopupWidget(
-                                          title: '로그인 실패',
-                                          subtitle: '전화번호 또는 비밀번호를 확인해주세요.',
-                                          buttonText: '확인');
-                                    });
+                                    title: '로그인 성공',
+                                    desc: '$value님, 환영합니다!',
+                                    onPressed: () {});
+                              } else {
+                                AwesomeDialogWidget.showErrorDialog(
+                                    context: context,
+                                    title: '로그인 실패',
+                                    desc: '전화번호 또는 비밀번호를 확인해주세요.',
+                                    onPressed: () {});
                               }
                             });
                           }),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +12,7 @@ import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/text_button_widget.dart';
 import 'package:orre/widget/popup/alert_popup_widget.dart';
+import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 
 import 'package:orre/widget/text_field/text_input_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
@@ -118,18 +120,11 @@ class SignUpResetPasswordScreen extends ConsumerWidget {
                                         } else if (value ==
                                             APIResponseStatus
                                                 .resetPasswordPhoneNumberFailure) {
-                                          showDialog(
+                                          AwesomeDialogWidget.showErrorDialog(
                                               context: context,
-                                              builder: (context) => Builder(
-                                                    builder: (BuildContext
-                                                            context) =>
-                                                        AlertPopupWidget(
-                                                      title: '인증번호 요청 실패',
-                                                      subtitle:
-                                                          '일치하는 전화번호가 없습니다.',
-                                                      buttonText: '확인',
-                                                    ),
-                                                  ));
+                                              title: '인증번호 요청 실패',
+                                              desc: '일치하는 전화번호가 없습니다.',
+                                              onPressed: () {});
                                         }
                                       });
                                     }
@@ -214,27 +209,18 @@ class SignUpResetPasswordScreen extends ConsumerWidget {
 
                               context.go("/user/onboarding");
 
-                              // showDialog(
-                              //     context: context,
-                              //     builder: (context) => Builder(
-                              //           builder: (BuildContext context) =>
-                              //               AlertPopupWidget(
-                              //             title: '비밀번호 재설정 성공',
-                              //             subtitle: '새로운 비밀번호로 로그인해주세요.',
-                              //             buttonText: '확인',
-                              //           ),
-                              //         ));
-                            } else {
-                              showDialog(
+                              AwesomeDialogWidget.showSuccessDialog(
                                   context: context,
-                                  builder: (context) => Builder(
-                                        builder: (BuildContext context) =>
-                                            AlertPopupWidget(
-                                          title: '비밀번호 재설정 실패',
-                                          subtitle: '인증번호 또는 전화번호를 확인해주세요.',
-                                          buttonText: '확인',
-                                        ),
-                                      ));
+                                  title: '비밀번호 재설정 성공',
+                                  desc: '새로운 비밀번호로 로그인해주세요.',
+                                  onPressed: () {});
+                            } else {
+                              AwesomeDialogWidget.showErrorDialog(
+                                context: context,
+                                title: '비밀번호 재설정 실패',
+                                desc: '인증번호 또는 전화번호를 확인해주세요.',
+                                onPressed: () {},
+                              );
                             }
                           });
                         },

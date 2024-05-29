@@ -1,6 +1,8 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import '../../provider/location/location_securestorage_provider.dart';
 import '../../services/debug.services.dart'; // 필요에 따라 경로 수정
@@ -15,28 +17,17 @@ class _LocationManagementScreenState
     extends ConsumerState<LocationManagementScreen> {
   // 개별 위치 삭제 함수
   void _deleteLocation(String locationName, WidgetRef ref) async {
-    final shouldDelete = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: TextWidget('삭제하시겠습니까?'),
-        content: TextWidget('선택한 위치를 삭제합니다.'),
-        actions: [
-          TextButton(
-            onPressed: () => context.pop(true),
-            child: TextWidget('확인'),
-          ),
-          TextButton(
-            onPressed: () => context.pop(false),
-            child: TextWidget('취소'),
-          ),
-        ],
-      ),
-    );
-
-    if (shouldDelete == true) {
-      // 선택한 위치 삭제
-      ref.read(locationListProvider.notifier).removeLocation(locationName);
-    }
+    AwesomeDialogWidget.showCustomDialogWithCancel(
+        context: context,
+        title: '삭제하시겠습니까?',
+        desc: '선택한 위치를 삭제합니다.',
+        dialogType: DialogType.noHeader,
+        onPressed: () {
+          ref.read(locationListProvider.notifier).removeLocation(locationName);
+        },
+        btnText: '확인',
+        onCancel: () {},
+        cancelText: '취소');
   }
 
   @override
