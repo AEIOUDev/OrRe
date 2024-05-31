@@ -112,7 +112,7 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
     ref.read(storeWaitingInfoNotifierProvider.notifier).setClient(client);
     ref.read(storeWaitingRequestNotifierProvider.notifier).setClient(client);
     ref.read(storeWaitingUserCallNotifierProvider.notifier).setClient(client);
-    ref.read(storeDetailInfoProvider.notifier).setClient(client);
+    ref.read(storeDetailInfoWebsocketProvider.notifier).setClient(client);
   }
 
   // void reconnect() {

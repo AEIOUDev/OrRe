@@ -45,9 +45,8 @@ class _LocationManagementScreenState
     final location = ref.watch(locationListProvider);
     final customLocations = location.customLocations;
     final selectedLocation = location.selectedLocation;
-    final nowLocation = location.nowLocation;
 
-    final isSame = selectedLocation == nowLocation;
+    final isSame = selectedLocation?.locationName == "현재 위치";
 
     return Scaffold(
       backgroundColor: Color(0xFFDFDFDF),

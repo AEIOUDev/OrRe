@@ -124,34 +124,63 @@ class _WaitingStatusWidgetState extends ConsumerState<WaitingStatusWidget> {
 
     printd("myUserCall: ${myUserCall?.entryTime.second}");
     printd("remainingTime: ${remainingTime?.inSeconds}");
-    if (myUserCall != null && remainingTime != null) {
+    if (myUserCall != null &&
+        remainingTime != null &&
+        remainingTime.inSeconds != -1) {
       children.add(
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Expanded(
-                flex: 1,
-                child: Icon(
-                  Icons.watch_later,
-                  color: Color(0xFFFFB74D),
-                )),
-            Expanded(
-                flex: 3,
-                child: TextWidget(
-                  '남은 입장 시간',
-                  textAlign: TextAlign.start,
-                  color: Color(0xFFFFB74D),
-                )),
-            Expanded(
-              flex: 3,
-              child: TextWidget(
-                ': ${remainingTime.inSeconds} 초',
-                textAlign: TextAlign.start,
-                color: Color(0xFFFFB74D),
+        (remainingTime.inSeconds == 0)
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                      flex: 1,
+                      child: Icon(
+                        Icons.watch_later,
+                        color: Color(0xFFFFB74D),
+                      )),
+                  Expanded(
+                      flex: 3,
+                      child: TextWidget(
+                        '입장 마감 시간이 지났습니다.',
+                        textAlign: TextAlign.start,
+                        color: Color(0xFFFFB74D),
+                      )),
+                  Expanded(
+                    flex: 3,
+                    child: TextWidget(
+                      '',
+                      textAlign: TextAlign.start,
+                      color: Color(0xFFFFB74D),
+                    ),
+                  )
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                      flex: 1,
+                      child: Icon(
+                        Icons.watch_later,
+                        color: Color(0xFFFFB74D),
+                      )),
+                  Expanded(
+                      flex: 3,
+                      child: TextWidget(
+                        '남은 입장 시간',
+                        textAlign: TextAlign.start,
+                        color: Color(0xFFFFB74D),
+                      )),
+                  Expanded(
+                    flex: 3,
+                    child: TextWidget(
+                      ': ${remainingTime.inSeconds} 초',
+                      textAlign: TextAlign.start,
+                      color: Color(0xFFFFB74D),
+                    ),
+                  )
+                ],
               ),
-            )
-          ],
-        ),
       );
     } else {
       children.add(

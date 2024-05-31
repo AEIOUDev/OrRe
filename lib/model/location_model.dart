@@ -33,7 +33,7 @@ class LocationInfo extends Equatable {
 
   static nullValue() {
     return LocationInfo(
-      locationName: '보정동 카페거리',
+      locationName: '위치를 설정해주세요',
       latitude: 37.32152732612146,
       longitude: 127.11053698988346,
       address: '경기도 용인시 기흥구 보정동 죽전로 15번길',

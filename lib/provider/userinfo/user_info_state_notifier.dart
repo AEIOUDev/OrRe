@@ -27,10 +27,12 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
   }
 
   void saveUserInfo() {
+    printd("saveUserInfo: $state");
     _storage.write(key: 'userPhoneNumber', value: state?.phoneNumber);
     _storage.write(key: 'userPassword', value: state?.password);
     _storage.write(key: 'name', value: state?.name);
     _storage.write(key: 'fcmToken', value: state?.fcmToken);
+    printd("saveUserInfo: ${state?.phoneNumber}");
   }
 
   Future<bool> loadUserInfo() async {
@@ -170,13 +172,14 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
     _storage.readAll().then((value) => printd(value));
   }
 
-  void clearAllInfo() {
+  Future<void> clearAllInfo() {
     state = null;
     _storage.deleteAll();
     SharedPreferences.getInstance().then((prefs) {
       prefs.clear();
     });
     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+    return Future.value();
   }
 
   String? getNickname() {

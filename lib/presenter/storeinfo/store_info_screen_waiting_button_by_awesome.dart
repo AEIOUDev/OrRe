@@ -197,7 +197,7 @@ class WaitingButtonAwesome extends ConsumerWidget {
           ref.read(waitingSuccessDialogProvider.notifier).state = false;
         }
         // ref.read(streamActiveProvider.notifier).state = false;
-        // ref.read(storeDetailInfoProvider.notifier).clearStoreDetailInfo();
+        // ref.read(storeDetailInfoHttpsProvider.notifier).clearStoreDetailInfo();
         // ref.read(storeWaitingInfoNotifierProvider.notifier).clearWaitingInfo();
       });
     }

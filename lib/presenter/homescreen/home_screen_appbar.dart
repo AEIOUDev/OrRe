@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:orre/main.dart';
 import 'package:orre/model/location_model.dart';
+import 'package:orre/services/notifications_services.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 import '../../services/debug.services.dart';
@@ -32,26 +31,27 @@ class HomeScreenAppBar extends ConsumerWidget {
             },
           ),
           actions: [
-            IconButton(
-              icon: Icon(
-                Icons.search,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                // 가게 검색 로직
-                printd("임시로 Store Info 1로 이동");
-                context.push('/storeinfo/1');
-              },
-            ),
+            // IconButton(
+            //   icon: Icon(
+            //     Icons.search,
+            //     color: Colors.black,
+            //   ),
+            //   onPressed: () {
+            //     // 가게 검색 로직
+            //     printdd("임시로 Store Info 1로 이동");
+            //     context.push('/storeinfo/1');
+            //   },
+            // ),
             IconButton(
               icon: Icon(
                 Icons.star,
                 color: Colors.black,
               ),
               onPressed: () {
-                print("즐겨찾기 페이지로 이동");
+                printd("즐겨찾기 페이지로 이동이지만 지금은 이스터에그");
                 // 즐겨찾기 페이지로 이동
-                showNotification();
+                NotificationService.showNotification(
+                    NotificationType.easteregg);
               },
             ),
             IconButton(
@@ -72,25 +72,5 @@ class HomeScreenAppBar extends ConsumerWidget {
           ),
           backgroundColor: Color(0xFFFFB74D),
         ));
-  }
-
-  void showNotification() async {
-    var androidDetails = AndroidNotificationDetails(
-      '유니크한 알림 채널 ID',
-      '알림종류 설명',
-      priority: Priority.high,
-      importance: Importance.max,
-      color: Color.fromARGB(255, 255, 0, 0),
-    );
-
-    var iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
-
-    // 알림 id, 제목, 내용 맘대로 채우기
-    notifications.show(1, '제목1', '내용1',
-        NotificationDetails(android: androidDetails, iOS: iosDetails));
   }
 }

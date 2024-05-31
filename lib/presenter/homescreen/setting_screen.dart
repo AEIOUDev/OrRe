@@ -167,6 +167,9 @@ class SettingScreen extends ConsumerWidget {
                                       print("회원탈퇴 결과: $value");
                                       if (value) {
                                         // 모든 화면을 pop한 후, OnboardingScreen으로 교체
+                                        await ref
+                                            .read(userInfoProvider.notifier)
+                                            .clearAllInfo();
                                         context.pop();
                                         context.go("/user/onboarding");
                                       } else {
