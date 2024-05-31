@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +18,7 @@ import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/model/user_info_model.dart';
 
 import '../../services/debug.services.dart';
+import '../../widget/popup/awesome_dialog_widget.dart';
 
 final isObscureProvider = StateProvider<bool>((ref) => true);
 final formKeyProvider = Provider((ref) => GlobalKey<FormState>());
@@ -110,10 +114,11 @@ class SignInScreen extends ConsumerWidget {
                       BigButtonWidget(
                           text: '로그인 하기',
                           textColor: Colors.white,
-                          onPressed: () {
+                          onPressed: () async {
                             if (!formKey.currentState!.validate()) {
                               return;
                             }
+                            FocusScope.of(context).unfocus();
                             final signInUserInfo = SignInInfo(
                               password: passwordController.text,
                               phoneNumber: phoneNumberController.text
@@ -121,32 +126,41 @@ class SignInScreen extends ConsumerWidget {
                             );
                             print(signInUserInfo.password);
                             print(signInUserInfo.phoneNumber);
-                            ref
+                            final success = await ref
                                 .read(userInfoProvider.notifier)
-                                .requestSignIn(signInUserInfo)
-                                .then((value) async {
-                              if (value != null) {
-                                print("로그인 성공");
-                                context.go('/locationCheck');
-                                // showDialog(
-                                //     context: context,
-                                //     builder: (context) {
-                                //       return AlertPopupWidget(
-                                //           title: '로그인 성공',
-                                //           subtitle: '$value님, 환영합니다!',
-                                //           buttonText: '확인');
-                                //     });
-                              } else {
-                                showDialog(
+                                .requestSignIn(signInUserInfo);
+
+                            if (success != null) {
+                              if (Platform.isAndroid) {
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  AwesomeDialogWidget.showCustomDialog(
                                     context: context,
-                                    builder: (context) {
-                                      return AlertPopupWidget(
-                                          title: '로그인 실패',
-                                          subtitle: '전화번호 또는 비밀번호를 확인해주세요.',
-                                          buttonText: '확인');
-                                    });
+                                    title: "재부팅",
+                                    desc: "설정을 완료하기 위하여 재부팅이 필요합니다.",
+                                    dialogType: DialogType.info,
+                                    onPressed: () {
+                                      context.go("/boot/locationcheck");
+                                    },
+                                    btnText: "확인",
+                                  );
+                                });
+                              } else {
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  context.go("/boot/locationcheck");
+                                });
                               }
-                            });
+                            } else {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertPopupWidget(
+                                        title: '로그인 실패',
+                                        subtitle: '전화번호 또는 비밀번호를 확인해주세요.',
+                                        buttonText: '확인');
+                                  });
+                            }
                           }),
                       SizedBox(height: 8),
                       Row(
@@ -186,6 +200,17 @@ class SignInScreen extends ConsumerWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class TestWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Text("Test Widget"),
       ),
     );
   }

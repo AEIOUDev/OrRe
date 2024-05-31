@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
@@ -14,9 +15,11 @@ import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../main.dart';
 import '../../model/store_info_model.dart';
 import '../../provider/network/websocket/store_detail_info_state_notifier.dart';
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
+import '../../widget/popup/awesome_dialog_widget.dart';
 import './store_info_screen_button_selector.dart';
 import 'store_info_screen_waiting_status.dart';
 
@@ -42,15 +45,17 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
     super.didChangeDependencies();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      var currentDetailInfo = ref.read(storeDetailInfoProvider);
+      var currentDetailInfo = ref.read(storeDetailInfoWebsocketProvider);
       if (currentDetailInfo == null ||
           currentDetailInfo.storeCode != widget.storeCode) {
-        ref.read(storeDetailInfoProvider.notifier).clearStoreDetailInfo();
         ref
-            .read(storeDetailInfoProvider.notifier)
+            .read(storeDetailInfoWebsocketProvider.notifier)
+            .clearStoreDetailInfo();
+        ref
+            .read(storeDetailInfoWebsocketProvider.notifier)
             .subscribeStoreDetailInfo(widget.storeCode);
         ref
-            .read(storeDetailInfoProvider.notifier)
+            .read(storeDetailInfoWebsocketProvider.notifier)
             .sendStoreDetailInfoRequest(widget.storeCode);
       }
     });
@@ -59,9 +64,9 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
   @override
   Widget build(BuildContext context) {
     printd("\n\nStoreDetailInfoWidget build 진입");
-    final storeDetailInfo = ref.watch(storeDetailInfoProvider);
+    final storeDetailInfo = ref.watch(storeDetailInfoWebsocketProvider);
     _handleCancelState();
-    _handleUserCallAlert();
+    // _handleUserCallAlert();
 
     if (storeDetailInfo == null) {
       return Scaffold(
@@ -76,28 +81,29 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
     final cancelState = ref.watch(cancelDialogStatus);
     if (cancelState != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (navigatorKey.currentContext == null) return;
         if (cancelState == 1103 || cancelState == 200) {
           ref.read(storeWaitingUserCallNotifierProvider.notifier).unSubscribe();
           ref
               .read(storeWaitingRequestNotifierProvider.notifier)
               .unSubscribe(widget.storeCode);
           ref.read(cancelDialogStatus.notifier).state = null;
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertPopupWidget(
-                title: '웨이팅 취소',
-                subtitle: cancelState == 1103
-                    ? '웨이팅이 가게에 의해 취소되었습니다.'
-                    : '웨이팅을 취소했습니다.',
-                buttonText: '확인',
-              );
-            },
-          );
+          // showDialog(
+          //   context: navigatorKey.currentContext!,
+          //   builder: (context) {
+          //     return AlertPopupWidget(
+          //       title: '웨이팅 취소',
+          //       subtitle: cancelState == 1103
+          //           ? '웨이팅이 가게에 의해 취소되었습니다.'
+          //           : '웨이팅을 취소했습니다.',
+          //       buttonText: '확인',
+          //     );
+          //   },
+          // );
         } else if (cancelState == 1102) {
           ref.read(cancelDialogStatus.notifier).state = null;
           showDialog(
-            context: context,
+            context: navigatorKey.currentContext!,
             builder: (context) {
               return AlertPopupWidget(
                 title: '웨이팅 취소 실패',
@@ -111,25 +117,25 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
     }
   }
 
-  void _handleUserCallAlert() {
-    final userCallAlert = ref.watch(userCallAlertProvider);
-    if (userCallAlert) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(userCallAlertProvider.notifier).state = false;
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertPopupWidget(
-              title: '입장 알림',
-              subtitle:
-                  "제한 시간 이내에 매장에 입장해주세요!\n입장 시간이 지나면 다음 대기자에게 넘어갈 수 있습니다.",
-              buttonText: '빨리 갈게요!',
-            );
-          },
-        );
-      });
-    }
-  }
+  // void _handleUserCallAlert() {
+  //   final userCallAlert = ref.watch(userCallAlertProvider);
+  //   if (userCallAlert) {
+  //     WidgetsBinding.instance.addPostFrameCallback((_) {
+  //       ref.read(userCallAlertProvider.notifier).state = false;
+  //       showDialog(
+  //         context: context,
+  //         builder: (context) {
+  //           return AlertPopupWidget(
+  //             title: '입장 알림',
+  //             subtitle:
+  //                 "제한 시간 이내에 매장에 입장해주세요!\n입장 시간이 지나면 다음 대기자에게 넘어갈 수 있습니다.",
+  //             buttonText: '빨리 갈게요!',
+  //           );
+  //         },
+  //       );
+  //     });
+  //   }
+  // }
 
   Widget buildScaffold(BuildContext context, StoreDetailInfo? storeDetailInfo) {
     printd("\n\nStoreDetailInfoWidget buildScaffold 진입");
@@ -176,7 +182,18 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                             storeDetailInfo.storePhoneNumber);
                       } else {
                         print('Permission denied');
-                        context.push("/permission/phone");
+                        AwesomeDialogWidget.showCustomDialogWithCancel(
+                          context: context,
+                          title: "전화 권한",
+                          desc: "전화 권한이 없습니다. 설정으로 이동하여 권한을 허용해주세요.",
+                          dialogType: DialogType.warning,
+                          onPressed: () {
+                            openAppSettings();
+                          },
+                          btnText: "설정으로 이동",
+                          onCancel: () {},
+                          cancelText: "취소",
+                        );
                       }
                     },
                   ),
@@ -241,7 +258,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                 onPopInvoked: (didPop) {
                   if (didPop) {
                     ref
-                        .read(storeDetailInfoProvider.notifier)
+                        .read(storeDetailInfoWebsocketProvider.notifier)
                         .clearStoreDetailInfo();
                   }
                 },
