@@ -50,7 +50,7 @@ class ServiceLogScreen extends ConsumerWidget {
                       child: TextWidget(
                         "이용내역이 없습니다.",
                         fontSize: 32,
-                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
                       ),
                     )
                   : ListView.builder(

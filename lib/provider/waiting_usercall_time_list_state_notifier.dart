@@ -66,7 +66,7 @@ class WaitingUserCallTimeListStateNotifier extends StateNotifier<Duration?> {
     printd('Stopping and deleting timer');
     timer?.cancel();
     timer = null;
-    state = Duration.zero;
+    state = Duration(seconds: -1);
   }
 
   // Disposes of the state notifier and its resources

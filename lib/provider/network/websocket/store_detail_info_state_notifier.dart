@@ -9,7 +9,7 @@ final storeInfoTrigger = StateProvider<bool?>((ref) {
   return null;
 });
 
-final storeDetailInfoProvider =
+final storeDetailInfoWebsocketProvider =
     StateNotifierProvider<StoreDetailInfoStateNotifier, StoreDetailInfo?>(
         (ref) {
   return StoreDetailInfoStateNotifier();

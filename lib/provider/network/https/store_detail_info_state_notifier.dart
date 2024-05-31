@@ -12,7 +12,7 @@ class StoreInfoParams {
   StoreInfoParams(this.storeCode, this.storeTableNumber);
 }
 
-final storeDetailInfoProvider =
+final storeDetailInfoHttpsProvider =
     StateNotifierProvider<StoreDetailInfoNotifier, StoreDetailInfo>((ref) {
   return StoreDetailInfoNotifier();
 });
@@ -32,7 +32,7 @@ class StoreDetailInfoNotifier extends StateNotifier<StoreDetailInfo> {
       final response = await HttpsService.postRequest("/storeInfo", jsonBody);
       if (response.statusCode == 200) {
         final jsonBody = json.decode(utf8.decode(response.bodyBytes));
-        print("storeDetailInfoProvider(json 200): $jsonBody");
+        print("storeDetailInfoHttpsProvider(json 200): $jsonBody");
         final result = StoreDetailInfo.fromJson(jsonBody);
 
         state = result;

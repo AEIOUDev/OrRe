@@ -1,5 +1,3 @@
-// import 'dart:io';
-
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:internet_connectivity_checker/internet_connectivity_checker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:orre/presenter/error/network_error_screen.dart';
-import 'package:orre/presenter/error/websocket_error_screen.dart';
 import 'package:orre/presenter/homescreen/service_log_screen.dart';
 import 'package:orre/presenter/location/add_location_screen.dart';
 import 'package:orre/presenter/location/location_management_screen.dart';
@@ -259,6 +256,39 @@ final GoRouter _router = GoRouter(
         builder: (context, state) {
           return PermissionRequestLocationScreen();
         }),
+    GoRoute(
+      path: '/boot',
+      builder: (context, state) {
+        printd("Navigating to BootScreen, fullPath: ${state.fullPath}");
+        return InitialScreen();
+      },
+      routes: [
+        GoRoute(
+          path: 'stompcheck',
+          builder: (context, state) {
+            return StompCheckScreen();
+          },
+        ),
+        GoRoute(
+          path: 'userinfocheck',
+          builder: (context, state) {
+            return UserInfoCheckWidget();
+          },
+        ),
+        GoRoute(
+          path: 'locationcheck',
+          builder: (context, state) {
+            return LocationStateCheckWidget();
+          },
+        ),
+        GoRoute(
+          path: 'loadservicelog',
+          builder: (context, state) {
+            return LoadServiceLogWidget();
+          },
+        ),
+      ],
+    ),
   ],
   errorBuilder: (context, state) {
     printd('Error: ${state.error}');
@@ -367,17 +397,22 @@ class StompCheckScreen extends ConsumerWidget {
     printd("\n\nStompCheckScreen 진입");
     // ignore: unused_local_variable
     final stomp = ref.watch(stompClientStateNotifierProvider);
-    final stompS = ref.watch(stompState);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final stompS = ref.watch(stompState);
 
-    if (stompS == StompStatus.CONNECTED) {
-      // STOMP 연결 성공
-      print("STOMP 연결 성공");
-      return UserInfoCheckWidget();
-    } else {
-      // STOMP 연결 실패
-      print("STOMP 연결 실패, WebsocketErrorScreen() 호출");
-      return WebsocketErrorScreen();
-    }
+      if (stompS == StompStatus.CONNECTED) {
+        // STOMP 연결 성공
+        print("STOMP 연결 성공");
+        context.go('/boot/userinfocheck');
+      } else {
+        // STOMP 연결 실패
+        print("STOMP 연결 실패, WebsocketErrorScreen() 호출");
+        context.go('/networkError');
+      }
+    });
+    return Scaffold(
+      body: CustomLoadingIndicator(),
+    );
   }
 }
 
@@ -392,17 +427,19 @@ class UserInfoCheckWidget extends ConsumerWidget {
             if (snapshot.data != null) {
               print("유저 정보 존재 : ${snapshot.data}");
               print("LocationStateCheckWidget() 호출");
-              return LocationStateCheckWidget();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                context.go('/locationCheck');
+              });
             } else {
               print("OnboardingScreen() 호출");
-              return OnboardingScreen();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                context.go('/user/onboarding');
+              });
             }
-          } else {
-            print("유저 정보 로딩 중");
-            return Scaffold(
-              body: CustomLoadingIndicator(),
-            );
           }
+          return Scaffold(
+            body: CustomLoadingIndicator(),
+          );
         });
   }
 }
@@ -417,25 +454,30 @@ class LocationStateCheckWidget extends ConsumerWidget {
           future: ref.watch(nowLocationProvider.notifier).updateNowLocation(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.data != null) {
-                print("위치 정보 존재 : ${snapshot.data}");
-                print("LoadServiceLogWidget() 호출");
-                ref.read(locationListProvider.notifier).init();
-                return LoadServiceLogWidget();
-              } else {
-                print("위치 정보 없음, PermissionRequestLocationScreen() 호출");
-                return PermissionRequestLocationScreen();
-              }
-            } else {
-              print("위치 정보 로딩 중");
-              return Scaffold(
-                body: CustomLoadingIndicator(),
-              );
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (snapshot.data != null) {
+                  print("위치 정보 존재 : ${snapshot.data}");
+                  print("LoadServiceLogWidget() 호출");
+                  ref.read(locationListProvider.notifier).init();
+                  context.go('/boot/loadservicelog');
+                } else {
+                  print("위치 정보 없음, PermissionRequestLocationScreen() 호출");
+                  context.go('/permission/location');
+                }
+              });
             }
+            return Scaffold(
+              body: CustomLoadingIndicator(),
+            );
           });
     } catch (e) {
       print("\n\nLocationStateCheckWidget : ${e}");
-      return LoadServiceLogWidget();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.go('/permission/location');
+      });
+      return Scaffold(
+        body: CustomLoadingIndicator(),
+      );
     }
   }
 }
@@ -473,20 +515,18 @@ class LoadServiceLogWidget extends ConsumerWidget {
               body: CustomLoadingIndicator(),
             );
           } else if (snapshot.hasData) {
-            if (APIResponseStatus.serviceLogPhoneNumberFailure
-                .isEqualTo(snapshot.data!.status)) {
-              // 서비스 로그 불러오기 실패
-              print("서비스 로그 불러오기 실패, 재로그인 필요 : OnboardingScreen() 호출");
-              WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (APIResponseStatus.serviceLogPhoneNumberFailure
+                  .isEqualTo(snapshot.data!.status)) {
+                // 서비스 로그 불러오기 실패
+                print("서비스 로그 불러오기 실패, 재로그인 필요 : OnboardingScreen() 호출");
                 context.go('/onboarding');
-              });
-            } else {
-              // 서비스 로그 불러오기 성공. 나열 시작
-              print("서비스 로그 불러오기 성공 : ${snapshot.data!.userLogs.length}");
-              WidgetsBinding.instance.addPostFrameCallback((_) {
+              } else {
+                // 서비스 로그 불러오기 성공. 나열 시작
+                print("서비스 로그 불러오기 성공 : ${snapshot.data!.userLogs.length}");
                 context.go('/main');
-              });
-            }
+              }
+            });
           } else if (snapshot.hasError) {
             // 에러 처리
             print("에러 발생: ${snapshot.error}");

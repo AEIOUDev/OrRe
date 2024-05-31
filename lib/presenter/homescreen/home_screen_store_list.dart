@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:orre/model/store_list_model.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
-import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
+// import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 class StoreListWidget extends ConsumerWidget {
@@ -15,7 +15,9 @@ class StoreListWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ListView.separated(
+    return Container(
+      color: Colors.white, // 배경색을 하얀색으로 설정
+      child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: storeList.length,
@@ -29,7 +31,9 @@ class StoreListWidget extends ConsumerWidget {
             endIndent: 10,
             indent: 10,
           );
-        });
+        },
+      ),
+    );
   }
 }
 

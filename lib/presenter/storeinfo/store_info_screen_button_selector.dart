@@ -79,8 +79,8 @@ class BottomButtonSelector extends ConsumerWidget {
                       desc: '이미 다른 가게에서 웨이팅 중입니다.',
                       btnText: '해당 가게로 이동',
                       onPressed: () {
-                        context
-                            .go('/storeinfo/${myWaitingInfo.token.storeCode}');
+                        context.push(
+                            '/storeinfo/${myWaitingInfo.token.storeCode}');
                       },
                       dialogType: DialogType.info,
                     );

@@ -7,9 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'package:orre/model/store_waiting_request_model.dart';
 import 'package:orre/provider/network/https/get_service_log_state_notifier.dart';
 import 'package:orre/provider/network/https/post_store_info_future_provider.dart';
+// import 'package:orre/provider/network/websocket/store_detail_info_state_notifier.dart';
 import 'package:orre/provider/network/https/store_detail_info_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
+// import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
+import 'package:orre/provider/waiting_usercall_time_list_state_notifier.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/popup/awesome_dialog_widget.dart';
@@ -24,6 +27,26 @@ class WaitingScreen extends ConsumerStatefulWidget {
 }
 
 class _WaitingScreenState extends ConsumerState<WaitingScreen> {
+  @override
+  void didChangeDependencies() async {
+    printd("\n\nWaitingScreen didUpdateDependencies 진입");
+    final userInfo = ref.watch(userInfoProvider);
+    if (userInfo == null) {
+      printd("사용자 정보 없음. 로그인 페이지로 이동");
+      context.go('/user/onboarding');
+    } else {
+      final serviceLog = await ref
+          .watch(serviceLogProvider.notifier)
+          .fetchStoreServiceLog(ref.read(userInfoProvider)!.phoneNumber);
+      if (serviceLog.userLogs.isNotEmpty) {
+        ref
+            .watch(serviceLogProvider.notifier)
+            .reconnectWebsocketProvider(serviceLog.userLogs.last);
+      }
+    }
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     printd("\n\nWaitingScreen 진입");
@@ -83,8 +106,10 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
                   itemBuilder: (context, irndex) {
                     final item = listOfWaitingStoreProvider;
                     if (item == null) {
+                      printd("item == null");
                       return LastStoreItem();
                     } else {
+                      printd("item != null");
                       return WaitingStoreItem(item);
                     }
                   },
@@ -112,8 +137,8 @@ class WaitingStoreItem extends ConsumerWidget {
             StoreInfoParams(storeWaitingRequest.token.storeCode, 0)),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // return CustomLoadingIndicator();
-            return Container();
+            return CustomLoadingIndicator();
+            // return Container();
           } else if (snapshot.hasError) {
             return TextWidget('Error: ${snapshot.error}');
           } else {
@@ -137,8 +162,8 @@ class WaitingStoreItem extends ConsumerWidget {
                           CachedNetworkImage(
                             imageUrl: storeDetailInfo.storeImageMain,
                             imageBuilder: (context, imageProvider) => Container(
-                              width: 80,
-                              height: 80,
+                              width: 120,
+                              height: 120,
                               decoration: BoxDecoration(
                                 shape: BoxShape.rectangle,
                                 image: DecorationImage(
@@ -159,8 +184,18 @@ class WaitingStoreItem extends ConsumerWidget {
                                 storeDetailInfo.storeName,
                                 textAlign: TextAlign.start,
                                 fontSize: 28,
-                              ), // 가게 이름 동적으로 표시
+                              ), // 가게 이름 동
                               SizedBox(height: 5),
+                              Consumer(
+                                builder: (context, ref, child) {
+                                  final serviceLog =
+                                      ref.watch(serviceLogProvider);
+                                  return TextWidget(
+                                      serviceLog.userLogs.last.status.toKr(),
+                                      fontSize: 24,
+                                      color: Color(0xFFDD0000));
+                                },
+                              ),
                               Row(
                                 children: [
                                   TextWidget('내 웨이팅 번호는 ', fontSize: 20),
@@ -172,32 +207,62 @@ class WaitingStoreItem extends ConsumerWidget {
                                   TextWidget('번 이예요.', fontSize: 20),
                                 ],
                               ),
-                              FutureBuilder(
-                                  future: Future.value(ref
-                                      .watch(storeWaitingInfoNotifierProvider)
-                                      .where((element) =>
-                                          element.storeCode ==
-                                          storeWaitingRequest.token.storeCode)
-                                      .first),
-                                  builder: ((context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return CustomLoadingIndicator();
-                                    } else if (snapshot.hasError) {
-                                      return TextWidget(
-                                          'Error: ${snapshot.error}');
-                                    } else {
-                                      if (snapshot.data == null) {
-                                        return TextWidget('웨이팅 정보를 불러오지 못했어요.');
-                                      }
+                              StreamBuilder(
+                                stream: ref
+                                    .watch(storeWaitingInfoNotifierProvider
+                                        .notifier)
+                                    .stream,
+                                builder: ((context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    // return CustomLoadingIndicator();
+                                    return Container();
+                                  } else if (snapshot.hasError) {
+                                    return TextWidget(
+                                        '네트워크 에러가 발생했어요. 앱을 재시작해주세요.');
+                                  } else {
+                                    if (snapshot.data == null) {
+                                      return TextWidget('웨이팅 정보를 불러오지 못했어요.');
+                                    }
+                                    return Consumer(
+                                        builder: (context, ref, child) {
                                       final storeWaitingInfo = snapshot.data;
-                                      final myWaitingNumber =
-                                          storeWaitingRequest.token.waiting;
                                       final myWaitingIndex = storeWaitingInfo
-                                          ?.enteringTeamList
-                                          .indexOf(myWaitingNumber);
+                                          ?.where((element) =>
+                                              element.storeCode ==
+                                              storeWaitingRequest
+                                                  .token.storeCode)
+                                          .first
+                                          .waitingTeamList
+                                          .indexOf(storeWaitingRequest
+                                              .token.waiting);
+                                      final userCallState = ref.watch(
+                                          waitingUserCallTimeListProvider);
 
-                                      if (myWaitingIndex == -1 ||
+                                      if (userCallState != null &&
+                                          userCallState !=
+                                              Duration(seconds: -1)) {
+                                        if (userCallState.inSeconds == 0) {
+                                          return TextWidget('입장마감 시간이 지났어요.');
+                                        } else {
+                                          return Row(
+                                            children: [
+                                              TextWidget(
+                                                '입장 마감까지  ',
+                                                fontSize: 20,
+                                                textAlign: TextAlign.start,
+                                              ),
+                                              TextWidget(
+                                                '${userCallState.inSeconds}',
+                                                fontSize: 24,
+                                                color: Color(0xFFDD0000),
+                                              ),
+                                              TextWidget('초 남았어요.',
+                                                  fontSize: 20),
+                                            ],
+                                          );
+                                        }
+                                      } else if (myWaitingIndex == -1 ||
                                           myWaitingIndex == null) {
                                         return TextWidget('대기 중인 팀이 없습니다.');
                                       } else {
@@ -217,16 +282,19 @@ class WaitingStoreItem extends ConsumerWidget {
                                           ],
                                         );
                                       }
-                                    }
-                                  }))
+                                    });
+                                  }
+                                }),
+                              ),
                             ],
                           ),
                         ],
                       ),
+                      SizedBox(height: 16),
                       BigButtonWidget(
                           text: '웨이팅 취소하기',
-                          textColor: Color(0xFF999999),
-                          backgroundColor: Color(0xFFDFDFDF),
+                          textColor: Colors.white,
+                          backgroundColor: Color(0xFFFFBF52),
                           minimumSize: Size(double.infinity, 40),
                           onPressed: () {
                             AwesomeDialogWidget.showCustomDialogWithCancel(
@@ -272,9 +340,12 @@ class LastStoreItem extends ConsumerWidget {
               .fetchStoreServiceLog(userInfo.phoneNumber),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CustomLoadingIndicator();
+              return Container();
             } else if (snapshot.hasError || snapshot.data == null) {
               return TextWidget('Error: ${snapshot.error}');
+            } else if (snapshot.data!.userLogs.isEmpty) {
+              return TextWidget('서비스 이용내역이 없습니다.',
+                  fontSize: 16.sp, color: Colors.grey);
             } else {
               final serviceLog = snapshot.data;
               final storeCode = snapshot.data!.userLogs.last.storeCode;
@@ -284,7 +355,7 @@ class LastStoreItem extends ConsumerWidget {
                     future: fetchStoreDetailInfo(StoreInfoParams(storeCode, 0)),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CustomLoadingIndicator();
+                        return Container();
                       } else if (snapshot.hasError) {
                         return TextWidget('Error: ${snapshot.error}');
                       } else {
@@ -366,6 +437,6 @@ class LastStoreItem extends ConsumerWidget {
             }
           });
     }
-    return CustomLoadingIndicator();
+    return Container();
   }
 }

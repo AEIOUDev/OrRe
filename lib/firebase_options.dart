@@ -62,6 +62,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '171129567626',
     projectId: 'orre-be',
     storageBucket: 'orre-be.appspot.com',
+    androidClientId: 'com.aeioudev.orre',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(

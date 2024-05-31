@@ -8,6 +8,7 @@ import 'package:orre/services/network/https_services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/services/debug.services.dart';
+import 'package:orre/services/notifications_services.dart';
 import 'package:stomp_dart_client/stomp.dart';
 
 import '../https/get_service_log_state_notifier.dart';
@@ -29,6 +30,18 @@ class UserWaitingStatusStateNotifier
 
   void setWaitingStatus(StoreWaitingStatus status) {
     state = status;
+    switch (status) {
+      case StoreWaitingStatus.USER_CANCELED:
+        NotificationService.showNotification(NotificationType.waitingCancel);
+      case StoreWaitingStatus.WAITING:
+        NotificationService.showNotification(NotificationType.waitingSuccess);
+      case StoreWaitingStatus.ETC:
+      case StoreWaitingStatus.ENTERD:
+      case StoreWaitingStatus.STORE_CLOSED:
+      case StoreWaitingStatus.STORE_CANCELED:
+        break;
+      default:
+    }
   }
 }
 
@@ -124,6 +137,9 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
               var firstResult = StoreWaitingRequest.fromJson(decodedBody);
               if (APIResponseStatus.success.isEqualTo(decodedBody['status'])) {
                 waitingAddProcess(firstResult);
+                ref
+                    .read(waitingStatus.notifier)
+                    .setWaitingStatus(StoreWaitingStatus.WAITING); // 웨이팅 상태로 변경
                 completer.complete(APIResponseStatus.success);
               } else if (APIResponseStatus.waitingAlreadyJoin
                   .isEqualTo(decodedBody['status'])) {
