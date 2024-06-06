@@ -4,7 +4,7 @@
 //
 //  Created by 정민호 on 5/9/24.
 //
-
+#if !os(macOS)
 import WidgetKit
 import SwiftUI
 
@@ -78,3 +78,4 @@ struct OrreWidget: Widget {
     SimpleEntry(date: .now, emoji: "😀")
     SimpleEntry(date: .now, emoji: "🤩")
 }
+#endif

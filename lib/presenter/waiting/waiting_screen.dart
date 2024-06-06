@@ -10,6 +10,7 @@ import 'package:orre/provider/network/https/post_store_info_future_provider.dart
 // import 'package:orre/provider/network/websocket/store_detail_info_state_notifier.dart';
 import 'package:orre/provider/network/https/store_detail_info_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
+import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 // import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/provider/waiting_usercall_time_list_state_notifier.dart';
@@ -42,6 +43,9 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
         ref
             .watch(serviceLogProvider.notifier)
             .reconnectWebsocketProvider(serviceLog.userLogs.last);
+        ref
+            .watch(storeWaitingInfoNotifierProvider.notifier)
+            .subscribeToStoreWaitingInfo(serviceLog.userLogs.last.storeCode);
       }
     }
     super.didChangeDependencies();
@@ -53,6 +57,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
 
     final listOfWaitingStoreProvider =
         ref.watch(storeWaitingRequestNotifierProvider);
+    final userWaiting = ref.watch(storeWaitingUserCallNotifierProvider);
 
     print("listOfWaitingStoreProvider: ${listOfWaitingStoreProvider}");
 
@@ -62,14 +67,14 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
         backgroundColor: Color(0xFFDFDFDF),
         title: TextWidget(' '),
         actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: () {
-              ref
-                  .read(storeWaitingRequestNotifierProvider.notifier)
-                  .clearWaitingRequestList();
-            },
-          ),
+          // IconButton(
+          //   icon: Icon(Icons.refresh),
+          //   onPressed: () {
+          //     ref
+          //         .read(storeWaitingRequestNotifierProvider.notifier)
+          //         .clearWaitingRequestList();
+          //   },
+          // ),
         ],
       ),
       body: Align(
@@ -188,12 +193,14 @@ class WaitingStoreItem extends ConsumerWidget {
                               SizedBox(height: 5),
                               Consumer(
                                 builder: (context, ref, child) {
-                                  final serviceLog =
-                                      ref.watch(serviceLogProvider);
-                                  return TextWidget(
-                                      serviceLog.userLogs.last.status.toKr(),
-                                      fontSize: 24,
-                                      color: Color(0xFFDD0000));
+                                  final waiting = ref.watch(waitingStatus);
+                                  if (waiting == null) {
+                                    return TextWidget('상태를 불러오는 중..',
+                                        fontSize: 24, color: Color(0xFFDD0000));
+                                  } else {
+                                    return TextWidget(waiting.toKr(),
+                                        fontSize: 24, color: Color(0xFFDD0000));
+                                  }
                                 },
                               ),
                               Row(
@@ -207,85 +214,101 @@ class WaitingStoreItem extends ConsumerWidget {
                                   TextWidget('번 이예요.', fontSize: 20),
                                 ],
                               ),
-                              StreamBuilder(
-                                stream: ref
-                                    .watch(storeWaitingInfoNotifierProvider
-                                        .notifier)
-                                    .stream,
-                                builder: ((context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    // return CustomLoadingIndicator();
-                                    return Container();
-                                  } else if (snapshot.hasError) {
-                                    return TextWidget(
-                                        '네트워크 에러가 발생했어요. 앱을 재시작해주세요.');
-                                  } else {
-                                    if (snapshot.data == null) {
-                                      return TextWidget('웨이팅 정보를 불러오지 못했어요.');
-                                    }
-                                    return Consumer(
-                                        builder: (context, ref, child) {
-                                      final storeWaitingInfo = snapshot.data;
-                                      final myWaitingIndex = storeWaitingInfo
-                                          ?.where((element) =>
-                                              element.storeCode ==
-                                              storeWaitingRequest
-                                                  .token.storeCode)
-                                          .first
-                                          .waitingTeamList
-                                          .indexOf(storeWaitingRequest
-                                              .token.waiting);
-                                      final userCallState = ref.watch(
-                                          waitingUserCallTimeListProvider);
-
-                                      if (userCallState != null &&
-                                          userCallState !=
-                                              Duration(seconds: -1)) {
-                                        if (userCallState.inSeconds == 0) {
-                                          return TextWidget('입장마감 시간이 지났어요.');
-                                        } else {
-                                          return Row(
-                                            children: [
-                                              TextWidget(
-                                                '입장 마감까지  ',
-                                                fontSize: 20,
-                                                textAlign: TextAlign.start,
-                                              ),
-                                              TextWidget(
-                                                '${userCallState.inSeconds}',
-                                                fontSize: 24,
-                                                color: Color(0xFFDD0000),
-                                              ),
-                                              TextWidget('초 남았어요.',
-                                                  fontSize: 20),
-                                            ],
-                                          );
-                                        }
-                                      } else if (myWaitingIndex == -1 ||
-                                          myWaitingIndex == null) {
-                                        return TextWidget('대기 중인 팀이 없습니다.');
+                              Consumer(
+                                builder: (context, ref, child) {
+                                  final storeWaitingInfo = ref
+                                      .watch(storeWaitingInfoNotifierProvider);
+                                  return StreamBuilder(
+                                    stream: ref
+                                        .watch(storeWaitingInfoNotifierProvider
+                                            .notifier)
+                                        .getStoreWaitingInfoStream(
+                                            storeWaitingRequest
+                                                .token.storeCode),
+                                    builder: ((context, snapshot) {
+                                      printd(
+                                          "WaitingScreen snapshot: $snapshot");
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        // return CustomLoadingIndicator();
+                                        return Container();
+                                      } else if (snapshot.hasError) {
+                                        return TextWidget(
+                                            '네트워크 에러가 발생했어요. 앱을 재시작해주세요.');
                                       } else {
-                                        return Row(
-                                          children: [
-                                            TextWidget(
-                                              '내 순서까지  ',
-                                              fontSize: 20,
-                                              textAlign: TextAlign.start,
-                                            ),
-                                            TextWidget(
-                                              '${myWaitingIndex}',
+                                        if (snapshot.data == null) {
+                                          return TextWidget(
+                                              '웨이팅 정보를 불러오지 못했어요.');
+                                        }
+                                        return Consumer(
+                                            builder: (context, ref, child) {
+                                          final storeWaitingInfo =
+                                              snapshot.data;
+                                          final myWaitingIndex =
+                                              storeWaitingInfo?.waitingTeamList
+                                                  .indexOf(storeWaitingRequest
+                                                      .token.waiting);
+                                          final userCallState = ref.watch(
+                                              waitingUserCallTimeListProvider);
+
+                                          if (userCallState != null &&
+                                              userCallState !=
+                                                  Duration(seconds: -1)) {
+                                            if (userCallState.inSeconds == 0) {
+                                              return TextWidget(
+                                                  '입장마감 시간이 지났어요.');
+                                            } else {
+                                              return Row(
+                                                children: [
+                                                  TextWidget(
+                                                    '입장 마감까지  ',
+                                                    fontSize: 20,
+                                                    textAlign: TextAlign.start,
+                                                  ),
+                                                  TextWidget(
+                                                    '${userCallState.inSeconds}',
+                                                    fontSize: 24,
+                                                    color: Color(0xFFDD0000),
+                                                  ),
+                                                  TextWidget('초 남았어요.',
+                                                      fontSize: 20),
+                                                ],
+                                              );
+                                            }
+                                          } else if (myWaitingIndex == -1 ||
+                                              myWaitingIndex == null) {
+                                            return TextWidget('대기 중인 팀이 없습니다.');
+                                          } else if (ref.watch(waitingStatus) ==
+                                              StoreWaitingStatus.CALLED) {
+                                            return TextWidget(
+                                              '입장 시간이 지났어요.',
                                               fontSize: 24,
                                               color: Color(0xFFDD0000),
-                                            ),
-                                            TextWidget('팀 남았어요.', fontSize: 20),
-                                          ],
-                                        );
+                                            );
+                                          } else {
+                                            return Row(
+                                              children: [
+                                                TextWidget(
+                                                  '내 순서까지  ',
+                                                  fontSize: 20,
+                                                  textAlign: TextAlign.start,
+                                                ),
+                                                TextWidget(
+                                                  '${myWaitingIndex}',
+                                                  fontSize: 24,
+                                                  color: Color(0xFFDD0000),
+                                                ),
+                                                TextWidget('팀 남았어요.',
+                                                    fontSize: 20),
+                                              ],
+                                            );
+                                          }
+                                        });
                                       }
-                                    });
-                                  }
-                                }),
-                              ),
+                                    }),
+                                  );
+                                },
+                              )
                             ],
                           ),
                         ],

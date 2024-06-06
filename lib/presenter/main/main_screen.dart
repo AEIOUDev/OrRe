@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:nfc_manager/nfc_manager.dart';
 import 'package:orre/presenter/homescreen/home_screen.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
@@ -24,6 +25,7 @@ import '../../services/nfc_services.dart';
 import '../../widget/popup/awesome_dialog_widget.dart';
 import '../order/order_prepare_screen.dart';
 import '../waiting/waiting_screen.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 final selectedIndexProvider = StateProvider<int>((ref) {
   return 1; // 기본적으로 '홈'을 선택 상태로 시작합니다.
@@ -291,7 +293,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
           // Menu items
           items: <Bubble>[
             // Floating action menu item
-            if (Platform.isIOS)
+            if (Platform.isIOS && ref.read(nfcAvailableProvider))
               Bubble(
                 title: "NFC 스캔",
                 iconColor: Colors.white,

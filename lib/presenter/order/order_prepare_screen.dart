@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import '../../services/nfc_services.dart';
 
@@ -35,11 +36,12 @@ class _OrderPrepareScreenState extends ConsumerState<OrderPrepareScreen> {
                 color: Color(0xFFDFDFDF),
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 32.h),
             TextWidget(
-              _message,
+              // _message,
+              "현재 버전에서는 가게 주문을 지원하지 않습니다.",
               textAlign: TextAlign.center,
-              fontSize: 32,
+              fontSize: 16.sp,
               color: Color(0xFFDFDFDF),
             )
           ],

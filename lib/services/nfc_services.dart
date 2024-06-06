@@ -7,6 +7,8 @@ import 'package:nfc_manager/nfc_manager.dart';
 import '../presenter/main/main_screen.dart';
 import 'debug.services.dart';
 
+final nfcAvailableProvider = StateProvider<bool>((ref) => false);
+
 // NFC 스캔 가능 상태를 관리하는 StateProvider
 final nfcScanAvailableProvider = StateProvider<bool>((ref) => true);
 

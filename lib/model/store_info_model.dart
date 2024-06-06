@@ -47,6 +47,11 @@ class StoreDetailInfo extends Equatable {
     required this.menuCategories,
   });
 
+  // StoreDetailInfo 인스턴스를 사용하여 추천 메뉴 목록을 반환하는 메서드
+  List<MenuInfo> getRecommendedMenus() {
+    return menuInfo.where((menu) => menu.recommend == 1).toList();
+  }
+
   factory StoreDetailInfo.fromJson(Map<String, dynamic> json) {
     final openingTime = timeFromJson(json['openingTime'] ?? '');
     // print('openingTime: $openingTime');

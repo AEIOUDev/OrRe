@@ -5,6 +5,7 @@
 //  Created by 정민호 on 5/9/24.
 //
 
+#if !os(macOS)
 import WidgetKit
 import SwiftUI
 
@@ -15,3 +16,4 @@ struct OrreWidgetBundle: WidgetBundle {
         OrreWidgetLiveActivity()
     }
 }
+#endif

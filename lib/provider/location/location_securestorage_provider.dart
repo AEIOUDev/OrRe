@@ -72,6 +72,11 @@ class LocationListNotifier extends StateNotifier<LocationState> {
         customLocations: updatedLocations,
         selectedLocation: updatedSelectedLocation);
 
+    // 만약 삭제한 위치가 selectedLocation이라면, 현재 위치를 선택된 위치로 설정
+    if (updatedSelectedLocation == null) {
+      selectLocationToNowLocation();
+    }
+
     await saveLocations(); // 변경 사항 저장
   }
 
