@@ -1,7 +1,7 @@
 name: orre
 description: "Smart Consumer Life with OrRe"
 publish_to: 'none'
-version: 1.0.2+4
+version: 1.0.3+5
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -28,6 +28,7 @@ dependencies:
   flutter_riverpod: ^2.4.10
   flutter_screenutil: ^5.9.1
   flutter_secure_storage: ^9.0.0
+  flutter_svg: ^2.0.10+1
   flutter_test:
     sdk: flutter
   geocoding: ^2.2.0
@@ -67,6 +68,8 @@ flutter:
     - assets/images/loading_orre.gif
     - assets/images/waveform/wave_shadow.png
     - assets/images/waveform/wave.png
+    - assets/images/waveform/orre_wave.svg
+    - assets/images/waveform/orre_wave_shadow.svg
 
   fonts :
     - family: Dovemayo_gothic

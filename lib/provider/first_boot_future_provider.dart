@@ -15,6 +15,34 @@ import 'app_state_provider.dart';
 Future<int> initializeApp(WidgetRef ref) async {
   printd("\n\ninitializeApp 진입");
 
+  await nfcCheck(ref);
+
+  final update = await updateCheck(ref);
+  if (update != 0) {
+    printd("업데이트 필요, 업데이트 화면으로 이동");
+    return update;
+  }
+
+  final isStompConnected = await stompConnectionCheck(ref);
+  printd("isStompConnected : $isStompConnected");
+  if (!isStompConnected) {
+    printd("Stomp 연결 실패, 네트워크 체크 화면으로 이동");
+    return 1;
+  }
+
+  final isLogin = await loginCheck(ref);
+  printd("isLogin : $isLogin");
+  if (!isLogin) {
+    printd("로그인 실패, 로그인 화면으로 이동");
+    return 2;
+  }
+
+  printd("\n\ninitializeApp 종료, 성공적으로 초기화 완료");
+  return 0;
+}
+
+Future<void> nfcCheck(WidgetRef ref) async {
+  printd("\n\nnfcCheck 진입");
   final isNFCAvailable = await NfcManager.instance.isAvailable();
   if (!isNFCAvailable) {
     printd("NFC 사용 불가로 설정");
@@ -23,6 +51,11 @@ Future<int> initializeApp(WidgetRef ref) async {
     printd("NFC 사용 가능으로 설정");
     ref.read(nfcAvailableProvider.notifier).state = true;
   }
+}
+
+Future<int> updateCheck(WidgetRef ref) async {
+  printd("\n\nupdateCheck 진입");
+
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   ref.read(appVersionProvider.notifier).setAppVersion(packageInfo.version);
 
@@ -55,24 +88,6 @@ Future<int> initializeApp(WidgetRef ref) async {
   } else {
     printd("앱 버전 같음");
   }
-
-  printd("Stomp 연결 체크 시작");
-
-  final isStompConnected = await stompConnectionCheck(ref);
-  printd("isStompConnected : $isStompConnected");
-  if (!isStompConnected) {
-    printd("Stomp 연결 실패, 네트워크 체크 화면으로 이동");
-    return 1;
-  }
-
-  final isLogin = await loginCheck(ref);
-  printd("isLogin : $isLogin");
-  if (!isLogin) {
-    printd("로그인 실패, 로그인 화면으로 이동");
-    return 2;
-  }
-
-  printd("\n\ninitializeApp 종료, 성공적으로 초기화 완료");
   return 0;
 }
 

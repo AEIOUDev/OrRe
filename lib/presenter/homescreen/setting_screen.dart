@@ -198,14 +198,14 @@ class SettingScreen extends ConsumerWidget {
             Positioned(
               left: 0,
               right: 0,
-              bottom: 40.h,
+              bottom: 8.h,
               child: Container(
                 padding: const EdgeInsets.all(20),
                 child: Consumer(builder: (context, ref, child) {
                   final appVersion = ref.watch(appVersionProvider);
                   return TextWidget(
                     "앱 버전 : $appVersion",
-                    fontSize: 5.sp,
+                    fontSize: 8.sp,
                     color: Colors.grey,
                   );
                 }),
