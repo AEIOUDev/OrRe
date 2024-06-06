@@ -6,7 +6,6 @@ import 'package:orre/model/location_model.dart';
 import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
-import 'package:orre/services/geocording/geocording_library_service.dart';
 import 'package:orre/services/geocording/naver_map_services.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/text/text_widget.dart';

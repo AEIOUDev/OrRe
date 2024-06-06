@@ -57,6 +57,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
 
     final listOfWaitingStoreProvider =
         ref.watch(storeWaitingRequestNotifierProvider);
+    // ignore: unused_local_variable
     final userWaiting = ref.watch(storeWaitingUserCallNotifierProvider);
 
     print("listOfWaitingStoreProvider: ${listOfWaitingStoreProvider}");
@@ -216,6 +217,7 @@ class WaitingStoreItem extends ConsumerWidget {
                               ),
                               Consumer(
                                 builder: (context, ref, child) {
+                                  // ignore: unused_local_variable
                                   final storeWaitingInfo = ref
                                       .watch(storeWaitingInfoNotifierProvider);
                                   return StreamBuilder(

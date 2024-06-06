@@ -20,7 +20,7 @@ class OnboardingScreen extends ConsumerWidget {
       body: WaveformBackgroundWidget(
         backgroundColor: Colors.white,
         child: Stack(
-          alignment: Alignment.center,
+          alignment: Alignment.topCenter,
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -29,9 +29,9 @@ class OnboardingScreen extends ConsumerWidget {
                 TextWidget(
                   '오리',
                   fontFamily: 'Dovemayo_gothic',
-                  fontSize: 64,
-                  color: Color(0xFFFFFFBF52),
-                  letterSpacing: 50,
+                  fontSize: 32.sp,
+                  color: Colors.black,
+                  letterSpacing: 40.sp,
                 ),
                 SizedBox(
                   height: 20.h,
@@ -41,28 +41,29 @@ class OnboardingScreen extends ConsumerWidget {
                     color: Color(0xFFFFFFBF52),
                     child: Image.asset(
                       "assets/images/orre_logo.png",
-                      width: MediaQuery.sizeOf(context).width * 0.5,
-                      height: MediaQuery.sizeOf(context).width * 0.5,
+                      width: 200.h,
+                      height: 200.h,
                     ),
                   ),
                 ),
                 TextWidget(
                   '원격 줄서기 원격 주문 서비스',
                   fontFamily: 'Dovemayo_gothic',
-                  fontSize: 24,
+                  fontSize: 16.sp,
                   color: Color(0xFFFFFFBF52),
                 ),
                 Spacer(),
                 // 버튼들을 추가합니다.
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 32.0.w, vertical: 8.0.h),
                   child: BigButtonWidget(
                     onPressed: () {
                       // 로그인 로직을 추가합니다.
                       context.push('/user/signin');
                     },
                     backgroundColor: Color(0xFFFFFFBF52), // 버튼 배경색을 조절합니다.
-                    minimumSize: Size(double.infinity, 50), // 버튼 크기를 조절합니다.
+                    minimumSize: Size(double.infinity, 50.h), // 버튼 크기를 조절합니다.
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15.0),
                     ),
@@ -71,15 +72,15 @@ class OnboardingScreen extends ConsumerWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 32.0, vertical: 8.0),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 32.0.w, vertical: 8.0.h),
                   child: BigButtonWidget(
                     onPressed: () {
                       // 회원 가입 로직을 추가합니다.
                       context.push('/user/agreement');
                     },
                     backgroundColor: Color(0xFFDFDFDF), // 버튼 배경색을 조절합니다.
-                    minimumSize: Size(double.infinity, 50), // 버튼 크기를 조절합니다.
+                    minimumSize: Size(double.infinity, 50.h), // 버튼 크기를 조절합니다.
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15.0),
                     ),
@@ -94,7 +95,7 @@ class OnboardingScreen extends ConsumerWidget {
               right: 0,
               bottom: 0,
               child: Container(
-                height: 20,
+                height: 20.h,
                 color: Color(0xFFFFBF52),
               ),
             ),

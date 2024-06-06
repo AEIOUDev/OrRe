@@ -1,7 +1,7 @@
 name: orre
 description: "Smart Consumer Life with OrRe"
 publish_to: 'none'
-version: 1.0.1+3
+version: 1.0.2+4
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
