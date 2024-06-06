@@ -2,12 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>가게와 사용자님의 거리 차이를 계산하기 위해 위치 권한이 필요합니다!</string>
-	<key>NSSupportsLiveActivities</key>
-	<true/>
-	<key>LSApplicationCategoryType</key>
-	<string></string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -30,7 +24,23 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NFCReaderUsageDescription</key>
+	<string>웨이팅 등록 또는 주문 기능을 사용하려면 NFC 권한이 필요합니다!</string>
+	<key>NSCameraUsageDescription</key>
+	<string>QR code 스캔을 위해서 카메라 권한이 필요합니다</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>가게와 사용자님의 거리 차이를 계산하기 위해 위치 권한이 필요합니다!</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>가게와 사용자님의 거리 차이를 계산하기 위해 위치 권한이 필요합니다!</string>
+	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
@@ -39,25 +49,24 @@
 		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
-	<key>UIRequiresFullScreen</key>
-	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<key>UIRequiresFullScreen</key>
+	<false/>
 	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>가게와 사용자님의 거리 차이를 계산하기 위해 위치 권한이 필요합니다!</string>
-	<key>NFCReaderUsageDescription</key>
-	<string>웨이팅 등록 또는 주문 기능을 사용하려면 NFC 권한이 필요합니다!</string>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+	</array>
 	<key>com.apple.developer.nfc.readersession.felica.systemcodes</key>
 	<array>
 		<string>88B4</string>
@@ -348,11 +357,5 @@
 		<string>E828BD080F</string>
 		<string>F0000000030001</string>
 	</array>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>tel</string>
-	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>QR code 스캔을 위해서 카메라 권한이 필요합니다</string>
 </dict>
 </plist>

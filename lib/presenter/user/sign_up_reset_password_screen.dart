@@ -85,8 +85,7 @@ class SignUpResetPasswordScreen extends ConsumerWidget {
                               autofillHints: [AutofillHints.telephoneNumber],
                               controller: phoneNumberController,
                               inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'[0-9]'))
+                                PhoneInputFormatter(),
                               ],
                               minLength: 11,
                               maxLength: 11,

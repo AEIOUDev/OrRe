@@ -18,7 +18,6 @@ import 'package:orre/provider/first_boot_future_provider.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
-import 'package:orre/provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -375,7 +374,7 @@ class SplashScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     printd("\n\nSplashScreen 진입");
-    return FlutterSplashScreen.fadeIn(
+    return FlutterSplashScreen.scale(
       backgroundColor: Colors.white,
       onInit: () async {
         debugPrint("On Init");
