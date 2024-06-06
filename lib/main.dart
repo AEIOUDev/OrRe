@@ -61,11 +61,11 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   ); // Firebase를 현재 플랫폼에 맞게 초기화
 
-  initializeFirebaseMessaging(); // Firebase 메시징 초기화
+  await initializeNotification(); // Firebase 메시징 초기화
   // requestPermission(); // 권한 요청
 
-  SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp]); // 화면 방향을 세로로 고정
+  // SystemChrome.setPreferredOrientations(
+  //     [DeviceOrientation.portraitUp]); // 화면 방향을 세로로 고정
 
   // 네이버 지도 초기화
   if (!GetPlatform.isWeb) {
@@ -549,95 +549,74 @@ class LoadServiceLogWidget extends ConsumerWidget {
   }
 }
 
-Future<void> initializeFirebaseMessaging() async {
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+Future<void> backgroundHandler(RemoteMessage message) async {
+  // 백그라운드에서 메시지 수신 처리
+  _showNotification(message);
+}
 
-  const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // title
-    description: 'This channel is used for important notifications.',
-    importance: Importance.max,
-    playSound: true,
-    sound: RawResourceAndroidNotificationSound('orre'),
-  );
+Future<void> initializeNotification() async {
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  await notifications
+  await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
+      ?.createNotificationChannel(const AndroidNotificationChannel(
+          'high_importance_channel', 'high_importance_notification',
+          importance: Importance.max));
 
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
-
-  const DarwinInitializationSettings initializationSettingsIOS =
-      DarwinInitializationSettings(
-    requestAlertPermission: true,
-    requestBadgePermission: true,
-    requestSoundPermission: true,
+  await flutterLocalNotificationsPlugin.initialize(
+    const InitializationSettings(
+      android: AndroidInitializationSettings("@mipmap/ic_launcher"),
+      iOS: DarwinInitializationSettings(),
+    ),
+    onDidReceiveNotificationResponse: (details) {
+      // 액션 추가...
+      print("onDidReceiveNotificationResponse: ${details.payload}");
+    },
   );
-
-  const InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
-    iOS: initializationSettingsIOS,
-  );
-
-  await notifications.initialize(initializationSettings);
-
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    RemoteNotification? notification = message.notification;
-    AndroidNotification? android = message.notification?.android;
-
-    if (notification != null && android != null) {
-      notifications.show(
-        notification.hashCode,
-        notification.title,
-        notification.body,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            channel.id,
-            channel.name,
-            channelDescription: channel.description,
-            icon: android.smallIcon,
-            playSound: true,
-            sound: const RawResourceAndroidNotificationSound('orre'),
-          ),
-          iOS: DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-            sound: "slow_spring_board.aiff",
-          ),
-        ),
-      );
-    }
-  });
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
     alert: true,
     badge: true,
     sound: true,
   );
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    // 포어그라운드에서 메시지 수신 처리
+    _showNotification(message);
+  });
+
+  FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+
+  RemoteMessage? message = await FirebaseMessaging.instance.getInitialMessage();
+
+  if (message != null) {
+    // 앱이 종료된 상태에서 수신된 메시지 처리
+    _showNotification(message);
+    print("getInitialMessage: ${message.data['test_parameter1']}");
+  }
 }
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('Handling a background message ${message.messageId}');
-}
+void _showNotification(RemoteMessage message) {
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  RemoteNotification? notification = message.notification;
+  AndroidNotification? android = message.notification?.android;
 
-void requestPermission() async {
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-
-  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    print('User granted permission');
-  } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-    print('User granted provisional permission');
-  } else {
-    print('User declined or has not accepted permission');
+  if (notification != null && android != null) {
+    flutterLocalNotificationsPlugin.show(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'high_importance_channel',
+            'high_importance_notification',
+            importance: Importance.max,
+            priority: Priority.high,
+          ),
+          iOS: DarwinNotificationDetails(),
+        ),
+        payload: message.data['test_parameter1']);
   }
 }
 
