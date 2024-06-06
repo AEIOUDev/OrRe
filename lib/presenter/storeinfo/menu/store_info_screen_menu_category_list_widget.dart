@@ -43,7 +43,8 @@ class StoreMenuCategoryListWidget extends ConsumerWidget {
       );
     } else {
       return SliverToBoxAdapter(
-        child: StoreMenuCategoryTileWidget(storeDetailInfo: storeDetailInfo),
+        child: StoreMenuCategoryTileWidget(
+            storeDetailInfo: storeDetailInfo, categoryKR: categoryKR),
       );
     }
   }

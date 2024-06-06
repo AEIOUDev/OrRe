@@ -140,7 +140,7 @@ class SignInScreen extends ConsumerWidget {
                                     desc: "설정을 완료하기 위하여 재부팅이 필요합니다.",
                                     dialogType: DialogType.info,
                                     onPressed: () {
-                                      context.go("/boot/locationcheck");
+                                      context.go("/locationCheck");
                                     },
                                     btnText: "확인",
                                   );
@@ -148,7 +148,7 @@ class SignInScreen extends ConsumerWidget {
                               } else {
                                 WidgetsBinding.instance
                                     .addPostFrameCallback((_) {
-                                  context.go("/boot/locationcheck");
+                                  context.go("/locationCheck");
                                 });
                               }
                             } else {

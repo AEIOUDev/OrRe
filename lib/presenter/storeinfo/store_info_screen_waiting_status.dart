@@ -4,6 +4,8 @@ import 'package:orre/model/location_model.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
 import 'package:orre/model/store_waiting_request_model.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
+import 'package:orre/provider/network/https/get_service_log_state_notifier.dart';
+import 'package:orre/provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import '../../provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import '../../provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
@@ -128,59 +130,61 @@ class _WaitingStatusWidgetState extends ConsumerState<WaitingStatusWidget> {
         remainingTime != null &&
         remainingTime.inSeconds != -1) {
       children.add(
-        (remainingTime.inSeconds == 0)
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: Icon(
-                        Icons.watch_later,
-                        color: Color(0xFFFFB74D),
-                      )),
-                  Expanded(
-                      flex: 3,
-                      child: TextWidget(
-                        '입장 마감 시간이 지났습니다.',
-                        textAlign: TextAlign.start,
-                        color: Color(0xFFFFB74D),
-                      )),
-                  Expanded(
-                    flex: 3,
-                    child: TextWidget(
-                      '',
-                      textAlign: TextAlign.start,
-                      color: Color(0xFFFFB74D),
-                    ),
-                  )
-                ],
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: Icon(
-                        Icons.watch_later,
-                        color: Color(0xFFFFB74D),
-                      )),
-                  Expanded(
-                      flex: 3,
-                      child: TextWidget(
-                        '남은 입장 시간',
-                        textAlign: TextAlign.start,
-                        color: Color(0xFFFFB74D),
-                      )),
-                  Expanded(
-                    flex: 3,
-                    child: TextWidget(
-                      ': ${remainingTime.inSeconds} 초',
-                      textAlign: TextAlign.start,
-                      color: Color(0xFFFFB74D),
-                    ),
-                  )
-                ],
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+                flex: 1,
+                child: Icon(
+                  Icons.watch_later,
+                  color: Color(0xFFFFB74D),
+                )),
+            Expanded(
+                flex: 3,
+                child: TextWidget(
+                  '남은 입장 시간',
+                  textAlign: TextAlign.start,
+                  color: Color(0xFFFFB74D),
+                )),
+            Expanded(
+              flex: 3,
+              child: TextWidget(
+                ': ${remainingTime.inSeconds} 초',
+                textAlign: TextAlign.start,
+                color: Color(0xFFFFB74D),
               ),
+            )
+          ],
+        ),
+      );
+    } else if (ref.watch(waitingStatus) == StoreWaitingStatus.CALLED) {
+      children.add(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+                flex: 1,
+                child: Icon(
+                  Icons.watch_later,
+                  color: Color(0xFFFFB74D),
+                )),
+            Expanded(
+                flex: 3,
+                child: TextWidget(
+                  '입장 시간이 지났습니다.',
+                  textAlign: TextAlign.start,
+                  color: Color(0xFFFFB74D),
+                )),
+            Expanded(
+              flex: 3,
+              child: TextWidget(
+                '',
+                textAlign: TextAlign.start,
+                color: Color(0xFFFFB74D),
+              ),
+            )
+          ],
+        ),
       );
     } else {
       children.add(

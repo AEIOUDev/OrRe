@@ -246,7 +246,7 @@ class SignUpScreen extends ConsumerWidget {
                                     );
                               });
 
-                              context.go('/main');
+                              context.go('/user/onboarding');
 
                               // showDialog(
                               //   context: context,

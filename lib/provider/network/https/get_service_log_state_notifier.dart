@@ -216,6 +216,8 @@ class UserLogs {
           status.replaceFirst('${StoreWaitingStatus.CALLED.toEn()} : ', '');
       // printd("calledTimeOutString: $calledTimeOutString");
 
+      printd("statusChangeTime: $statusChangeTime");
+
       // {몇분}을 DateTime 객체의 minute으로 변환
       final calledTimeOutMinutes = int.parse(calledTimeOutString);
       calledTimeOutDateTime =
@@ -311,6 +313,7 @@ class ServiceLogStateNotifier extends StateNotifier<ServiceLogResponse> {
           final result = ServiceLogResponse.fromJson(jsonBody);
           state = result;
           // printd("state: $state");
+          printd("callTime = ${result.userLogs.last.calledTimeOut}");
 
           return result;
         }
@@ -332,6 +335,7 @@ class ServiceLogStateNotifier extends StateNotifier<ServiceLogResponse> {
 
   void reconnectWebsocketProvider(UserLogs lastUserLog) {
     printd("reconnectWebsocketProvider");
+    ref.read(waitingStatus.notifier).setWaitingStatus(lastUserLog.status);
 
     if (lastUserLog.status == StoreWaitingStatus.WAITING) {
       printd("현재 웨이팅 중! : ${lastUserLog.status}");

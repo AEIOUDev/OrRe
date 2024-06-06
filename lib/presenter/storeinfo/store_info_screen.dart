@@ -197,19 +197,20 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                       }
                     },
                   ),
-                  IconButton(
-                    icon: Icon(Icons.info_outline, color: Colors.white),
-                    onPressed: () {
-                      // Navigate to the store detail info page
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => StoreDetailInfoScreen(
-                      //         storeDetailInfo: storeDetailInfo),
-                      //   ),
-                      // );
-                    },
-                  ),
+                  // IconButton(
+                  //   icon: Icon(Icons.info_outline, color: Colors.white),
+                  //   onPressed: () {
+                  //     // Navigate to the store detail info page
+                  //     // Navigator.push(
+                  //     //   context,
+                  //     //   MaterialPageRoute(
+                  //     //     builder: (context) => StoreDetailInfoScreen(
+                  //     //         storeDetailInfo: storeDetailInfo),
+                  //     //   ),
+                  //     // );
+                  //   },
+                  // ),
+                  SizedBox(width: 8.w)
                 ],
                 expandedHeight: 240, // 높이 설정
                 flexibleSpace: FlexibleSpaceBar(

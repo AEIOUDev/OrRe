@@ -150,6 +150,11 @@ class StoreWaitingInfoListNotifier
     return storeWaitingInfo;
   }
 
+  Stream<StoreWaitingInfo> getStoreWaitingInfoStream(int storeCode) {
+    return Stream.fromIterable(state)
+        .where((info) => info.storeCode == storeCode);
+  }
+
   void reconnect() {
     print("StoreWaitingInfoListNotifier reconnect");
     unSubscribeAll();

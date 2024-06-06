@@ -18,6 +18,7 @@ import 'package:orre/provider/first_boot_future_provider.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
+import 'package:orre/provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,6 +28,7 @@ import 'package:go_router/go_router.dart';
 
 import 'presenter/homescreen/home_screen.dart';
 import 'presenter/homescreen/setting_screen.dart';
+import 'presenter/initial/app_update_screen.dart';
 import 'presenter/main/main_qr_scanner_screen.dart';
 import 'presenter/permission/permission_checker_screen.dart';
 import 'presenter/permission/permission_request_location.dart';
@@ -123,7 +125,7 @@ final GoRouter _router = GoRouter(
         }),
     GoRoute(
       path: '/initial/:initState',
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         printd("Navigating to InitialScreen, fullPath: ${state.fullPath}");
         final initState = int.parse(state.pathParameters['initState']!);
 
@@ -131,9 +133,10 @@ final GoRouter _router = GoRouter(
           LocationStateCheckWidget(),
           StompCheckScreen(),
           OnboardingScreen(),
+          AppUpdateScreen(),
         ];
 
-        return nextScreen[initState];
+        return NoTransitionPage(child: nextScreen[initState]);
       },
     ),
     GoRoute(
@@ -170,36 +173,36 @@ final GoRouter _router = GoRouter(
     ),
     GoRoute(
         path: '/locationCheck',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           printd(
               "Navigating to LocationStateCheckWidget, fullPath: ${state.fullPath}");
-          return LocationStateCheckWidget();
+          return NoTransitionPage(child: LocationStateCheckWidget());
         }),
     GoRoute(
         path: '/stompCheck',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           printd("Navigating to StompCheckScreen, fullPath: ${state.fullPath}");
-          return StompCheckScreen();
+          return NoTransitionPage(child: StompCheckScreen());
         }),
     GoRoute(
         path: "/networkError",
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           printd(
               "Navigating to NetworkErrorScreen, fullPath: ${state.fullPath}");
-          return NetworkErrorScreen();
+          return NoTransitionPage(child: NetworkErrorScreen());
         }),
     GoRoute(
         path: '/loadServiceLog',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           printd(
               "Navigating to LoadServiceLogWidget, fullPath: ${state.fullPath}");
-          return LoadServiceLogWidget();
+          return NoTransitionPage(child: LoadServiceLogWidget());
         }),
     GoRoute(
         path: '/main',
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           printd("Navigating to MainScreen, fullPath: ${state.fullPath}");
-          return MainScreen();
+          return NoTransitionPage(child: MainScreen());
         },
         routes: [
           GoRoute(
@@ -265,26 +268,26 @@ final GoRouter _router = GoRouter(
       routes: [
         GoRoute(
           path: 'stompcheck',
-          builder: (context, state) {
-            return StompCheckScreen();
+          pageBuilder: (context, state) {
+            return NoTransitionPage(child: StompCheckScreen());
           },
         ),
         GoRoute(
           path: 'userinfocheck',
-          builder: (context, state) {
-            return UserInfoCheckWidget();
+          pageBuilder: (context, state) {
+            return NoTransitionPage(child: UserInfoCheckWidget());
           },
         ),
         GoRoute(
           path: 'locationcheck',
-          builder: (context, state) {
-            return LocationStateCheckWidget();
+          pageBuilder: (context, state) {
+            return NoTransitionPage(child: LocationStateCheckWidget());
           },
         ),
         GoRoute(
           path: 'loadservicelog',
-          builder: (context, state) {
-            return LoadServiceLogWidget();
+          pageBuilder: (context, state) {
+            return NoTransitionPage(child: LoadServiceLogWidget());
           },
         ),
       ],
@@ -380,7 +383,8 @@ class SplashScreen extends ConsumerWidget {
       },
       onEnd: () {
         debugPrint("On End");
-        context.go('/initial/${ref.read(initStateProvider)}');
+        final initState = ref.read(initStateProvider);
+        context.go('/initial/${initState}');
       },
       childWidget: SizedBox(
         height: 200.h,
@@ -524,6 +528,9 @@ class LoadServiceLogWidget extends ConsumerWidget {
               } else {
                 // 서비스 로그 불러오기 성공. 나열 시작
                 print("서비스 로그 불러오기 성공 : ${snapshot.data!.userLogs.length}");
+                ref
+                    .read(serviceLogProvider.notifier)
+                    .reconnectWebsocketProvider(snapshot.data!.userLogs.last);
                 context.go('/main');
               }
             });

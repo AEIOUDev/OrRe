@@ -1,12 +1,63 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nfc_manager/nfc_manager.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/services/debug.services.dart';
+import 'package:orre/services/network/https_services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
+import '../services/nfc_services.dart';
+import 'app_state_provider.dart';
 
 Future<int> initializeApp(WidgetRef ref) async {
   printd("\n\ninitializeApp 진입");
+
+  final isNFCAvailable = await NfcManager.instance.isAvailable();
+  if (!isNFCAvailable) {
+    printd("NFC 사용 불가로 설정");
+    ref.read(nfcAvailableProvider.notifier).state = false;
+  } else {
+    printd("NFC 사용 가능으로 설정");
+    ref.read(nfcAvailableProvider.notifier).state = true;
+  }
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  ref.read(appVersionProvider.notifier).setAppVersion(packageInfo.version);
+
+  final jsonBody = {
+    'appCode': '1', // 오리의 경우 1
+    'appVersion': packageInfo.version,
+  };
+  final jsonString = json.encode(jsonBody);
+
+  final isNeedUpdate =
+      await HttpsService.postUniRequest('/appVersion', jsonString);
+
+  final isNeedUpdateResponse = json.decode(isNeedUpdate.body);
+  printd("latestVersion : ${isNeedUpdateResponse['appVersion']}");
+  ref
+      .read(latestAppVersionProvider.notifier)
+      .setLatestAppVersion(isNeedUpdateResponse['appVersion']);
+
+  if (APIResponseStatus.appVersionDifferent
+      .isEqualTo(isNeedUpdateResponse['status'])) {
+    printd("앱 버전 다름 : ${isNeedUpdateResponse['appVersion']}");
+    printd("업데이트 필요 유무 : ${isNeedUpdateResponse['appEssentialUpdate'] == 1}");
+    // if (packageInfo.version != isNeedUpdateResponse['appVersion']) {
+    if (isNeedUpdateResponse['appEssentialUpdate'] == 1) {
+      printd("앱 업데이트 필요");
+      return 3;
+    } else {
+      printd("앱 업데이트 불필요");
+    }
+  } else {
+    printd("앱 버전 같음");
+  }
+
+  printd("Stomp 연결 체크 시작");
+
   final isStompConnected = await stompConnectionCheck(ref);
   printd("isStompConnected : $isStompConnected");
   if (!isStompConnected) {

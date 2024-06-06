@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>가게와 사용자님의 거리 차이를 계산하기 위해 위치 권한이 필요합니다!</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>LSApplicationCategoryType</key>
@@ -37,6 +39,8 @@
 		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -44,15 +48,11 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>가게와 사용자님의 거리 차이를 계산하기 위해 위치 권한이 필요합니다!</string>
@@ -353,6 +353,6 @@
 		<string>tel</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-		<string>QR code 스캔을 위해서 카메라 권한이 필요합니다</string>
+	<string>QR code 스캔을 위해서 카메라 권한이 필요합니다</string>
 </dict>
 </plist>

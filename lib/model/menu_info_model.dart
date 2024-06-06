@@ -95,6 +95,7 @@ class MenuCategories extends Equatable {
       return MenuCategories(
         storeCode: json['storeCode'] ?? -1,
         categories: {
+          '추천 메뉴': "추천 메뉴",
           'A': json['a'] ?? null,
           'B': json['b'] ?? null,
           'C': json['c'] ?? null,
@@ -165,6 +166,7 @@ class MenuCategories extends Equatable {
     return MenuCategories(
       storeCode: -1,
       categories: {
+        '추천 메뉴': null,
         'A': null,
         'B': null,
         'C': null,
@@ -196,13 +198,14 @@ class MenuCategories extends Equatable {
   }
 
   List<String> getCategories() {
+    printd("getCategories");
     List<String> categories = [];
-    categories.add('추천 메뉴');
     categories.addAll(this
         .categories
         .values
         .where((element) => element != null)
         .cast<String>());
+    printd("categories: $categories");
     return categories;
   }
 

@@ -4,7 +4,7 @@
 //
 //  Created by 정민호 on 5/9/24.
 //
-
+#if !os(macOS)
 import ActivityKit
 import WidgetKit
 import SwiftUI
@@ -65,3 +65,4 @@ extension LiveActivitiesAppAttributes {
     return "\(id)_\(key)"
   }
 }
+#endif

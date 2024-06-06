@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/provider/network/connectivity_state_notifier.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
 import 'package:orre/widget/text/text_widget.dart';
@@ -15,14 +16,7 @@ class NetworkErrorScreen extends ConsumerWidget {
             TextWidget('네트워크 정보를 불러오는데 실패했습니다.'),
             ElevatedButton(
               onPressed: () {
-                ref.read(networkStateProvider).listen((event) {
-                  if (event) {
-                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                      // ignore: unused_result
-                      ref.refresh(stompClientStateNotifierProvider.notifier);
-                    });
-                  }
-                });
+                context.go('/stompCheck');
               },
               child: TextWidget('다시 시도하기'),
             ),
