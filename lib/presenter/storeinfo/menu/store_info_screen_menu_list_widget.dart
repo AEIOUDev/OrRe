@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:orre/model/menu_info_model.dart';
 import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_tilie_widget.dart';
+import 'package:orre/services/debug.services.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 import '../../../../model/store_info_model.dart';
@@ -21,13 +22,34 @@ class StoreMenuListWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    printd("StoreMenuListWidget build");
     // print("category: $category");
     // storeDetailInfo.menuInfo.forEach((element) {
     //   printd("element: ${element.menuCode}");
     // });
     final menuList =
         MenuInfo.getMenuByCategory(storeDetailInfo.menuInfo, category);
-    if (menuList.isEmpty) {
+    printd("카테고리: $category");
+    if (category == '추천 메뉴') {
+      final recommendMenuList = storeDetailInfo.getRecommendedMenus();
+      printd("추천 메뉴");
+      return ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: recommendMenuList.length,
+        itemBuilder: (context, index) {
+          final menu = recommendMenuList[index];
+          printd("menu: $menu");
+          return StoreMenuTileWidget(menu: menu);
+        },
+        separatorBuilder: (context, index) => Divider(
+          color: const Color(0xFFDFDFDF),
+          thickness: 2.r,
+          endIndent: 10.r,
+          indent: 10.r,
+        ),
+      );
+    } else if (menuList.isEmpty) {
       return Padding(
         padding: EdgeInsets.only(left: 16.r),
         child: Row(
@@ -41,24 +63,6 @@ class StoreMenuListWidget extends ConsumerWidget {
               color: const Color(0xFFDFDFDF),
             )
           ],
-        ),
-      );
-    } else if (category == '추천 메뉴') {
-      return ListView.separated(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: menuList.length,
-        itemBuilder: (context, index) {
-          final recommendMenuList =
-              MenuInfo.getRecommendedMenu(storeDetailInfo.menuInfo);
-          final menu = recommendMenuList[index];
-          return StoreMenuTileWidget(menu: menu);
-        },
-        separatorBuilder: (context, index) => Divider(
-          color: const Color(0xFFDFDFDF),
-          thickness: 2.r,
-          endIndent: 10.r,
-          indent: 10.r,
         ),
       );
     } else {

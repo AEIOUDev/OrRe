@@ -1,7 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-Future<String?> getAddressFromLatLngNaver(
+import '../debug.services.dart';
+
+// TODO : API 키 HIDING
+
+Future<List<String?>> getAddressFromLatLngNaver(
     double latitude, double longitude, int detail, bool includeArea1) async {
   final String clientId = 'mlravb678f'; // Naver API 클라이언트 ID
   final String clientSecret =
@@ -27,31 +31,50 @@ Future<String?> getAddressFromLatLngNaver(
       // includeArea1 : 광역/기초 자치단체 제외 여부
       // detail : 행정구역 세부 표현 단계 조절
       // 광역/기초 자치단체
+      printd("naver_map_services : $responseData");
       if (detail >= 1 && includeArea1) {
-        address += responseData['results'][0]['region']['area1']['name'];
+        address +=
+            (responseData['results'][0]['region']['area1']['name'] ?? '');
       }
       // 3단계 (일반구, 행정시)
       if (detail >= 2) {
-        address += ' ' + responseData['results'][0]['region']['area2']['name'];
+        address +=
+            ' ' + (responseData['results'][0]['region']['area2']['name'] ?? '');
       }
       // 4단계(읍면동)
       if (detail >= 3) {
-        address += ' ' + responseData['results'][0]['region']['area3']['name'];
+        address +=
+            ' ' + (responseData['results'][0]['region']['area3']['name'] ?? '');
       }
       // 5단계(리, 통)
       if (detail >= 4) {
-        address += ' ' + responseData['results'][0]['region']['area4']['name'];
+        address +=
+            ' ' + (responseData['results'][0]['region']['area4']['name'] ?? '');
       }
       // 6단계인 '반'은 넣지 않았음.
 
-      return address.trim(); // 주소 반환 전 앞뒤 공백 제거
+      // 4~5단계만 포함된 String과 전체 주소를 List로 반환
+      List<String?> addressList = [];
+      String placeName = '';
+
+      if (responseData['results'][0]['land']['name'] == null) {
+        placeName += (responseData['results'][0]['region']['area3']['name']);
+        placeName += ' ';
+        placeName += (responseData['results'][0]['region']['area4']['name']);
+      } else {
+        placeName = responseData['results'][0]['land']['name'];
+      }
+
+      addressList = [placeName.trim(), address.trim()];
+
+      return addressList;
     } else {
       // 요청이 실패했을 경우
       print('Failed to fetch address: ${response.statusCode}');
-      return null;
+      return [];
     }
   } catch (e) {
     print('Error fetching address: $e');
-    return null;
+    return [];
   }
 }

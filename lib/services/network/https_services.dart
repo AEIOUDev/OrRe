@@ -20,6 +20,7 @@ enum APIResponseStatus {
   waitingAlreadyJoin,
   serviceLogEmpty,
   serviceLogPhoneNumberFailure,
+  appVersionDifferent,
   etc
 }
 
@@ -62,7 +63,8 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return '서비스 로그 조회 결과 없음';
       case APIResponseStatus.serviceLogPhoneNumberFailure:
         return '서비스 로그 조회 실패: 일치하는 전화번호 없음';
-
+      case APIResponseStatus.appVersionDifferent:
+        return '필수 업데이트 필요';
       default:
         return '기타';
     }
@@ -106,7 +108,8 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return 'Service log empty';
       case APIResponseStatus.serviceLogPhoneNumberFailure:
         return 'Service log failure: No matching phone number';
-
+      case APIResponseStatus.appVersionDifferent:
+        return 'Essential update required';
       default:
         return 'Etc';
     }
@@ -148,6 +151,8 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return '1201';
       case APIResponseStatus.serviceLogPhoneNumberFailure:
         return '1202';
+      case APIResponseStatus.appVersionDifferent:
+        return '1301';
 
       case APIResponseStatus.success:
         return '200';
@@ -194,6 +199,8 @@ extension APIResponseStatusExtension on APIResponseStatus {
         return APIResponseStatus.serviceLogEmpty;
       case '1202':
         return APIResponseStatus.serviceLogPhoneNumberFailure;
+      case '1301':
+        return APIResponseStatus.appVersionDifferent;
 
       default:
         return APIResponseStatus.etc;
@@ -206,10 +213,15 @@ extension APIResponseStatusExtension on APIResponseStatus {
 }
 
 class HttpsService {
-  static const String _defaultUrl = 'https://orre.store/api/user';
+  static const String _uniUrl = 'https://orre.store/api';
+  static const String _defaultUrl = _uniUrl + '/user';
 
   static Uri getUri(String url) {
     return Uri.parse(_defaultUrl + url);
+  }
+
+  static Uri getUniUri(String url) {
+    return Uri.parse(_uniUrl + url);
   }
 
   static Future<http.Response> postRequest(String url, String jsonBody) async {
@@ -234,6 +246,32 @@ class HttpsService {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
+    return response;
+  }
+
+  static Future<http.Response> getUniRequest(String url) async {
+    printd('get url: ${getUniUri(url)}');
+    final response = await http.get(
+      getUniUri(url),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    return response;
+  }
+
+  static Future<http.Response> postUniRequest(
+      String url, String jsonBody) async {
+    printd('jsonBody: $jsonBody');
+    printd('post url: ${getUniUri(url)}');
+    final response = await http.post(
+      getUniUri(url),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonBody,
+    );
+    printd('response: ${response.body}');
     return response;
   }
 }

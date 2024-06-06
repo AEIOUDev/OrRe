@@ -28,7 +28,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:171129567626:android:a903ad078d8238f52db073",
         "android_client_info": {
-          "package_name": "com.example.orre"
+          "package_name": "com.aeioudev.orre"
         }
       },
       "oauth_client": [],
@@ -47,7 +47,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:171129567626:android:1719bbeca4c5f4742db073",
         "android_client_info": {
-          "package_name": "com.example.orre_manager"
+          "package_name": "com.aeioudev.orre_manager"
         }
       },
       "oauth_client": [],

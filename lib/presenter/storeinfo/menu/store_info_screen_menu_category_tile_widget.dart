@@ -4,19 +4,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_list_widget.dart';
+import 'package:orre/services/debug.services.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 import '../../../../model/store_info_model.dart';
 
 class StoreMenuCategoryTileWidget extends ConsumerWidget {
   final StoreDetailInfo storeDetailInfo;
+  final List<String> categoryKR;
 
-  const StoreMenuCategoryTileWidget({super.key, required this.storeDetailInfo});
+  const StoreMenuCategoryTileWidget(
+      {super.key, required this.storeDetailInfo, required this.categoryKR});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    printd("StoreMenuCategoryTileWidget build");
     final menuCategories = storeDetailInfo.menuCategories;
-    final categoryKR = menuCategories.getCategories();
 
     return ListView.separated(
       shrinkWrap: true,
@@ -24,11 +27,6 @@ class StoreMenuCategoryTileWidget extends ConsumerWidget {
       itemCount: categoryKR.length,
       itemBuilder: (context, index) {
         final category = categoryKR[index];
-        // print("category: $category");
-        final categoryCode = menuCategories.categories.keys.firstWhere(
-          (key) => menuCategories.categories[key] == category,
-          orElse: () => '',
-        );
         // print("categoryCode: $categoryCode");
         return Material(
           color: Colors.white,
@@ -60,9 +58,19 @@ class StoreMenuCategoryTileWidget extends ConsumerWidget {
               SizedBox(
                 height: 8.r,
               ),
-              StoreMenuListWidget(
-                storeDetailInfo: storeDetailInfo,
-                category: categoryCode,
+              Consumer(
+                builder: (context, ref, child) {
+                  // print("category: $category");
+                  final categoryCode =
+                      menuCategories.categories.keys.firstWhere(
+                    (key) => menuCategories.categories[key] == category,
+                    orElse: () => '추천 메뉴',
+                  );
+                  return StoreMenuListWidget(
+                    storeDetailInfo: storeDetailInfo,
+                    category: categoryCode,
+                  );
+                },
               ),
               SizedBox(
                 height: 8.r,

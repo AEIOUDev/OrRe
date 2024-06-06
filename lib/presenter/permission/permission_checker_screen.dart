@@ -1,8 +1,11 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
+import 'package:orre/widget/popup/alert_popup_widget.dart';
+import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../services/debug.services.dart';
@@ -64,22 +67,15 @@ class _PermissionCheckerScreenState
 
   void _showPermissionDeniedDialog(
       BuildContext context, List<String> deniedPermissions) {
-    showDialog(
+    AwesomeDialogWidget.showCustomDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('권한 허용 필요'),
-          content: Text(
-              '다음 권한들이 허용되지 않았습니다: ${deniedPermissions.join(', ')}.\n모든 권한을 허용해야 다음 단계로 진행할 수 있습니다.'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('확인'),
-              onPressed: () {
-                openAppSettings();
-              },
-            ),
-          ],
-        );
+      title: "권한 허용 필요",
+      desc:
+          "${deniedPermissions.join(', ')} 권한이 허용되지 않았습니다.\n모든 권한을 허용해야 다음 단계로 진행할 수 있습니다.",
+      dialogType: DialogType.warning,
+      btnText: "확인",
+      onPressed: () {
+        openAppSettings();
       },
     );
   }

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:orre/model/store_waiting_request_model.dart';
+import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import 'package:orre/provider/waiting_usercall_time_list_state_notifier.dart';
 import 'package:orre/services/network/https_services.dart';
 
@@ -29,12 +30,20 @@ class UserWaitingStatusStateNotifier
   UserWaitingStatusStateNotifier(this.ref) : super(null);
 
   void setWaitingStatus(StoreWaitingStatus status) {
+    // 웨이팅 상태를 변경하고 알림을 표시합니다.
+    printd("setWaitingStatus : $status");
+    // 이전 상태와 동일한 경우 알림을 표시하지 않습니다.
+    if (state == status) {
+      return;
+    }
     state = status;
     switch (status) {
       case StoreWaitingStatus.USER_CANCELED:
         NotificationService.showNotification(NotificationType.waitingCancel);
+        break;
       case StoreWaitingStatus.WAITING:
         NotificationService.showNotification(NotificationType.waitingSuccess);
+        break;
       case StoreWaitingStatus.ETC:
       case StoreWaitingStatus.ENTERD:
       case StoreWaitingStatus.STORE_CLOSED:
@@ -135,6 +144,11 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
             try {
               var decodedBody = json.decode(frame.body!);
               var firstResult = StoreWaitingRequest.fromJson(decodedBody);
+              printd(
+                  "subscribeToStoreWaitingRequest firstResult : $firstResult");
+              ref
+                  .read(serviceLogProvider.notifier)
+                  .fetchStoreServiceLog(userPhoneNumber);
               if (APIResponseStatus.success.isEqualTo(decodedBody['status'])) {
                 waitingAddProcess(firstResult);
                 ref
@@ -192,6 +206,9 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
               var decodedBody = json.decode(frame.body!); // JSON 문자열을 객체로 변환
               printd(
                   "decodedBody!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : $decodedBody");
+              ref
+                  .read(serviceLogProvider.notifier)
+                  .fetchStoreServiceLog(userPhoneNumber);
               if (APIResponseStatus.success.isEqualTo(decodedBody['status'])) {
                 printd("웨이팅 취소 성공!!");
                 waitingCancelProcess(true, storeCode, userPhoneNumber);
@@ -290,6 +307,10 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
   void waitingAddProcess(StoreWaitingRequest result) {
     if (APIResponseStatus.success.isEqualTo(result.status)) {
       state = result;
+
+      ref
+          .read(storeWaitingUserCallNotifierProvider.notifier)
+          .subscribeToUserCall(result.token.storeCode, result.token.waiting);
       var unsubscribeFunction = _subscribeRequest[result.token.storeCode];
       if (unsubscribeFunction != null) {
         unsubscribeFunction(unsubscribeHeaders: {}); // 구독 해제 함수 호출

@@ -20,6 +20,7 @@ class OnboardingScreen extends ConsumerWidget {
       body: WaveformBackgroundWidget(
         backgroundColor: Colors.white,
         child: Stack(
+          alignment: Alignment.center,
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
