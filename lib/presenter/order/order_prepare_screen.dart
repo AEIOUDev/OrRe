@@ -18,6 +18,7 @@ class _OrderPrepareScreenState extends ConsumerState<OrderPrepareScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     final _message = ref.watch(nfcScanMessageProvider);
 
     return Scaffold(

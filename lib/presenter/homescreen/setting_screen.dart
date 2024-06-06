@@ -12,6 +12,8 @@ import 'package:orre/widget/button/text_button_widget.dart';
 import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
+import '../../provider/app_state_provider.dart';
+
 class SettingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -196,9 +198,25 @@ class SettingScreen extends ConsumerWidget {
             Positioned(
               left: 0,
               right: 0,
-              bottom: 0,
+              bottom: 40.h,
               child: Container(
-                height: 20,
+                padding: const EdgeInsets.all(20),
+                child: Consumer(builder: (context, ref, child) {
+                  final appVersion = ref.watch(appVersionProvider);
+                  return TextWidget(
+                    "앱 버전 : $appVersion",
+                    fontSize: 5.sp,
+                    color: Colors.grey,
+                  );
+                }),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0.h,
+              child: Container(
+                height: 20.h,
                 color: Color(0xFFFFBF52),
               ),
             ),

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
