@@ -27,9 +27,14 @@ class _PermissionCheckerScreenState
 
   Future<void> _checkPermissions() async {
     bool locationPermissionGranted = await _checkLocationPermission();
+    bool notificationPermissionGranted = await _checkNotificationPermission();
 
-    if (!locationPermissionGranted) {
-      _showPermissionDeniedDialog(context, ["위치"]);
+    if (!locationPermissionGranted || !notificationPermissionGranted) {
+      List<String> deniedPermissions = [];
+      if (!locationPermissionGranted) deniedPermissions.add("위치");
+      if (!notificationPermissionGranted) deniedPermissions.add("알림");
+
+      _showPermissionDeniedDialog(context, deniedPermissions);
       return;
     }
 
@@ -51,11 +56,27 @@ class _PermissionCheckerScreenState
     return true;
   }
 
+  Future<bool> _checkNotificationPermission() async {
+    PermissionStatus status = await Permission.notification.status;
+    if (status.isDenied || status.isPermanentlyDenied) {
+      status = await Permission.notification.request();
+      if (status.isDenied || status.isPermanentlyDenied) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Future<void> _requestPermissions(BuildContext context) async {
     bool locationPermissionGranted = await _checkLocationPermission();
+    bool notificationPermissionGranted = await _checkNotificationPermission();
 
-    if (!locationPermissionGranted) {
-      _showPermissionDeniedDialog(context, ["위치"]);
+    if (!locationPermissionGranted || !notificationPermissionGranted) {
+      List<String> deniedPermissions = [];
+      if (!locationPermissionGranted) deniedPermissions.add("위치");
+      if (!notificationPermissionGranted) deniedPermissions.add("알림");
+
+      _showPermissionDeniedDialog(context, deniedPermissions);
       return;
     }
 
@@ -91,7 +112,7 @@ class _PermissionCheckerScreenState
             SizedBox(height: 50),
             TextWidget(
               "오리",
-              fontSize: 30,
+              fontSize: 30.sp,
               fontWeight: FontWeight.bold,
               color: Color(0xFFFFBF52),
             ),
@@ -99,7 +120,7 @@ class _PermissionCheckerScreenState
             TextWidget(
               "오리의 이용을 위해\n아래 권한을 허용해 주세요.",
               textAlign: TextAlign.center,
-              fontSize: 16,
+              fontSize: 16.sp,
               color: Colors.black,
               maxLines: 5,
             ),
@@ -161,7 +182,7 @@ class PermissionItem extends StatelessWidget {
                 SizedBox(height: 5),
                 TextWidget(
                   description,
-                  fontSize: 14,
+                  fontSize: 14.sp,
                   color: Colors.grey,
                   maxLines: 5,
                   textAlign: TextAlign.left,

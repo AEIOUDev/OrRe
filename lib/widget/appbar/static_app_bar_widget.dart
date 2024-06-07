@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/widget/text/text_widget.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class StaticAppBarWidget extends ConsumerWidget {
   final String title;
@@ -26,7 +27,7 @@ class StaticAppBarWidget extends ConsumerWidget {
           leading ?? SizedBox(width: 20),
           TextWidget(
             title,
-            fontSize: 32,
+            fontSize: 20.sp,
             color: Colors.white,
           ),
           Spacer(),

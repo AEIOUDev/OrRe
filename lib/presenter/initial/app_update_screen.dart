@@ -45,7 +45,7 @@ class AppUpdateScreen extends ConsumerWidget {
             TextWidget(
               '앱의 업데이트가 필요합니다.',
               fontFamily: 'Dovemayo_gothic',
-              fontSize: 24,
+              fontSize: 24.sp,
               color: Color(0xFFFFFFBF52),
             ),
             SizedBox(

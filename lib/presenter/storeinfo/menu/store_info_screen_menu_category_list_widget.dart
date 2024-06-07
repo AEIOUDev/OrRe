@@ -35,7 +35,7 @@ class StoreMenuCategoryListWidget extends ConsumerWidget {
               TextWidget(
                 '메뉴 정보가 없습니다.',
                 color: const Color(0xFFDFDFDF),
-                fontSize: 24.r,
+                fontSize: 24.sp,
               ),
             ],
           ),

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import '../../provider/location/location_securestorage_provider.dart';
 import '../../services/debug.services.dart'; // 필요에 따라 경로 수정
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LocationManagementScreen extends ConsumerStatefulWidget {
   @override
@@ -73,7 +74,7 @@ class _LocationManagementScreenState
                     label: TextWidget(
                       ' 지도로 위치를 설정해보세요.',
                       color: Color(0xFF999999),
-                      fontSize: 20,
+                      fontSize: 20.sp,
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFEEEEEE),
@@ -95,7 +96,7 @@ class _LocationManagementScreenState
                       color: isSame ? Color(0xFFFFFFBF52) : Color(0xFF999999)),
                   label: TextWidget(
                     isSame ? "현재 위치로 설정됨" : '현재 위치로 설정',
-                    fontSize: 20,
+                    fontSize: 20.sp,
                     color: isSame ? Color(0xFFFFFFBF52) : Color(0xFF999999),
                   ),
                   style: TextButton.styleFrom(

@@ -72,10 +72,4 @@ struct OrreWidget: Widget {
     }
 }
 
-#Preview(as: .systemSmall) {
-    OrreWidget()
-} timeline: {
-    SimpleEntry(date: .now, emoji: "😀")
-    SimpleEntry(date: .now, emoji: "🤩")
-}
 #endif

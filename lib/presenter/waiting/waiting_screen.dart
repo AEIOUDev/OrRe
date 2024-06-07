@@ -40,12 +40,17 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
           .watch(serviceLogProvider.notifier)
           .fetchStoreServiceLog(ref.read(userInfoProvider)!.phoneNumber);
       if (serviceLog.userLogs.isNotEmpty) {
+        printd("serviceLog: ${serviceLog.userLogs.length}");
         ref
             .watch(serviceLogProvider.notifier)
             .reconnectWebsocketProvider(serviceLog.userLogs.last);
+        printd(
+            "serviceLog.userLogs.last.storeCode: ${serviceLog.userLogs.last.storeCode}");
         ref
             .watch(storeWaitingInfoNotifierProvider.notifier)
             .subscribeToStoreWaitingInfo(serviceLog.userLogs.last.storeCode);
+        printd(
+            "subscribeToStoreWaitingInfo: ${serviceLog.userLogs.last.storeCode}");
       }
     }
     super.didChangeDependencies();
@@ -60,29 +65,18 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
     // ignore: unused_local_variable
     final userWaiting = ref.watch(storeWaitingUserCallNotifierProvider);
 
+    final storeWaitingProvider = ref.watch(storeWaitingInfoNotifierProvider);
+    printd("storeWaitingProvider: ${storeWaitingProvider.length}");
+
     print("listOfWaitingStoreProvider: ${listOfWaitingStoreProvider}");
 
     return Scaffold(
       backgroundColor: Color(0xFFDFDFDF),
-      appBar: AppBar(
-        backgroundColor: Color(0xFFDFDFDF),
-        title: TextWidget(' '),
-        actions: [
-          // IconButton(
-          //   icon: Icon(Icons.refresh),
-          //   onPressed: () {
-          //     ref
-          //         .read(storeWaitingRequestNotifierProvider.notifier)
-          //         .clearWaitingRequestList();
-          //   },
-          // ),
-        ],
-      ),
       body: Align(
         alignment: Alignment.bottomCenter,
         child: Container(
           width: 1.sw,
-          height: 0.9.sh,
+          height: 0.8.sh,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -91,36 +85,34 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
             ),
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(height: 20),
+              SizedBox(height: 8.h),
               TextWidget(
-                '웨이팅 목록',
-                fontSize: 42,
+                '웨이팅 조회',
+                fontSize: 32.sp,
                 color: Color(0xFFFFB74D),
               ),
               Divider(
                 color: Color(0xFFFFB74D),
                 thickness: 3,
-                endIndent: MediaQuery.sizeOf(context).width * 0.25,
-                indent: MediaQuery.sizeOf(context).width * 0.25,
+                endIndent: 0.25.sw,
+                indent: 0.25.sw,
               ),
-              SizedBox(height: 25),
+              SizedBox(height: 8.h),
               Expanded(
                 child: ListView.builder(
                   itemCount: 1,
                   itemBuilder: (context, irndex) {
                     final item = listOfWaitingStoreProvider;
-                    if (item == null) {
-                      printd("item == null");
+                    if (item == null)
                       return LastStoreItem();
-                    } else {
-                      printd("item != null");
+                    else
                       return WaitingStoreItem(item);
-                    }
                   },
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -158,9 +150,13 @@ class WaitingStoreItem extends ConsumerWidget {
               child: Form(
                 key: _formKey,
                 child: Container(
+                  alignment: Alignment.topCenter,
+                  transformAlignment: Alignment.topCenter,
                   margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -168,8 +164,8 @@ class WaitingStoreItem extends ConsumerWidget {
                           CachedNetworkImage(
                             imageUrl: storeDetailInfo.storeImageMain,
                             imageBuilder: (context, imageProvider) => Container(
-                              width: 120,
-                              height: 120,
+                              width: 100.w,
+                              height: 100.w,
                               decoration: BoxDecoration(
                                 shape: BoxShape.rectangle,
                                 image: DecorationImage(
@@ -182,37 +178,38 @@ class WaitingStoreItem extends ConsumerWidget {
                             errorWidget: (context, url, error) =>
                                 Icon(Icons.error),
                           ),
-                          SizedBox(width: 10),
+                          SizedBox(width: 10.w),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TextWidget(
                                 storeDetailInfo.storeName,
                                 textAlign: TextAlign.start,
-                                fontSize: 28,
+                                fontSize: 20.sp,
                               ), // 가게 이름 동
-                              SizedBox(height: 5),
                               Consumer(
                                 builder: (context, ref, child) {
                                   final waiting = ref.watch(waitingStatus);
                                   if (waiting == null) {
                                     return TextWidget('상태를 불러오는 중..',
-                                        fontSize: 24, color: Color(0xFFDD0000));
+                                        fontSize: 20.sp,
+                                        color: Color(0xFFDD0000));
                                   } else {
                                     return TextWidget(waiting.toKr(),
-                                        fontSize: 24, color: Color(0xFFDD0000));
+                                        fontSize: 20.sp,
+                                        color: Color(0xFFDD0000));
                                   }
                                 },
                               ),
                               Row(
                                 children: [
-                                  TextWidget('내 웨이팅 번호는 ', fontSize: 20),
+                                  TextWidget('내 웨이팅 번호는 ', fontSize: 16.sp),
                                   TextWidget(
                                     '${storeWaitingRequest.token.waiting}',
-                                    fontSize: 24,
+                                    fontSize: 20.sp,
                                     color: Color(0xFFDD0000),
                                   ),
-                                  TextWidget('번 이예요.', fontSize: 20),
+                                  TextWidget('번 이예요.', fontSize: 16.sp),
                                 ],
                               ),
                               Consumer(
@@ -236,7 +233,9 @@ class WaitingStoreItem extends ConsumerWidget {
                                         return Container();
                                       } else if (snapshot.hasError) {
                                         return TextWidget(
-                                            '네트워크 에러가 발생했어요. 앱을 재시작해주세요.');
+                                          '네트워크 에러가 발생했어요. 앱을 재시작해주세요.',
+                                          fontSize: 20.sp,
+                                        );
                                       } else {
                                         if (snapshot.data == null) {
                                           return TextWidget(
@@ -258,33 +257,38 @@ class WaitingStoreItem extends ConsumerWidget {
                                                   Duration(seconds: -1)) {
                                             if (userCallState.inSeconds == 0) {
                                               return TextWidget(
-                                                  '입장마감 시간이 지났어요.');
+                                                '입장마감 시간이 지났어요.',
+                                                fontSize: 16.sp,
+                                              );
                                             } else {
                                               return Row(
                                                 children: [
                                                   TextWidget(
                                                     '입장 마감까지  ',
-                                                    fontSize: 20,
+                                                    fontSize: 16.sp,
                                                     textAlign: TextAlign.start,
                                                   ),
                                                   TextWidget(
                                                     '${userCallState.inSeconds}',
-                                                    fontSize: 24,
+                                                    fontSize: 20.sp,
                                                     color: Color(0xFFDD0000),
                                                   ),
                                                   TextWidget('초 남았어요.',
-                                                      fontSize: 20),
+                                                      fontSize: 16.sp),
                                                 ],
                                               );
                                             }
                                           } else if (myWaitingIndex == -1 ||
                                               myWaitingIndex == null) {
-                                            return TextWidget('대기 중인 팀이 없습니다.');
+                                            return TextWidget(
+                                              '대기 중인 팀이 없습니다.',
+                                              fontSize: 16.sp,
+                                            );
                                           } else if (ref.watch(waitingStatus) ==
                                               StoreWaitingStatus.CALLED) {
                                             return TextWidget(
                                               '입장 시간이 지났어요.',
-                                              fontSize: 24,
+                                              fontSize: 16.sp,
                                               color: Color(0xFFDD0000),
                                             );
                                           } else {
@@ -292,16 +296,16 @@ class WaitingStoreItem extends ConsumerWidget {
                                               children: [
                                                 TextWidget(
                                                   '내 순서까지  ',
-                                                  fontSize: 20,
+                                                  fontSize: 16.sp,
                                                   textAlign: TextAlign.start,
                                                 ),
                                                 TextWidget(
                                                   '${myWaitingIndex}',
-                                                  fontSize: 24,
+                                                  fontSize: 20.sp,
                                                   color: Color(0xFFDD0000),
                                                 ),
                                                 TextWidget('팀 남았어요.',
-                                                    fontSize: 20),
+                                                    fontSize: 16.sp),
                                               ],
                                             );
                                           }
@@ -391,10 +395,14 @@ class LastStoreItem extends ConsumerWidget {
                         return GestureDetector(
                           onTap: () => context.push("/storeinfo/$storeCode"),
                           child: Container(
+                            alignment: Alignment.topCenter,
+                            transformAlignment: Alignment.topCenter,
                             margin: EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 16.0),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -403,8 +411,8 @@ class LastStoreItem extends ConsumerWidget {
                                       imageUrl: storeDetailInfo.storeImageMain,
                                       imageBuilder: (context, imageProvider) =>
                                           Container(
-                                        width: 80,
-                                        height: 80,
+                                        width: 100.w,
+                                        height: 100.w,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.rectangle,
                                           image: DecorationImage(
@@ -418,7 +426,7 @@ class LastStoreItem extends ConsumerWidget {
                                       errorWidget: (context, url, error) =>
                                           Icon(Icons.error),
                                     ),
-                                    SizedBox(width: 10),
+                                    SizedBox(width: 10.w),
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -426,24 +434,25 @@ class LastStoreItem extends ConsumerWidget {
                                         TextWidget(
                                           storeDetailInfo.storeName,
                                           textAlign: TextAlign.start,
-                                          fontSize: 28,
+                                          fontSize: 20.sp,
                                         ), // 가게 이름 동적으로 표시
                                         SizedBox(height: 5),
                                         TextWidget(
                                             serviceLog.userLogs.last.status
                                                 .toKr(),
-                                            fontSize: 24,
+                                            fontSize: 20.sp,
                                             color: Color(0xFFDD0000)),
                                         Row(
                                           children: [
                                             TextWidget('내 웨이팅 번호는 ',
-                                                fontSize: 20),
+                                                fontSize: 16.sp),
                                             TextWidget(
                                               '${serviceLog.userLogs.last.waiting}',
-                                              fontSize: 24,
+                                              fontSize: 20.sp,
                                               color: Color(0xFFDD0000),
                                             ),
-                                            TextWidget('번이었어요.', fontSize: 20),
+                                            TextWidget('번이었어요.',
+                                                fontSize: 16.sp),
                                           ],
                                         ),
                                       ],
@@ -457,7 +466,10 @@ class LastStoreItem extends ConsumerWidget {
                       }
                     });
               } else {
-                return TextWidget('서비스 로그 없음.', fontSize: 24);
+                return TextWidget(
+                  '서비스 로그 없음.',
+                  fontSize: 24.sp,
+                );
               }
             }
           });

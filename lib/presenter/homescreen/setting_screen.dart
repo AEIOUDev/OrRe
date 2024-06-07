@@ -27,7 +27,11 @@ class SettingScreen extends ConsumerWidget {
           child: StaticAppBarWidget(
             title: '설정',
             leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+                size: 20.sp,
+              ),
               onPressed: () {
                 context.pop();
               },
@@ -52,34 +56,34 @@ class SettingScreen extends ConsumerWidget {
                           TextWidget(
                             '${nickname}님.',
                             fontFamily: 'Dovemayo_gothic',
-                            fontSize: 36,
+                            fontSize: 24.sp,
                           ),
                           TextWidget(
                             '만나서 반가워요 :)',
                             fontFamily: 'Dovemayo_gothic',
-                            fontSize: 36,
+                            fontSize: 24.sp,
                           ),
                         ],
                       ),
                       SizedBox(
                         height: 60,
                       ),
-                      BigButtonWidget(
-                        onPressed: () {
-                          // 이용내역 확인 버튼 클릭 시 이용내역 확인 화면으로 이동
-                          context.push("/setting/servicelog");
-                        },
-                        backgroundColor: Color(0xFFDFDFDF),
-                        minimumSize: Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        text: '이용내역 확인',
-                        textColor: Colors.black,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
+                      // BigButtonWidget(
+                      //   onPressed: () {
+                      //     // 이용내역 확인 버튼 클릭 시 이용내역 확인 화면으로 이동
+                      //     context.push("/setting/servicelog");
+                      //   },
+                      //   backgroundColor: Color(0xFFDFDFDF),
+                      //   minimumSize: Size(double.infinity, 50),
+                      //   shape: RoundedRectangleBorder(
+                      //     borderRadius: BorderRadius.circular(15.0),
+                      //   ),
+                      //   text: '이용내역 확인',
+                      //   textColor: Colors.black,
+                      // ),
+                      // SizedBox(
+                      //   height: 10,
+                      // ),
                       // BigButtonWidget(
                       //   onPressed: () {},
                       //   backgroundColor: Color(0xFFDFDFDF),
@@ -114,7 +118,7 @@ class SettingScreen extends ConsumerWidget {
                         children: [
                           TextButtonWidget(
                             text: '로그아웃',
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             textColor: Color(0xFFDFDFDF),
                             onPressed: () {
                               AwesomeDialogWidget.showCustomDialogWithCancel(
@@ -153,7 +157,7 @@ class SettingScreen extends ConsumerWidget {
                           SizedBox(width: 10),
                           TextButtonWidget(
                             text: '회원탈퇴',
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             textColor: Color(0xFFDFDFDF),
                             onPressed: () {
                               AwesomeDialogWidget.showCustomDialogWithCancel(

@@ -22,8 +22,20 @@ class _OrderPrepareScreenState extends ConsumerState<OrderPrepareScreen> {
     final _message = ref.watch(nfcScanMessageProvider);
 
     return Scaffold(
-      appBar:
-          AppBar(title: TextWidget('주문하기'), backgroundColor: Color(0xFFFFB74D)),
+      appBar: AppBar(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(30),
+          ),
+        ),
+        title: TextWidget(
+          '주문하기',
+          fontSize: 20.sp,
+        ),
+        centerTitle: false,
+        backgroundColor: Color(0xFFFFB74D),
+        toolbarHeight: 58.h,
+      ),
       body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

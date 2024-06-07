@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:orre/widget/button/small_button_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -33,6 +34,7 @@ class _PermissionRequestLocationScreenState
     if (status.isGranted) {
       // Location permission granted, do something
       print("Location permission granted");
+      context.go('/locationCheck');
     } else if (status.isDenied) {
       // Location permission denied, show error message or handle accordingly
       print("Location permission denied");

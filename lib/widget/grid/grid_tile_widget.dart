@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 import '../../provider/home_screen/store_category_provider.dart';
@@ -24,6 +25,7 @@ class CategoryItem extends ConsumerWidget {
           child: TextWidget(
             category.toKoKr(),
             color: selectedTitle == category ? Colors.white : Colors.black,
+            fontSize: 16.sp,
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor:
