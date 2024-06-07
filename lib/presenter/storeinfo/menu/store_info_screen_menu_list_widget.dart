@@ -59,7 +59,7 @@ class StoreMenuListWidget extends ConsumerWidget {
             TextWidget(
               '메뉴 정보가 없습니다.',
               textAlign: TextAlign.start,
-              fontSize: 16.r,
+              fontSize: 16.sp.r,
               color: const Color(0xFFDFDFDF),
             )
           ],

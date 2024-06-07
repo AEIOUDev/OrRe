@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orre/widget/button/small_button_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AlertPopupWidget extends StatelessWidget {
   final String title;
@@ -39,7 +40,7 @@ class AlertPopupWidget extends StatelessWidget {
               subtitle!,
               textAlign: TextAlign.center,
               softWrap: true,
-              fontSize: 20,
+              fontSize: 20.sp,
               color: Color.fromARGB(255, 66, 49, 21),
             )
           : null,

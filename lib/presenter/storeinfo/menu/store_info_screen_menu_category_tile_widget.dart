@@ -45,7 +45,7 @@ class StoreMenuCategoryTileWidget extends ConsumerWidget {
                       width: 5.r,
                     ),
                     TextWidget(category,
-                        fontSize: 24.r,
+                        fontSize: 24.sp,
                         fontWeight: FontWeight.bold,
                         color: const Color(0xFFFFB74D)),
                     SizedBox(

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orre/model/store_list_model.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
@@ -48,20 +49,22 @@ class StoreItem extends ConsumerWidget {
         .watch(storeWaitingInfoNotifierProvider.notifier)
         .subscribeToStoreWaitingInfo(storeInfo.storeCode);
     final storeWaitingInfo = ref.watch(
-      storeWaitingInfoNotifierProvider.select((state) {
-        // state를 StoreWaitingInfo의 리스트로 가정합니다.
-        // storeInfo.storeCode와 일치하는 첫 번째 객체를 찾습니다.
-        // print("storeInfo.storeCode : ${storeInfo.storeCode}");
-        return state.firstWhere(
-          (storeWaitingInfo) =>
-              storeWaitingInfo.storeCode == storeInfo.storeCode,
-          orElse: () => StoreWaitingInfo(
-              storeCode: storeInfo.storeCode,
-              waitingTeamList: [],
-              enteringTeamList: [],
-              estimatedWaitingTimePerTeam: 0), // 일치하는 객체가 없을 경우 0을 반환합니다.
-        );
-      }),
+      storeWaitingInfoNotifierProvider.select(
+        (state) {
+          // state를 StoreWaitingInfo의 리스트로 가정합니다.
+          // storeInfo.storeCode와 일치하는 첫 번째 객체를 찾습니다.
+          // print("storeInfo.storeCode : ${storeInfo.storeCode}");
+          return state.firstWhere(
+            (storeWaitingInfo) =>
+                storeWaitingInfo.storeCode == storeInfo.storeCode,
+            orElse: () => StoreWaitingInfo(
+                storeCode: storeInfo.storeCode,
+                waitingTeamList: [],
+                enteringTeamList: [],
+                estimatedWaitingTimePerTeam: 0), // 일치하는 객체가 없을 경우 0을 반환합니다.
+          );
+        },
+      ),
     );
     return InkWell(
       onTap: () {
@@ -90,19 +93,19 @@ class StoreItem extends ConsumerWidget {
               children: [
                 TextWidget(
                   '${storeInfo.storeName}',
-                  fontSize: 28,
+                  fontSize: 20.sp,
                 ),
                 Spacer(),
                 TextWidget(
                   '거리 ${storeInfo.distance.round()}m',
-                  fontSize: 18,
+                  fontSize: 16.sp,
                   color: Color(0xFF999999),
                 ),
               ],
             ),
             TextWidget(
               '${storeInfo.storeShortIntroduce}',
-              fontSize: 18,
+              fontSize: 16.sp,
               color: Color(0xFF999999),
             ),
             Row(
@@ -111,12 +114,13 @@ class StoreItem extends ConsumerWidget {
                   Icons.people_alt,
                   color: Color(0xFFDD0000),
                   textDirection: TextDirection.rtl,
+                  size: 16.sp,
                 ),
                 SizedBox(width: 5),
                 TextWidget(
                   "대기 팀 수 ${storeWaitingInfo.waitingTeamList.length} 팀\t(약 ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam} 분)",
                   color: Color(0xFFDD0000),
-                  fontSize: 18,
+                  fontSize: 16.sp,
                 ),
               ],
             ),

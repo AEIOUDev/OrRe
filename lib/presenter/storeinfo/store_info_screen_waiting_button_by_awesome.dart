@@ -12,6 +12,7 @@ import '../../provider/network/websocket/store_waiting_info_request_state_notifi
 import '../../provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import '../../services/debug.services.dart';
 import '../../services/network/https_services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 final peopleNumberProvider = StateProvider<int>((ref) => 1);
 final waitingSuccessDialogProvider = StateProvider<bool?>((ref) => null);
@@ -116,8 +117,8 @@ class WaitingButtonAwesome extends ConsumerWidget {
                         Container(
                           padding: EdgeInsets.symmetric(
                               horizontal: 12, vertical: 12),
-                          width: 75,
-                          height: 75,
+                          width: 75.w,
+                          height: 75.h,
                           decoration: BoxDecoration(
                             border:
                                 Border.all(color: Color(0xFFFFB74D), width: 2),
@@ -128,7 +129,7 @@ class WaitingButtonAwesome extends ConsumerWidget {
                             suffix: "명",
                             textStyle: TextStyle(
                               fontFamily: 'Dovemayo_gothic',
-                              fontSize: 36,
+                              fontSize: 32.sp,
                             ),
                           ),
                         ),

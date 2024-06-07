@@ -32,6 +32,12 @@ Future<List<String?>> getAddressFromLatLngNaver(
       // detail : 행정구역 세부 표현 단계 조절
       // 광역/기초 자치단체
       printd("naver_map_services : $responseData");
+
+      // 네이버 API가 지원하는 위치가 아닌 경우 기본값 반환
+      if (responseData['status']['code'] == 3) {
+        printd("지원범위 밖");
+        return ["지원범위 밖", "지원범위 밖"];
+      }
       if (detail >= 1 && includeArea1) {
         address +=
             (responseData['results'][0]['region']['area1']['name'] ?? '');

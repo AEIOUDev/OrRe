@@ -155,8 +155,8 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                 backgroundColor: Color(0xFFFFB74D), // 배경색 설정
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(25), // 아래쪽 모서리 둥글게
-                    bottomRight: Radius.circular(25),
+                    bottomLeft: Radius.circular(30), // 아래쪽 모서리 둥글게
+                    bottomRight: Radius.circular(30),
                   ),
                 ),
                 leading: IconButton(
@@ -215,11 +215,11 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                 expandedHeight: 240, // 높이 설정
                 flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,
-                  titlePadding: const EdgeInsets.only(bottom: 12),
+                  titlePadding: EdgeInsets.only(bottom: 8.h),
                   title: TextWidget(
                     storeDetailInfo.storeName,
                     color: Colors.white,
-                    fontSize: 32,
+                    fontSize: 24.sp,
                     textAlign: TextAlign.center,
                   ),
                   background: Container(
@@ -243,6 +243,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                   ),
                 ),
                 pinned: true, // 스크롤시 고정
+                toolbarHeight: 58.h,
               ),
               WaitingStatusWidget(
                 storeCode: widget.storeCode,

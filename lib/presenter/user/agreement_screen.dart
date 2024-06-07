@@ -90,7 +90,7 @@ class AgreementScreen extends ConsumerWidget {
                       SizedBox(width: 10),
                       TextWidget(
                         '오리 서비스 이용약관 요약',
-                        fontSize: 20,
+                        fontSize: 20.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ],
@@ -114,7 +114,7 @@ class AgreementScreen extends ConsumerWidget {
                                 flex: 3,
                                 child: TextWidget(
                                   '수집 목적',
-                                  fontSize: 16,
+                                  fontSize: 16.sp,
                                   textAlign: TextAlign.start,
                                   color: Color(0xFF999999),
                                 ),
@@ -123,7 +123,7 @@ class AgreementScreen extends ConsumerWidget {
                                 flex: 7,
                                 child: TextWidget(
                                   ': 서비스 이용',
-                                  fontSize: 16,
+                                  fontSize: 16.sp,
                                   textAlign: TextAlign.start,
                                   color: Color(0xFF999999),
                                 ),
@@ -136,7 +136,7 @@ class AgreementScreen extends ConsumerWidget {
                                 flex: 3,
                                 child: TextWidget(
                                   '수집 항목',
-                                  fontSize: 16,
+                                  fontSize: 16.sp,
                                   textAlign: TextAlign.start,
                                   color: Color(0xFF999999),
                                 ),
@@ -145,7 +145,7 @@ class AgreementScreen extends ConsumerWidget {
                                 flex: 7,
                                 child: TextWidget(
                                   ': 전화번호, 위치',
-                                  fontSize: 16,
+                                  fontSize: 16.sp,
                                   textAlign: TextAlign.start,
                                   color: Color(0xFF999999),
                                 ),
@@ -158,7 +158,7 @@ class AgreementScreen extends ConsumerWidget {
                                 flex: 3,
                                 child: TextWidget(
                                   '보유 및 이용 기간',
-                                  fontSize: 16,
+                                  fontSize: 16.sp,
                                   textAlign: TextAlign.start,
                                   color: Color(0xFF999999),
                                 ),
@@ -167,7 +167,7 @@ class AgreementScreen extends ConsumerWidget {
                                 flex: 7,
                                 child: TextWidget(
                                   ': 보유 및 이용하는 기간은 탈퇴 시까지',
-                                  fontSize: 16,
+                                  fontSize: 16.sp,
                                   textAlign: TextAlign.start,
                                   color: Color(0xFF999999),
                                 ),
@@ -185,7 +185,7 @@ class AgreementScreen extends ConsumerWidget {
                       SizedBox(width: 10),
                       TextWidget(
                         '전체 이용약관 보기',
-                        fontSize: 20,
+                        fontSize: 20.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ],
@@ -207,7 +207,7 @@ class AgreementScreen extends ConsumerWidget {
                           agreement,
                           style: TextStyle(
                             fontFamily: 'Dovemayo_gothic',
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             color: Color(0xFF999999),
                           ),
                           textAlign: TextAlign.justify,

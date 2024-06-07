@@ -73,13 +73,13 @@ class PopupDialog {
                 ),
                 TextWidget(
                   title,
-                  fontSize: 24.r,
+                  fontSize: 24.sp,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8),
                   child: TextWidget(
                     '$price 원',
-                    fontSize: 16.r,
+                    fontSize: 16.sp.r,
                   ),
                 ),
                 Padding(
@@ -87,7 +87,7 @@ class PopupDialog {
                   child: TextWidget(
                     info,
                     maxLines: 3,
-                    fontSize: 16.r,
+                    fontSize: 16.sp.r,
                     color: const Color(0xFF5F5F5F),
                     overflow: TextOverflow.ellipsis,
                   ),

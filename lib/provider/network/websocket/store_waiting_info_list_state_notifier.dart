@@ -42,6 +42,7 @@ class StoreWaitingInfoListNotifier
             if (decodedBody is Map<String, dynamic>) {
               // 첫 번째 요소를 추출하고 StoreWaitingInfo 인스턴스로 변환
               var firstResult = StoreWaitingInfo.fromJson(decodedBody);
+              printd("가게 웨이팅 리스트 정보 : ${firstResult.waitingTeamList}");
 
               // 이미 있는 storeCode인 경우, 해당 요소의 내용을 업데이트
               var existingIndex = state.indexWhere(

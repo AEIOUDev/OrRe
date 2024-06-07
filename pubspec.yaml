@@ -1,7 +1,7 @@
 name: orre
 description: "Smart Consumer Life with OrRe"
 publish_to: 'none'
-version: 1.0.3+5
+version: 1.0.5+7
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -10,6 +10,7 @@ environment:
 dependencies:
   animated_flip_counter: ^0.3.4
   another_flutter_splash_screen: ^1.2.0
+  app_links: ^6.1.1
   awesome_dialog: ^3.2.1
   awesome_snackbar_content: ^0.1.3
   cached_network_image: ^3.3.1
@@ -27,7 +28,7 @@ dependencies:
   flutter_phone_direct_caller: ^2.1.1
   flutter_riverpod: ^2.4.10
   flutter_screenutil: ^5.9.1
-  flutter_secure_storage: ^9.0.0
+  flutter_secure_storage: ^9.2.2
   flutter_svg: ^2.0.10+1
   flutter_test:
     sdk: flutter

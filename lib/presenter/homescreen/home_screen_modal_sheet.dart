@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/widget/button/text_button_widget.dart';
@@ -17,15 +18,20 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
     final nowSortType = ref.watch(selectSortTypeProvider);
 
     return SizedBox(
-      width: 145,
-      height: 40,
+      width: 120.w,
+      height: 40.h,
       child: ElevatedButton(
         onPressed: () {
           showModalBottomSheet<void>(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(30),
+              ),
+            ),
             context: context,
             builder: (BuildContext context) {
               return Container(
-                color: Colors.white,
+                color: Colors.transparent,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -36,7 +42,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                       '목록',
                       style: TextStyle(
                         fontFamily: 'Dovemayo_gothic',
-                        fontSize: 28,
+                        fontSize: 24.sp,
                       ),
                     ),
                     SizedBox(
@@ -53,6 +59,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                     ListTile(
                       title: TextWidget(
                         StoreListSortType.basic.toKoKr(),
+                        fontSize: 20.sp,
                         color: nowSortType == StoreListSortType.basic
                             ? Color(0xFFFFBF52)
                             : Colors.black,
@@ -101,6 +108,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                             ? Color(0xFFFFBF52)
                             : Colors.black,
                         textAlign: TextAlign.start,
+                        fontSize: 20.sp,
                       ),
                       trailing: nowSortType == StoreListSortType.nearest
                           ? Icon(Icons.check, color: Color(0xFFFFBF52))
@@ -154,7 +162,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
                     ),
                     TextButtonWidget(
                       text: '닫기',
-                      fontSize: 24,
+                      fontSize: 24.sp,
                       onPressed: () => context.pop(),
                     ),
                     SizedBox(
@@ -177,12 +185,13 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            TextWidget(nowSortType.toKoKr()),
+            TextWidget(nowSortType.toKoKr(), fontSize: 20.sp),
             Transform.rotate(
               angle: 90 * 3.14 / 180,
               child: Icon(
                 Icons.sync_alt,
                 color: Colors.black,
+                size: 20.sp,
               ),
             )
           ],

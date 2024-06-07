@@ -188,7 +188,7 @@ class SignUpScreen extends ConsumerWidget {
                                 text: timer == 0
                                     ? "인증 번호 받기"
                                     : timer.toString() + "초 후 재시도",
-                                fontSize: 16,
+                                fontSize: 16.sp,
                               ),
                             ),
                           );
