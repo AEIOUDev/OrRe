@@ -24,6 +24,7 @@ import '../../services/nfc_services.dart';
 import '../../widget/popup/awesome_dialog_widget.dart';
 import '../order/order_prepare_screen.dart';
 import '../waiting/waiting_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 final selectedIndexProvider = StateProvider<int>((ref) {
   return 1; // 기본적으로 '홈'을 선택 상태로 시작합니다.
@@ -297,7 +298,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
                 iconColor: Colors.white,
                 bubbleColor: Color(0xFFFFBF52),
                 icon: Icons.phonelink_ring_rounded,
-                titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+                titleStyle: TextStyle(fontSize: 16.sp, color: Colors.white),
                 onPress: () {
                   startNFCScan(ref, context);
                   _animationController.reverse();
@@ -309,7 +310,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
               iconColor: Colors.white,
               bubbleColor: Color(0xFFFFBF52),
               icon: Icons.qr_code_scanner_rounded,
-              titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+              titleStyle: TextStyle(fontSize: 16.sp, color: Colors.white),
               onPress: () {
                 Permission.camera.request().then((value) {
                   if (value.isGranted) {

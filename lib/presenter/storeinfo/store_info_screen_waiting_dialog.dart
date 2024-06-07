@@ -84,7 +84,7 @@
 //                       suffix: "명",
 //                       textStyle: TextStyle(
 //                         fontFamily: 'Dovemayo_gothic',
-//                         fontSize: 36,
+//                         fontSize: 36.sp,
 //                       ),
 //                     ),
 //                   ),

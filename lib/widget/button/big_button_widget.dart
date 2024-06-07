@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 class BigButtonWidget extends ConsumerWidget {
@@ -28,7 +29,7 @@ class BigButtonWidget extends ConsumerWidget {
       onPressed: () {
         onPressed();
       },
-      child: TextWidget(text, color: textColor),
+      child: TextWidget(text, color: textColor, fontSize: 20.sp),
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         minimumSize: minimumSize,

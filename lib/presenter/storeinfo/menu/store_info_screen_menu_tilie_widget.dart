@@ -30,7 +30,7 @@ class StoreMenuTileWidget extends ConsumerWidget {
                   TextWidget(
                     menu.menu,
                     textAlign: TextAlign.left,
-                    fontSize: 16.r,
+                    fontSize: 16.sp.r,
                   ),
                   SizedBox(
                     height: 4.r,
@@ -38,14 +38,14 @@ class StoreMenuTileWidget extends ConsumerWidget {
                   TextWidget(
                     menu.introduce,
                     textAlign: TextAlign.left,
-                    fontSize: 16.r,
+                    fontSize: 16.sp.r,
                     color: const Color.fromARGB(255, 133, 133, 133),
                     overflow: TextOverflow.ellipsis,
                   ),
                   TextWidget(
                     '${menu.price}원',
                     textAlign: TextAlign.left,
-                    fontSize: 16.r,
+                    fontSize: 16.sp.r,
                   ),
                 ],
               ),

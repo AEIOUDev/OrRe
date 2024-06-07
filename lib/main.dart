@@ -1,4 +1,5 @@
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
+import 'package:app_links/app_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:internet_connectivity_checker/internet_connectivity_checker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:orre/presenter/error/network_error_screen.dart';
+import 'package:orre/presenter/error/server_error_screen.dart';
 import 'package:orre/presenter/homescreen/service_log_screen.dart';
 import 'package:orre/presenter/location/add_location_screen.dart';
 import 'package:orre/presenter/location/location_management_screen.dart';
@@ -66,6 +68,13 @@ Future<void> main() async {
 
   // SystemChrome.setPreferredOrientations(
   //     [DeviceOrientation.portraitUp]); // 화면 방향을 세로로 고정
+
+  final _appLinks = AppLinks(); // AppLinks is singleton
+  _appLinks.uriLinkStream.listen((uri) {
+    printd("uri: $uri");
+  }, onError: (Object err) {
+    printd("err: $err");
+  });
 
   // 네이버 지도 초기화
   if (!GetPlatform.isWeb) {
@@ -133,6 +142,7 @@ final GoRouter _router = GoRouter(
           StompCheckScreen(),
           OnboardingScreen(),
           AppUpdateScreen(),
+          ServerErrorScreen(),
         ];
 
         return NoTransitionPage(child: nextScreen[initState]);
@@ -254,10 +264,17 @@ final GoRouter _router = GoRouter(
           return PermissionRequestPhoneScreen();
         }),
     GoRoute(
-        path: "/permission/location",
-        builder: (context, state) {
-          return PermissionRequestLocationScreen();
-        }),
+      path: "/permission/location",
+      builder: (context, state) {
+        return PermissionRequestLocationScreen();
+      },
+    ),
+    GoRoute(
+      path: '/userinfocheck',
+      pageBuilder: (context, state) {
+        return NoTransitionPage(child: UserInfoCheckWidget());
+      },
+    ),
     GoRoute(
       path: '/boot',
       builder: (context, state) {
@@ -370,20 +387,33 @@ class InitialScreen extends ConsumerWidget {
   }
 }
 
-class SplashScreen extends ConsumerWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends ConsumerState<SplashScreen> {
+  @override
+  Widget build(BuildContext context) {
     printd("\n\nSplashScreen 진입");
-    return FlutterSplashScreen.scale(
+
+    ref.listen(initStateProvider, (previous, next) {
+      if (previous != next) {
+        context.go('/initial/${next}');
+      }
+    });
+
+    return FlutterSplashScreen.fadeIn(
       backgroundColor: Colors.white,
       onInit: () async {
         debugPrint("On Init");
-        ref.read(initStateProvider.notifier).state = await initializeApp(ref);
+        final initState = await initializeApp(ref);
+        if (mounted) {
+          ref.read(initStateProvider.notifier).state = initState;
+        }
       },
       onEnd: () {
         debugPrint("On End");
-        final initState = ref.read(initStateProvider);
-        context.go('/initial/${initState}');
       },
       childWidget: SizedBox(
         height: 200.h,
@@ -391,6 +421,8 @@ class SplashScreen extends ConsumerWidget {
         child: Image.asset("assets/images/orre_logo.png"),
       ),
       onAnimationEnd: () => debugPrint("On Fade In End"),
+      duration: const Duration(milliseconds: 2000),
+      animationDuration: const Duration(milliseconds: 2000),
     );
   }
 }
@@ -496,7 +528,7 @@ class LoadServiceLogWidget extends ConsumerWidget {
       // 유저 정보 없음
       print("유저 정보 없음, UserInfoCheckWidget() 호출");
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.go('/userinfo_check');
+        context.go('/userinfocheck');
       });
       return Scaffold(
         body: CustomLoadingIndicator(),
@@ -613,6 +645,8 @@ void _showNotification(RemoteMessage message) {
             'high_importance_notification',
             importance: Importance.max,
             priority: Priority.high,
+            playSound: true,
+            enableVibration: true,
           ),
           iOS: DarwinNotificationDetails(),
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 class TextInputWidget extends ConsumerWidget {
@@ -51,7 +52,7 @@ class TextInputWidget extends ConsumerWidget {
               title!,
               fontWeight: FontWeight.bold,
               color: Color(0xFFFFBF52),
-              fontSize: 16,
+              fontSize: 16.sp,
               textAlign: TextAlign.left,
             ),
           ),
@@ -61,7 +62,7 @@ class TextInputWidget extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 0, 4),
             child: TextWidget(
               subTitle!,
-              fontSize: 12,
+              fontSize: 12.sp,
               color: Color(0xFFFFBF52),
             ),
           ),

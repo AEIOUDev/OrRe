@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/provider/error_state_notifier.dart';
@@ -37,7 +38,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
         title: TextWidget(
           '위치 설정하기', // 텍스트
           color: Color(0xFFFFB74D),
-          fontSize: 32,
+          fontSize: 32.sp,
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios), // 뒤로 가기 아이콘
@@ -55,7 +56,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
             children: [
               SizedBox(height: 16),
               TextWidget('지도를 움직여 원하는 위치로 이동하세요.',
-                  textAlign: TextAlign.start, fontSize: 20),
+                  textAlign: TextAlign.start, fontSize: 20.sp),
               SizedBox(height: 16),
             ],
           ),
@@ -183,7 +184,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // TODO : 엄마 여기 위치 추가되면 마커된 주소 가져와서 보여줘. <- 일단 보류
-                      // TextWidget(address, fontSize: 20),
+                      // TextWidget(address, fontSize: 20.sp),
                       SizedBox(height: 8),
                       Container(
                         width: MediaQuery.sizeOf(context).width,

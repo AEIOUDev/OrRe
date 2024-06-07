@@ -49,7 +49,7 @@ class ServiceLogScreen extends ConsumerWidget {
                   ? Center(
                       child: TextWidget(
                         "이용내역이 없습니다.",
-                        fontSize: 32,
+                        fontSize: 32.sp,
                         color: Colors.grey,
                       ),
                     )
@@ -61,70 +61,70 @@ class ServiceLogScreen extends ConsumerWidget {
                           children: [
                             TextWidget("index : $index",
                                 textAlign: TextAlign.left,
-                                fontSize: 32,
+                                fontSize: 32.sp,
                                 fontWeight: FontWeight.bold),
                             TextWidget(
                                 "historyId : " +
                                     snapshot.data!.userLogs[index].historyNum
                                         .toString(),
                                 textAlign: TextAlign.left,
-                                fontSize: 16),
+                                fontSize: 16.sp),
                             TextWidget(
                                 "Status : " +
                                     snapshot.data!.userLogs[index].status
                                         .toKr(),
                                 textAlign: TextAlign.left,
-                                fontSize: 16),
+                                fontSize: 16.sp),
                             TextWidget(
                                 "Make Waiting Time : " +
                                     snapshot
                                         .data!.userLogs[index].makeWaitingTime
                                         .toString(),
                                 textAlign: TextAlign.left,
-                                fontSize: 16),
+                                fontSize: 16.sp),
                             TextWidget(
                                 "Store Code : " +
                                     snapshot.data!.userLogs[index].storeCode
                                         .toString(),
                                 textAlign: TextAlign.left,
-                                fontSize: 16),
+                                fontSize: 16.sp),
                             TextWidget(
                                 "Status Change Time : " +
                                     snapshot
                                         .data!.userLogs[index].statusChangeTime
                                         .toString(),
                                 textAlign: TextAlign.left,
-                                fontSize: 16),
+                                fontSize: 16.sp),
                             TextWidget(
                                 "Paid Money : " +
                                     snapshot.data!.userLogs[index].paidMoney
                                         .toString(),
                                 textAlign: TextAlign.left,
-                                fontSize: 16),
+                                fontSize: 16.sp),
                             TextWidget(
                                 "Ordered Menu : " +
                                     snapshot.data!.userLogs[index].orderedMenu
                                         .toString(),
                                 textAlign: TextAlign.left,
-                                fontSize: 16),
+                                fontSize: 16.sp),
                             TextWidget(
                                 "User Phone Number : " +
                                     snapshot
                                         .data!.userLogs[index].userPhoneNumber,
                                 textAlign: TextAlign.left,
-                                fontSize: 16),
+                                fontSize: 16.sp),
                             TextWidget(
                                 "User Waiting Number : " +
                                     snapshot.data!.userLogs[index].waiting
                                         .toString(),
                                 textAlign: TextAlign.left,
-                                fontSize: 16),
+                                fontSize: 16.sp),
                             TextWidget(
                                 "Waiting Person Number : " +
                                     snapshot.data!.userLogs[index].personNumber
                                         .toString(),
                                 textAlign: TextAlign.left,
-                                fontSize: 16),
+                                fontSize: 16.sp),
                             SizedBox(height: 20),
                           ],
                         );

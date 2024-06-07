@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/services.dart';
 import 'package:orre/model/user_info_model.dart';
 import 'package:orre/services/network/https_services.dart';
 import 'package:riverpod/riverpod.dart';
@@ -21,18 +20,27 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
 
   final _storage = FlutterSecureStorage();
 
-  void updateUserInfo(UserInfo userInfo) {
+  void updateUserInfo(UserInfo userInfo) async {
     state = userInfo;
-    saveUserInfo();
+    await saveUserInfo();
   }
 
-  void saveUserInfo() {
-    printd("saveUserInfo: $state");
-    _storage.write(key: 'userPhoneNumber', value: state?.phoneNumber);
-    _storage.write(key: 'userPassword', value: state?.password);
-    _storage.write(key: 'name', value: state?.name);
-    _storage.write(key: 'fcmToken', value: state?.fcmToken);
-    printd("saveUserInfo: ${state?.phoneNumber}");
+  Future<void> saveUserInfo() async {
+    try {
+      final userInfo = state;
+      if (userInfo == null) {
+        printd("saveUserInfo: userInfo is null");
+        return;
+      }
+      printd("saveUserInfo: $userInfo");
+      await _storage.write(key: 'userPhoneNumber', value: userInfo.phoneNumber);
+      await _storage.write(key: 'userPassword', value: userInfo.password);
+      await _storage.write(key: 'name', value: userInfo.name);
+      await _storage.write(key: 'fcmToken', value: userInfo.fcmToken);
+      printd("saveUserInfo: ${userInfo.phoneNumber}");
+    } catch (error) {
+      printd("saveUserInfo: error $error");
+    }
   }
 
   Future<bool> loadUserInfo() async {
@@ -57,74 +65,75 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
   }
 
   Future<String?> requestSignIn(SignInInfo? signInInfo) async {
-    try {
-      printd("로그인 시도 : $signInInfo");
-      SignInInfo? info;
+    printd("로그인 시도 : $signInInfo");
+    SignInInfo? info;
 
-      final fcmToken = await FirebaseMessaging.instance.getToken() ?? '';
-      printd("fcmToken : " + fcmToken);
+    final fcmToken = await FirebaseMessaging.instance.getToken() ?? '';
+    printd("fcmToken : " + fcmToken);
 
-      // 매개변수가 없다면 저장된 로그인 정보를 불러옴
-      if (signInInfo == null) {
-        final loaded = await loadUserInfo();
-        printd("loadUserInfo: $loaded");
-        // 저장된 정보가 있다면
-        if (loaded) {
-          // 해당 정보로 로그인 시도
-          info = SignInInfo(
-            phoneNumber: state!.phoneNumber,
-            password: state!.password,
-          );
-        } else {
-          // 매개변수도 없고 저장된 정보도 없다면
-          return null; // null 반환하여 로그인 화면으로 이동
-        }
+    // 매개변수가 없다면 저장된 로그인 정보를 불러옴
+    if (signInInfo == null) {
+      final loaded = await loadUserInfo();
+      printd("loadUserInfo: $loaded");
+      // 저장된 정보가 있다면
+      if (loaded) {
+        // 해당 정보로 로그인 시도
+        info = SignInInfo(
+          phoneNumber: state!.phoneNumber,
+          password: state!.password,
+        );
       } else {
-        // 매개변수가 있다면 해당 매개변수로 로그인 시도
-        info = signInInfo;
+        // 매개변수도 없고 저장된 정보도 없다면
+        return null; // null 반환하여 로그인 화면으로 이동
       }
-
-      final body = {
-        'userPhoneNumber': info.phoneNumber,
-        'userPassword': info.password,
-        'userFcmToken': fcmToken,
-      };
-
-      final jsonBody = json.encode(body);
-
-      final response = await HttpsService.postRequest("/login", jsonBody);
-
-      // 로그인 요청 성공 시
-      if (response.statusCode == 200) {
-        final jsonResponse = json.decode(utf8.decode(response.bodyBytes));
-        printd("로그인 시도(json 200): $jsonResponse");
-        if (APIResponseStatus.success.isEqualTo(jsonResponse['status'])) {
-          printd("로그인 시도: success");
-          // 기존 저장된 유저의 전화번호와 현재 로그인된 유저의 전화번호가 다르다면
-          if (state?.phoneNumber != info.phoneNumber) {
-            // 기존 유저 정보의 모든 정보 삭제
-            clearAllInfo();
-          }
-          printd("fcmToken : " + fcmToken);
-          state = UserInfo(
-            phoneNumber: info.phoneNumber,
-            password: info.password,
-            name: jsonResponse['token'],
-            fcmToken: fcmToken, // fcmToken이 null이면 빈 문자열로 저장
-          );
-          saveUserInfo();
-          return jsonResponse['token'];
-        } else {
-          printd(
-              "로그인 시도: failed : Status Code ${APIResponseStatusExtension.fromCode(jsonResponse['status'])}");
-        }
-      } else {
-        printd("로그인 시도: failed : response code ${response.statusCode}");
-      }
-    } catch (error) {
-      printd("로그인 시도: error $error");
+    } else {
+      // 매개변수가 있다면 해당 매개변수로 로그인 시도
+      info = signInInfo;
     }
-    // 로그인 성공 못했을 시 null 반환하여 로그인 화면으로 이동
+
+    final body = {
+      'userPhoneNumber': info.phoneNumber,
+      'userPassword': info.password,
+      'userFcmToken': fcmToken,
+    };
+
+    final jsonBody = json.encode(body);
+
+    final response = await HttpsService.postRequest("/login", jsonBody);
+
+    // 로그인 요청 성공 시
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+      printd("로그인 시도(json 200): $jsonResponse");
+      if (APIResponseStatus.success.isEqualTo(jsonResponse['status'])) {
+        printd("로그인 시도: success");
+        // 기존 저장된 유저의 전화번호와 현재 로그인된 유저의 전화번호가 다르다면
+        if (state?.phoneNumber != info.phoneNumber) {
+          // 기존 유저 정보의 모든 정보 삭제
+          await clearAllInfo();
+        }
+        printd("fcmToken : " + fcmToken);
+        state = UserInfo(
+          phoneNumber: info.phoneNumber,
+          password: info.password,
+          name: jsonResponse['token'],
+          fcmToken: fcmToken, // fcmToken이 null이면 빈 문자열로 저장
+        );
+        await saveUserInfo();
+        printd("로그인 성공 : ${state?.name}");
+        printd("로그인 성공 : ${state?.phoneNumber}");
+        printd("로그인 성공 : ${state?.password}");
+        printd("로그인 성공 : ${state?.fcmToken}");
+
+        return jsonResponse['token'];
+      } else {
+        printd(
+            "로그인 시도: failed : Status Code ${APIResponseStatusExtension.fromCode(jsonResponse['status'])}");
+      }
+    } else {
+      printd("로그인 시도: failed : response code ${response.statusCode}");
+    }
+    // // 로그인 성공 못했을 시 null 반환하여 로그인 화면으로 이동
     return null;
   }
 
@@ -172,14 +181,20 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
     _storage.readAll().then((value) => printd(value));
   }
 
-  Future<void> clearAllInfo() {
+  Future<void> clearAllInfo() async {
+    printd("clearAllInfo");
     state = null;
-    _storage.deleteAll();
-    SharedPreferences.getInstance().then((prefs) {
+
+    printd("state : $state");
+    await _storage.deleteAll();
+
+    printd("storage : ${await _storage.readAll()}");
+    await SharedPreferences.getInstance().then((prefs) {
       prefs.clear();
     });
-    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-    return Future.value();
+
+    printd("sharedPreferences : ${await SharedPreferences.getInstance()}");
+    // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
   }
 
   String? getNickname() {

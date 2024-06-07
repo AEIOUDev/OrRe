@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:sliver_app_bar_builder/sliver_app_bar_builder.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppBarWidget extends ConsumerWidget {
   final String title;
@@ -90,7 +91,7 @@ class AppBarWidget extends ConsumerWidget {
                 color: Colors.transparent,
                 child: TextWidget(
                   title,
-                  fontSize: 24 + expandRatio * 10,
+                  fontSize: 20.sp + expandRatio * 2.h,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   shadows: [

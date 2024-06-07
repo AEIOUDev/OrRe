@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/services/notifications_services.dart';
@@ -18,12 +19,13 @@ class HomeScreenAppBar extends ConsumerWidget {
         height: 300,
         color: Colors.transparent,
         child: AppBar(
+          toolbarHeight: 58.h,
           title: GestureDetector(
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextWidget(location.locationName),
-                Icon(Icons.arrow_drop_down),
+                TextWidget(location.locationName, fontSize: 20.sp),
+                Icon(Icons.arrow_drop_down, size: 20.sp),
               ],
             ),
             onTap: () {
@@ -46,6 +48,7 @@ class HomeScreenAppBar extends ConsumerWidget {
               icon: Icon(
                 Icons.star,
                 color: Colors.black,
+                size: 20.sp,
               ),
               onPressed: () {
                 printd("즐겨찾기 페이지로 이동이지만 지금은 이스터에그");
@@ -58,6 +61,7 @@ class HomeScreenAppBar extends ConsumerWidget {
               icon: Icon(
                 Icons.settings,
                 color: Colors.black,
+                size: 20.sp,
               ),
               onPressed: () {
                 // 설정 페이지로 이동

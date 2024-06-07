@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +15,6 @@ import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/model/user_info_model.dart';
 
 import '../../services/debug.services.dart';
-import '../../widget/popup/awesome_dialog_widget.dart';
 
 final isObscureProvider = StateProvider<bool>((ref) => true);
 final formKeyProvider = Provider((ref) => GlobalKey<FormState>());
@@ -131,26 +127,11 @@ class SignInScreen extends ConsumerWidget {
                                 .requestSignIn(signInUserInfo);
 
                             if (success != null) {
-                              if (Platform.isAndroid) {
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  AwesomeDialogWidget.showCustomDialog(
-                                    context: context,
-                                    title: "재부팅",
-                                    desc: "설정을 완료하기 위하여 재부팅이 필요합니다.",
-                                    dialogType: DialogType.info,
-                                    onPressed: () {
-                                      context.go("/locationCheck");
-                                    },
-                                    btnText: "확인",
-                                  );
-                                });
-                              } else {
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
+                              WidgetsBinding.instance.addPostFrameCallback(
+                                (_) {
                                   context.go("/locationCheck");
-                                });
-                              }
+                                },
+                              );
                             } else {
                               showDialog(
                                   context: context,
@@ -169,7 +150,7 @@ class SignInScreen extends ConsumerWidget {
                           // 하단 "비밀번호 찾기" 버튼
                           TextButtonWidget(
                             text: '비밀번호 찾기',
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             textColor: Color(0xFFDFDFDF),
                             onPressed: () {
                               context.push('/user/resetpassword');
@@ -184,7 +165,7 @@ class SignInScreen extends ConsumerWidget {
                           SizedBox(width: 10), // 여기서 간격을 조절해요
                           TextButtonWidget(
                             text: '회원가입',
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             textColor: Color(0xFFFFBF52),
                             onPressed: () {
                               FocusScope.of(context).unfocus();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orre/model/location_model.dart';
 
 import '../../provider/home_screen/store_category_provider.dart';
@@ -42,7 +43,7 @@ class CategoryWidget extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextWidget(nowCategory.toKoKr(),
-                  fontSize: 30, fontWeight: FontWeight.bold),
+                  fontSize: 24.sp, fontWeight: FontWeight.bold),
             ),
             Spacer(),
             HomeScreenModalBottomSheet(location: location),

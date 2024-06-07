@@ -17,10 +17,15 @@ Future<int> initializeApp(WidgetRef ref) async {
 
   await nfcCheck(ref);
 
-  final update = await updateCheck(ref);
-  if (update != 0) {
-    printd("업데이트 필요, 업데이트 화면으로 이동");
-    return update;
+  try {
+    final update = await updateCheck(ref);
+    if (update != 0) {
+      printd("업데이트 필요, 업데이트 화면으로 이동");
+      return update;
+    }
+  } catch (e) {
+    printd("업데이트 체크 실패, 서버 에러 화면 이동");
+    return 4;
   }
 
   final isStompConnected = await stompConnectionCheck(ref);
