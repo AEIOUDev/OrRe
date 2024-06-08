@@ -5,6 +5,7 @@ import '../debug.services.dart';
 // 위도와 경도로부터 주소를 문자열로 반환하는 비동기 함수입니다.
 Future<List<String?>> getAddressFromLatLngLibrary(
     double latitude, double longitude, int detail, bool includeArea1) async {
+  printd("Google Geocoding API");
   try {
     // 주어진 위도와 경도로 Placemark 객체의 리스트를 비동기적으로 조회합니다.
     List<Placemark> placemarks =

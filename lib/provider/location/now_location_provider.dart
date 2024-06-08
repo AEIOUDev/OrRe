@@ -4,6 +4,7 @@ import 'package:orre/model/location_model.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/services/geocording/naver_map_services.dart';
 import '../../services/debug.services.dart';
+import '../../services/geocording/geocording_library_service.dart';
 // import '../../services/geocording/geocording_library_service.dart'; // 추가
 
 final nowLocationProvider =
@@ -43,14 +44,14 @@ class LocationStateNotifier extends StateNotifier<LocationInfo?> {
         "nowLocationProvider : 현재 경도 : ${position.longitude}, 현재 위도 : ${position.latitude}");
 
     // 권한이 허용되었을 때 도로명 주소 변환 로직
-    // final temp = await getAddressFromLatLngLibrary(
-    //     position.latitude, position.longitude, 4, true);
-    final temp = await getAddressFromLatLngNaver(
+    final temp = await getAddressFromLatLngLibrary(
         position.latitude, position.longitude, 4, true);
+    // final temp = await getAddressFromLatLngNaver(
+    // position.latitude, position.longitude, 4, true);
     printd("nowLocationProvier getAddr : $temp");
     // final temp = await getAddressFromLatLngNaver(
     //     position.latitude, position.longitude, 4, true);
-    String? placemarks = temp.first;
+    String? placemarks = temp.last;
 
     // 내 도로명 주소를 불러올 수 없을 때의 상태 반환
     if (placemarks == null) {

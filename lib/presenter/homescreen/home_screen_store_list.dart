@@ -1,3 +1,4 @@
+import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -96,10 +97,15 @@ class StoreItem extends ConsumerWidget {
                   fontSize: 20.sp,
                 ),
                 Spacer(),
-                TextWidget(
-                  '거리 ${storeInfo.distance.round()}m',
-                  fontSize: 16.sp,
-                  color: Color(0xFF999999),
+                AnimatedFlipCounter(
+                  prefix: "거리 ",
+                  value: storeInfo.distance.round(),
+                  suffix: "m",
+                  textStyle: TextStyle(
+                    fontFamily: 'Dovemayo_gothic',
+                    fontSize: 16.sp,
+                    color: Color(0xFF999999),
+                  ),
                 ),
               ],
             ),
@@ -117,10 +123,31 @@ class StoreItem extends ConsumerWidget {
                   size: 16.sp,
                 ),
                 SizedBox(width: 5),
-                TextWidget(
-                  "대기 팀 수 ${storeWaitingInfo.waitingTeamList.length} 팀\t(약 ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam} 분)",
-                  color: Color(0xFFDD0000),
-                  fontSize: 16.sp,
+                Row(
+                  children: [
+                    AnimatedFlipCounter(
+                      prefix: "대기 팀 수 ",
+                      value: storeWaitingInfo.waitingTeamList.length,
+                      suffix: " 팀",
+                      textStyle: TextStyle(
+                        fontFamily: 'Dovemayo_gothic',
+                        fontSize: 16.sp,
+                        color: Colors.red,
+                      ),
+                    ),
+                    SizedBox(width: 10.w),
+                    AnimatedFlipCounter(
+                      prefix: "(약 ",
+                      value: storeWaitingInfo.waitingTeamList.length *
+                          storeWaitingInfo.estimatedWaitingTimePerTeam,
+                      suffix: "분)",
+                      textStyle: TextStyle(
+                        fontFamily: 'Dovemayo_gothic',
+                        fontSize: 16.sp,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

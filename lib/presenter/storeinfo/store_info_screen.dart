@@ -215,7 +215,7 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                 expandedHeight: 240, // 높이 설정
                 flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,
-                  titlePadding: EdgeInsets.only(bottom: 8.h),
+                  titlePadding: EdgeInsets.only(bottom: 14.h),
                   title: TextWidget(
                     storeDetailInfo.storeName,
                     color: Colors.white,

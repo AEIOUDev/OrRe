@@ -78,14 +78,13 @@ String uriSwitcher(String uri, WidgetRef ref, BuildContext context) {
   final identifier = uriParts.last;
   print("last uriParts: $identifier");
 
-  if (uri.contains('reservation')) {
+  if (uri.contains('order')) {
     // 'reservation'을 포함하는 경우, 'r'을 붙여 반환합니다.
     ref.read(selectedIndexProvider.notifier).state =
         pageIndex.orderScreen.index;
     return 'r$identifier';
-  } else if (uri.contains('waiting')) {
-    ref.read(selectedIndexProvider.notifier).state =
-        pageIndex.waitingScreen.index;
+  } else if (uri.contains('reservation') || uri.contains('storeinfo')) {
+    ref.read(selectedIndexProvider.notifier).state = pageIndex.homeScreen.index;
     // 'waiting'을 포함하는 경우, 'w'을 붙여 반환합니다.
 
     context.push("/storeinfo/${identifier}");

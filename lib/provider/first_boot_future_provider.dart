@@ -24,7 +24,7 @@ Future<int> initializeApp(WidgetRef ref) async {
       return update;
     }
   } catch (e) {
-    printd("업데이트 체크 실패, 서버 에러 화면 이동");
+    printd("업데이트 체크 실패, 서버 에러 화면 이동 : ${e.toString()}");
     return 4;
   }
 

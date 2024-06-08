@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:app_links/app_links.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,8 @@ final appLifeCycleStateProvider = StateProvider<AppLifecycleState>((ref) {
   return AppLifecycleState.resumed;
 });
 
+final AppLinks _appLinks = AppLinks();
+
 enum pageIndex {
   orderScreen,
   homeScreen,
@@ -58,6 +61,30 @@ class _MainScreenState extends ConsumerState<MainScreen>
       vsync: this,
       duration: Duration(milliseconds: 260),
     );
+
+    _appLinks.uriLinkStream.listen((uri) {
+      printd("uri: $uri");
+      printd("uri.path: ${uri.path}");
+      printd("uri.pathSegments: ${uri.pathSegments}");
+
+      // storeinfo 요청이라면 해당 페이지로 이동
+      if (uri.toString().contains('//storeinfo')) {
+        printd("storeinfo 페이지로 이동");
+        final storeCode = int.parse(uri.pathSegments.first);
+        printd("storeCode: $storeCode");
+
+        // NavigatorKey가 초기화된 후에 페이지 이동
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) {
+            printd(
+                "navigatorKey.currentState?.pushNamed('/storeinfo/$storeCode');");
+            context.push('/storeinfo/$storeCode');
+          },
+        );
+      }
+    }, onError: (Object err) {
+      printd("err: $err");
+    });
 
     final curvedAnimation =
         CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);

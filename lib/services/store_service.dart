@@ -2,11 +2,10 @@
 import 'debug.services.dart';
 
 Future<String?> checkUrl(String url) async {
-  if (url.contains('https://myknow.github.io/orreweb/reservation/') ||
-      url.contains('https://orre.be/orreweb/reservation/') ||
-      url.contains('https://orre.store/orreweb/reservation/') ||
-      url.contains('https://orre.be/reservation/') ||
-      url.contains('https://orre.store/reservation/')) {
+  if (url.contains('https://orre.be/reservation/') ||
+      url.contains('https://orre.shop/reservation/') ||
+      url.contains('http://orre.be/reservation/') ||
+      url.contains('http://orre.shop/reservation/')) {
     printd('URL: $url');
     // reservation 뒤의 숫자(자릿수 상관 없음)를 추출하되, 다른 그 이후의 다른 문자열은 무시
     final storeCode = int.tryParse(

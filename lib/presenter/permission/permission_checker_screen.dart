@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,10 +31,11 @@ class _PermissionCheckerScreenState
     bool locationPermissionGranted = await _checkLocationPermission();
     bool notificationPermissionGranted = await _checkNotificationPermission();
 
-    if (!locationPermissionGranted || !notificationPermissionGranted) {
+    // if (!locationPermissionGranted || !notificationPermissionGranted) {
+    if (!locationPermissionGranted) {
       List<String> deniedPermissions = [];
       if (!locationPermissionGranted) deniedPermissions.add("위치");
-      if (!notificationPermissionGranted) deniedPermissions.add("알림");
+      // if (!notificationPermissionGranted) deniedPermissions.add("알림");
 
       _showPermissionDeniedDialog(context, deniedPermissions);
       return;
@@ -71,10 +74,11 @@ class _PermissionCheckerScreenState
     bool locationPermissionGranted = await _checkLocationPermission();
     bool notificationPermissionGranted = await _checkNotificationPermission();
 
-    if (!locationPermissionGranted || !notificationPermissionGranted) {
+    // if (!locationPermissionGranted || !notificationPermissionGranted) {
+    if (!locationPermissionGranted) {
       List<String> deniedPermissions = [];
       if (!locationPermissionGranted) deniedPermissions.add("위치");
-      if (!notificationPermissionGranted) deniedPermissions.add("알림");
+      // if (!notificationPermissionGranted) deniedPermissions.add("알림");
 
       _showPermissionDeniedDialog(context, deniedPermissions);
       return;
@@ -128,14 +132,25 @@ class _PermissionCheckerScreenState
             Divider(thickness: 1, color: Colors.grey[300]),
             SizedBox(height: 20),
             PermissionItem(
-              icon: Icons.notifications,
-              title: "알림",
-              description: "중요 알림을 받고 빠른 응답을 할 수 있도록 알림 권한이 필요합니다.",
+              icon: Icons.location_on,
+              title: "위치 (필수)",
+              description: "현재 위치를 확인하고 맞춤형 서비스를 제공하기 위해 위치 권한이 필요합니다.",
             ),
             PermissionItem(
-              icon: Icons.location_on,
-              title: "위치",
-              description: "현재 위치를 확인하고 맞춤형 서비스를 제공하기 위해 위치 권한이 필요합니다.",
+              icon: Icons.notifications,
+              title: "알림 (선택)",
+              description: "웨이팅 변동사항을 확인하기 위해 알림 권한이 필요합니다.",
+            ),
+            if (Platform.isAndroid)
+              PermissionItem(
+                icon: Icons.phone,
+                title: "전화 (선택)",
+                description: "안드로이드 기기에서 가게로 전화를 걸기 위해선, 전화 및 전화 기록 권한이 필요합니다.",
+              ),
+            PermissionItem(
+              icon: Icons.camera_alt_rounded,
+              title: "카메라 (선택)",
+              description: "QR 코드를 스캔하기 위해선, 카메라 권한이 필요합니다.",
             ),
             Spacer(),
             Padding(

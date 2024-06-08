@@ -1,5 +1,7 @@
+import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
 import 'package:orre/model/store_waiting_request_model.dart';
@@ -89,17 +91,28 @@ class _WaitingStatusWidgetState extends ConsumerState<WaitingStatusWidget> {
         children: [
           Expanded(flex: 1, child: Icon(Icons.person)),
           Expanded(
-              flex: 3,
-              child: TextWidget(
-                '남은 팀 수',
-                textAlign: TextAlign.start,
-              )),
-          Expanded(
             flex: 3,
             child: TextWidget(
-              ': $myWaitingIndex 팀',
+              '남은 팀 수',
               textAlign: TextAlign.start,
             ),
+          ),
+          Expanded(
+            flex: 3,
+            child: AnimatedFlipCounter(
+              mainAxisAlignment: MainAxisAlignment.start,
+              prefix: ':  ',
+              value: myWaitingIndex,
+              suffix: ' 팀',
+              textStyle: TextStyle(
+                fontFamily: 'Dovemayo_gothic',
+                fontSize: 20.sp,
+              ),
+            ),
+            // TextWidget(
+            //   ': $myWaitingIndex 팀',
+            //   textAlign: TextAlign.start,
+            // ),
           )
         ],
       ),
@@ -116,7 +129,7 @@ class _WaitingStatusWidgetState extends ConsumerState<WaitingStatusWidget> {
           Expanded(
             flex: 3,
             child: TextWidget(
-              ': $myWaitingNumber 번',
+              ':  $myWaitingNumber 번',
               textAlign: TextAlign.start,
             ),
           )
@@ -148,11 +161,22 @@ class _WaitingStatusWidgetState extends ConsumerState<WaitingStatusWidget> {
                 )),
             Expanded(
               flex: 3,
-              child: TextWidget(
-                ': ${remainingTime.inSeconds} 초',
-                textAlign: TextAlign.start,
-                color: Color(0xFFFFB74D),
+              child: AnimatedFlipCounter(
+                mainAxisAlignment: MainAxisAlignment.start,
+                prefix: ':  ',
+                value: remainingTime.inSeconds,
+                suffix: ' 초',
+                textStyle: TextStyle(
+                  fontFamily: 'Dovemayo_gothic',
+                  fontSize: 20.sp,
+                  color: Color(0xFFFFB74D),
+                ),
               ),
+              // TextWidget(
+              //   ': ${remainingTime.inSeconds} 초',
+              //   textAlign: TextAlign.start,
+              //   color: Color(0xFFFFB74D),
+              // ),
             )
           ],
         ),
@@ -200,10 +224,21 @@ class _WaitingStatusWidgetState extends ConsumerState<WaitingStatusWidget> {
                 )),
             Expanded(
               flex: 3,
-              child: TextWidget(
-                ': ${myWaitingIndex * storeWaitingInfo.estimatedWaitingTimePerTeam} 분',
-                textAlign: TextAlign.start,
+              child: AnimatedFlipCounter(
+                mainAxisAlignment: MainAxisAlignment.start,
+                prefix: ':  ',
+                value: myWaitingIndex *
+                    storeWaitingInfo.estimatedWaitingTimePerTeam,
+                suffix: ' 분',
+                textStyle: TextStyle(
+                  fontFamily: 'Dovemayo_gothic',
+                  fontSize: 20.sp,
+                ),
               ),
+              // TextWidget(
+              //   ': ${myWaitingIndex * storeWaitingInfo.estimatedWaitingTimePerTeam} 분',
+              //   textAlign: TextAlign.start,
+              // ),
             )
           ],
         ),
@@ -221,11 +256,13 @@ class _WaitingStatusWidgetState extends ConsumerState<WaitingStatusWidget> {
       StoreWaitingInfo storeWaitingInfo, WidgetRef ref) {
     printd("\n\nbuildGeneralWaitingStatus 진입");
     final nowLocation = ref.watch(nowLocationProvider);
-    String distance;
+    // String distance;
+    int distanceInt = 0;
     if (nowLocation == null) {
-      distance = '위치 정보를 불러오는 중입니다.';
+      // distance = '위치 정보를 불러오는 중입니다.';
     } else {
-      distance = '${nowLocation - widget.locationInfo}m';
+      // distance = '${nowLocation - widget.locationInfo}m';
+      distanceInt = nowLocation - widget.locationInfo;
     }
 
     return Column(
@@ -245,10 +282,20 @@ class _WaitingStatusWidgetState extends ConsumerState<WaitingStatusWidget> {
                 )),
             Expanded(
               flex: 3,
-              child: TextWidget(
-                ':  ${storeWaitingInfo.waitingTeamList.length} 팀',
-                textAlign: TextAlign.start,
+              child: AnimatedFlipCounter(
+                mainAxisAlignment: MainAxisAlignment.start,
+                prefix: ':  ',
+                value: storeWaitingInfo.waitingTeamList.length,
+                suffix: ' 팀',
+                textStyle: TextStyle(
+                  fontFamily: 'Dovemayo_gothic',
+                  fontSize: 20.sp,
+                ),
               ),
+              // TextWidget(
+              //   ':  ${storeWaitingInfo.waitingTeamList.length} 팀',
+              //   textAlign: TextAlign.start,
+              // ),
             )
           ],
         ),
@@ -264,10 +311,21 @@ class _WaitingStatusWidgetState extends ConsumerState<WaitingStatusWidget> {
                 )),
             Expanded(
               flex: 3,
-              child: TextWidget(
-                ':  ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam} 분',
-                textAlign: TextAlign.start,
+              child: AnimatedFlipCounter(
+                mainAxisAlignment: MainAxisAlignment.start,
+                prefix: ':  ',
+                value: storeWaitingInfo.waitingTeamList.length *
+                    storeWaitingInfo.estimatedWaitingTimePerTeam,
+                suffix: ' 분',
+                textStyle: TextStyle(
+                  fontFamily: 'Dovemayo_gothic',
+                  fontSize: 20.sp,
+                ),
               ),
+              // TextWidget(
+              //   ':  ${storeWaitingInfo.waitingTeamList.length * storeWaitingInfo.estimatedWaitingTimePerTeam} 분',
+              //   textAlign: TextAlign.start,
+              // ),
             )
           ],
         ),
@@ -283,10 +341,20 @@ class _WaitingStatusWidgetState extends ConsumerState<WaitingStatusWidget> {
                 )),
             Expanded(
               flex: 3,
-              child: TextWidget(
-                ':  ${distance}',
-                textAlign: TextAlign.start,
+              child: AnimatedFlipCounter(
+                mainAxisAlignment: MainAxisAlignment.start,
+                prefix: ':  ',
+                value: distanceInt,
+                suffix: 'm',
+                textStyle: TextStyle(
+                  fontFamily: 'Dovemayo_gothic',
+                  fontSize: 20.sp,
+                ),
               ),
+              // TextWidget(
+              //   ':  ${distance}',
+              //   textAlign: TextAlign.start,
+              // ),
             )
           ],
         ),

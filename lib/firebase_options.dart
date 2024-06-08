@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -46,31 +47,31 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAKWT7cM_O-d9RCtwP5xS_yZd4XBtqfrqA',
-    appId: '1:171129567626:web:7ca382d37414c50e2db073',
-    messagingSenderId: '171129567626',
-    projectId: 'orre-be',
-    authDomain: 'orre-be.firebaseapp.com',
-    storageBucket: 'orre-be.appspot.com',
-    measurementId: 'G-B75ET8W50Y',
+  static FirebaseOptions web = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_WEB']!,
+    appId: dotenv.env['FIREBASE_API_ID_WEB']!,
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID']!,
+    projectId: dotenv.env['FIREBASE_PROJECT_ID']!,
+    authDomain: dotenv.env['FIREBASE_AUTH_DOMAIN']!,
+    storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET']!,
+    measurementId: dotenv.env['FIREBASE_MESUREMENT_ID']!,
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDn3yd5fD1WVRm-p_sn9K_9lYSrx8JgHdw',
-    appId: '1:171129567626:android:a903ad078d8238f52db073',
-    messagingSenderId: '171129567626',
-    projectId: 'orre-be',
-    storageBucket: 'orre-be.appspot.com',
-    androidClientId: 'com.aeioudev.orre',
+  static FirebaseOptions android = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_ANDROID']!,
+    appId: dotenv.env['FIREBASE_APP_ID_ANDROID']!,
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID']!,
+    projectId: dotenv.env['FIREBASE_PROJECT_ID']!,
+    storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET']!,
+    androidClientId: dotenv.env['FIREBASE_ANDROID_CLIENT_ID']!,
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBOBHAPNAeC7qwPDWF-CHHzv0r1X2aoZC0',
-    appId: '1:171129567626:ios:a99856f8f5f31ba82db073',
-    messagingSenderId: '171129567626',
-    projectId: 'orre-be',
-    storageBucket: 'orre-be.appspot.com',
-    iosBundleId: 'com.aeioudev.orre',
+  static FirebaseOptions ios = FirebaseOptions(
+    apiKey: dotenv.env['FIREBASE_API_KEY_IOS']!,
+    appId: dotenv.env['FIREBASE_APP_ID_IOS']!,
+    messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID']!,
+    projectId: dotenv.env['FIREBASE_PROJECT_ID']!,
+    storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET']!,
+    iosBundleId: dotenv.env['FIREBASE_IOS_BUNDLE_ID']!,
   );
 }
