@@ -19,6 +19,9 @@
 *.iws
 .idea/
 
+# Hardcoded configuration files
+.env
+
 # Visual Studio Code related
 .classpath
 .project

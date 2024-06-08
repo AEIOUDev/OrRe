@@ -26,7 +26,7 @@ class TextWidget extends ConsumerWidget {
     this.fontFamily = 'Dovemayo_gothic',
     this.textAlign = TextAlign.center,
     this.fontWeight = FontWeight.normal,
-    this.softWrap = false,
+    this.softWrap = true,
     this.shadows = const [],
     this.wordSpacing = 0,
     this.letterSpacing = 0,
