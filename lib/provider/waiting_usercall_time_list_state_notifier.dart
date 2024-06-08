@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/services/debug.services.dart';
+import 'package:orre/services/debug_services.dart';
 
 class WaitingUserCallTimeListStateNotifier extends StateNotifier<Duration?> {
   DateTime? userCallTime;

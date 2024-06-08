@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_list_widget.dart';
-import 'package:orre/services/debug.services.dart';
+import 'package:orre/services/debug_services.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 import '../../../../model/store_info_model.dart';

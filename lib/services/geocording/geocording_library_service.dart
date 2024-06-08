@@ -1,6 +1,6 @@
 import 'package:geocoding/geocoding.dart';
 
-import '../debug.services.dart';
+import '../debug_services.dart';
 
 // 위도와 경도로부터 주소를 문자열로 반환하는 비동기 함수입니다.
 Future<List<String?>> getAddressFromLatLngLibrary(

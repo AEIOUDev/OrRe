@@ -38,7 +38,8 @@ class ServiceLogScreen extends ConsumerWidget {
                 child: StaticAppBarWidget(
                   title: "이용내역 조회",
                   leading: IconButton(
-                    icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                    icon: Icon(Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white),
                     onPressed: () {
                       context.pop();
                     },

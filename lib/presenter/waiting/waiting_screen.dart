@@ -19,9 +19,11 @@ import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
+import '../../services/notifications_services.dart';
 
 class WaitingScreen extends ConsumerStatefulWidget {
   @override
@@ -73,11 +75,68 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
 
     return Scaffold(
       backgroundColor: Color(0xFFDFDFDF),
+      appBar: AppBar(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(30),
+          ),
+        ),
+        title: TextWidget(
+          '웨이팅 확인',
+          fontSize: 20.sp,
+          color: Colors.black,
+        ),
+        centerTitle: false,
+        backgroundColor: Color(0xFFFFB74D),
+        toolbarHeight: 58.h,
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.star,
+              color: Colors.black,
+              size: 20.sp,
+            ),
+            onPressed: () async {
+              printd("즐겨찾기 페이지로 이동이지만 지금은 이스터에그");
+              // 즐겨찾기 페이지로 이동
+              final status = await Permission.notification.status;
+              if (status.isDenied || status.isPermanentlyDenied) {
+                AwesomeDialogWidget.showCustomDialogWithCancel(
+                  context: context,
+                  title: "위치 권한 없음!",
+                  desc: "웨이팅 알림을 받으려면 알림 권한이 필요합니다.",
+                  dialogType: DialogType.warning,
+                  onPressed: () async {
+                    openAppSettings();
+                  },
+                  btnText: "설정으로 이동",
+                  onCancel: () {},
+                  cancelText: "나중에",
+                );
+              } else {
+                NotificationService.showNotification(
+                    NotificationType.easteregg);
+              }
+            },
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.settings,
+              color: Colors.black,
+              size: 20.sp,
+            ),
+            onPressed: () {
+              // 설정 페이지로 이동
+              context.push("/setting");
+            },
+          ),
+        ],
+      ),
       body: Align(
         alignment: Alignment.bottomCenter,
         child: Container(
           width: 1.sw,
-          height: 0.8.sh,
+          height: 0.7.sh,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(

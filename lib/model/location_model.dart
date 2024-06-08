@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:equatable/equatable.dart';
-import 'package:orre/services/debug.services.dart';
+import 'package:orre/services/debug_services.dart';
 
 class LocationInfo extends Equatable {
   final String locationName; // 장소 이름

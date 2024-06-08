@@ -6,7 +6,8 @@ import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
-import '../../services/debug.services.dart';
+import '../../provider/app_state_provider.dart';
+import '../../services/debug_services.dart';
 
 class OnboardingScreen extends ConsumerWidget {
   @override
@@ -24,6 +25,8 @@ class OnboardingScreen extends ConsumerWidget {
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(height: 0.25.sh),
                 TextWidget(
@@ -31,7 +34,9 @@ class OnboardingScreen extends ConsumerWidget {
                   fontFamily: 'Dovemayo_gothic',
                   fontSize: 32.sp,
                   color: Colors.black,
-                  letterSpacing: 40.sp,
+                  letterSpacing: 45.sp,
+                  textAlign: TextAlign.center,
+                  softWrap: false,
                 ),
                 SizedBox(
                   height: 20.h,
@@ -68,7 +73,7 @@ class OnboardingScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                     text: '로그인',
-                    textColor: Colors.white,
+                    textColor: Colors.black,
                   ),
                 ),
                 Padding(
@@ -84,11 +89,27 @@ class OnboardingScreen extends ConsumerWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15.0),
                     ),
-                    text: '회원 가입',
+                    text: '회원가입',
                   ),
                 ),
                 Spacer(flex: 2),
               ],
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 8.h,
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                child: Consumer(builder: (context, ref, child) {
+                  final appVersion = ref.watch(appVersionProvider);
+                  return TextWidget(
+                    "앱 버전 : $appVersion",
+                    fontSize: 12.sp,
+                    color: Colors.grey,
+                  );
+                }),
+              ),
             ),
             Positioned(
               left: 0,

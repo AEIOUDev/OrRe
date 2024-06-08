@@ -6,15 +6,15 @@ import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/text_button_widget.dart';
-import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:go_router/go_router.dart';
+import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 
 import 'package:orre/widget/text_field/text_input_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
 
 import 'package:orre/model/user_info_model.dart';
 
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
 
 final isObscureProvider = StateProvider<bool>((ref) => true);
 final formKeyProvider = Provider((ref) => GlobalKey<FormState>());
@@ -44,7 +44,8 @@ class SignInScreen extends ConsumerWidget {
             child: StaticAppBarWidget(
                 title: '로그인',
                 leading: IconButton(
-                  icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                  icon: Icon(Icons.arrow_back_ios_new_rounded,
+                      color: Colors.black),
                   onPressed: () {
                     context.pop();
                   },
@@ -133,14 +134,11 @@ class SignInScreen extends ConsumerWidget {
                                 },
                               );
                             } else {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertPopupWidget(
-                                        title: '로그인 실패',
-                                        subtitle: '전화번호 또는 비밀번호를 확인해주세요.',
-                                        buttonText: '확인');
-                                  });
+                              AwesomeDialogWidget.showErrorDialog(
+                                context: context,
+                                title: '로그인 실패',
+                                desc: '전화번호 또는 비밀번호를 확인해주세요.',
+                              );
                             }
                           }),
                       SizedBox(height: 8),

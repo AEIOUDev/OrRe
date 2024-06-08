@@ -8,7 +8,7 @@ import '../../provider/home_screen/store_list_sort_type_provider.dart';
 import '../../provider/location/location_securestorage_provider.dart';
 import '../../provider/location/now_location_provider.dart';
 import '../../provider/network/https/store_list_state_notifier.dart';
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
 import '../../widget/loading_indicator/coustom_loading_indicator.dart';
 import '../../widget/text/text_widget.dart';
 import 'home_screen_appbar.dart';
@@ -79,7 +79,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xFFDFDFDF),
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight),
+        preferredSize: Size.fromHeight(58.h),
         child: HomeScreenAppBar(location: finalLocation),
       ),
       body: SingleChildScrollView(

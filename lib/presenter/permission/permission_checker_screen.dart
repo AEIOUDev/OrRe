@@ -9,7 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
 import '../../widget/button/big_button_widget.dart';
 import '../../widget/text/text_widget.dart';
 
