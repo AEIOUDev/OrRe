@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../services/debug.services.dart';
+import '../../../services/debug_services.dart';
 
 final firstStoreWaitingListLoaded = StateProvider<bool>((ref) => false);
 

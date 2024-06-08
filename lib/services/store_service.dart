@@ -1,5 +1,5 @@
 // 정해진 URL로 입력을 받았는 지 확인하는 함수
-import 'debug.services.dart';
+import 'debug_services.dart';
 
 Future<String?> checkUrl(String url) async {
   if (url.contains('https://orre.be/reservation/') ||

@@ -2,10 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
-import 'package:orre/services/geocording/naver_map_services.dart';
-import '../../services/debug.services.dart';
+// import 'package:orre/services/geocording/naver_map_services.dart';
+import '../../services/debug_services.dart';
 import '../../services/geocording/geocording_library_service.dart';
-// import '../../services/geocording/geocording_library_service.dart'; // 추가
 
 final nowLocationProvider =
     StateNotifierProvider<LocationStateNotifier, LocationInfo?>((ref) {
@@ -34,7 +33,7 @@ class LocationStateNotifier extends StateNotifier<LocationInfo?> {
 
     try {
       position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+          desiredAccuracy: LocationAccuracy.bestForNavigation);
     } catch (e) {
       printd("nowLocationProvider Error : $e");
       return null;
@@ -42,6 +41,24 @@ class LocationStateNotifier extends StateNotifier<LocationInfo?> {
 
     printd(
         "nowLocationProvider : 현재 경도 : ${position.longitude}, 현재 위도 : ${position.latitude}");
+
+    // state와 현재 좌표가 크게 다를 때만 state를 업데이트
+    if (state != null &&
+        (state!.latitude - position.latitude).abs() < 0.0001 &&
+        (state!.longitude - position.longitude).abs() < 0.0001) {
+      printd("nowLocationProvider : 위치가 변경되지 않았습니다.");
+
+      // 거리 차이 printd
+      printd(
+          "nowLocationProvider : 위도 차이 : ${(state!.latitude - position.latitude).abs()}");
+
+      printd(
+          "nowLocationProvider : 경도 차이 : ${(state!.longitude - position.longitude).abs()}");
+
+      printd(
+          "총 거리 : ${(state!.latitude - position.latitude).abs() + (state!.longitude - position.longitude).abs()}");
+      return state;
+    }
 
     // 권한이 허용되었을 때 도로명 주소 변환 로직
     final temp = await getAddressFromLatLngLibrary(

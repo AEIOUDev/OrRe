@@ -2,7 +2,7 @@ import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart
 import 'package:app_links/app_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -29,6 +29,7 @@ import 'firebase_options.dart'; // Firebase 초기화 옵션을 포함한 파일
 import 'package:go_router/go_router.dart';
 
 import 'presenter/homescreen/home_screen.dart';
+import 'presenter/homescreen/oss_licenses_screen.dart';
 import 'presenter/homescreen/setting_screen.dart';
 import 'presenter/initial/app_update_screen.dart';
 import 'presenter/main/main_qr_scanner_screen.dart';
@@ -50,7 +51,7 @@ import 'package:orre/provider/network/https/get_service_log_state_notifier.dart'
 
 import 'package:orre/services/network/https_services.dart';
 
-import 'services/debug.services.dart';
+import 'services/debug_services.dart';
 import 'widget/text/text_widget.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -256,6 +257,11 @@ final GoRouter _router = GoRouter(
           return ServiceLogScreen();
         }),
     GoRoute(
+        path: "/setting/licenses",
+        builder: (context, state) {
+          return OssLicensesPage();
+        }),
+    GoRoute(
         path: "/permission/phone",
         builder: (context, state) {
           return PermissionRequestPhoneScreen();
@@ -328,18 +334,7 @@ class OrreMain extends ConsumerWidget {
           child: MaterialApp.router(
             routerConfig: _router,
             theme: ThemeData(
-              primarySwatch: MaterialColor(0xFFFFBF52, {
-                50: Color(0xFFFFBF52),
-                100: Color(0xFFFFBF52),
-                200: Color(0xFFFFBF52),
-                300: Color(0xFFFFBF52),
-                400: Color(0xFFFFBF52),
-                500: Color(0xFFFFBF52),
-                600: Color(0xFFFFBF52),
-                700: Color(0xFFFFBF52),
-                800: Color(0xFFFFBF52),
-                900: Color(0xFFFFBF52),
-              }),
+              primaryColor: const Color(0xFFFFBF52),
             ),
           ),
         ),

@@ -28,8 +28,8 @@ class SettingScreen extends ConsumerWidget {
             title: '설정',
             leading: IconButton(
               icon: Icon(
-                Icons.arrow_back_ios,
-                color: Colors.white,
+                Icons.arrow_back_ios_new_rounded,
+                color: Colors.black,
                 size: 20.sp,
               ),
               onPressed: () {
@@ -111,7 +111,7 @@ class SettingScreen extends ConsumerWidget {
                         textColor: Colors.black,
                       ),
                       SizedBox(
-                        height: 10,
+                        height: 10.h,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -207,10 +207,25 @@ class SettingScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(20),
                 child: Consumer(builder: (context, ref, child) {
                   final appVersion = ref.watch(appVersionProvider);
-                  return TextWidget(
-                    "앱 버전 : $appVersion",
-                    fontSize: 12.sp,
-                    color: Colors.grey,
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      TextWidget(
+                        "앱 버전 : $appVersion",
+                        fontSize: 12.sp,
+                        color: Colors.grey,
+                      ),
+                      SizedBox(width: 10.w),
+                      TextButton(
+                        onPressed: () => context.push("/setting/licenses"),
+                        child: TextWidget(
+                          "오픈소스 라이선스 확인",
+                          fontSize: 12.sp,
+                          color: Colors.grey,
+                        ),
+                      )
+                    ],
                   );
                 }),
               ),

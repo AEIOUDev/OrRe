@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/services/debug.services.dart';
+import 'package:orre/services/debug_services.dart';
 import 'package:orre/model/menu_info_model.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';

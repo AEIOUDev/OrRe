@@ -9,7 +9,7 @@ import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 import '../../provider/app_state_provider.dart';
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
 
 class AppUpdateScreen extends ConsumerWidget {
   @override

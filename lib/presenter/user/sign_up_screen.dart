@@ -11,7 +11,7 @@ import 'package:orre/services/network/https_services.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/text_button_widget.dart';
-import 'package:orre/widget/popup/alert_popup_widget.dart';
+import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 
 import 'package:orre/widget/text_field/text_input_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
@@ -19,7 +19,7 @@ import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/model/user_info_model.dart';
 import 'package:orre/provider/timer_state_notifier.dart';
 
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
 
 final isObscureProvider = StateProvider<bool>((ref) => true);
 final signUpFormKeyProvider = Provider((ref) => GlobalKey<FormState>());
@@ -53,9 +53,10 @@ class SignUpScreen extends ConsumerWidget {
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(0.25.sh),
             child: StaticAppBarWidget(
-              title: '회원 가입',
+              title: '회원가입',
               leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                icon:
+                    Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
                 onPressed: () {
                   context.pop();
                 },
@@ -160,29 +161,24 @@ class SignUpScreen extends ConsumerWidget {
                                     String phoneNumber = phoneNumberController
                                         .text
                                         .replaceAll(RegExp(r'[^0-9]'), '');
-                                    requestAuthCode(phoneNumber).then((value) {
-                                      if (value == true) {
-                                        ref
-                                            .read(timerProvider.notifier)
-                                            .setAndStartTimer(300);
+                                    requestAuthCode(phoneNumber).then(
+                                      (value) {
+                                        if (value == true) {
+                                          ref
+                                              .read(timerProvider.notifier)
+                                              .setAndStartTimer(300);
 
-                                        FocusScope.of(context)
-                                            .requestFocus(authCodeFocusNode);
-                                      } else {
-                                        showDialog(
+                                          FocusScope.of(context)
+                                              .requestFocus(authCodeFocusNode);
+                                        } else {
+                                          AwesomeDialogWidget.showErrorDialog(
                                             context: context,
-                                            builder: (context) => Builder(
-                                                  builder:
-                                                      (BuildContext context) =>
-                                                          AlertPopupWidget(
-                                                    title: '인증번호 요청 실패',
-                                                    subtitle:
-                                                        '입력하신 전화번호가 이미 가입되어 있습니다.',
-                                                    buttonText: '확인',
-                                                  ),
-                                                ));
-                                      }
-                                    });
+                                            title: "인증번호 요청 실패",
+                                            desc: "입력하신 전화번호가 이미 가입되어 있습니다.",
+                                          );
+                                        }
+                                      },
+                                    );
                                   }
                                 },
                                 text: timer == 0
@@ -215,7 +211,7 @@ class SignUpScreen extends ConsumerWidget {
                       SizedBox(height: 32),
                       // 하단 "회원 가입하기" 버튼
                       BigButtonWidget(
-                        text: '회원 가입하기',
+                        text: '회원가입하기',
                         textColor: Colors.white,
                         onPressed: () {
                           final signUpUserInfo = SignUpInfo(
@@ -259,12 +255,10 @@ class SignUpScreen extends ConsumerWidget {
                               //   },
                               // );
                             } else {
-                              showDialog(
+                              AwesomeDialogWidget.showErrorDialog(
                                 context: context,
-                                builder: (context) => AlertPopupWidget(
-                                  title: '회원가입 실패',
-                                  buttonText: '확인',
-                                ),
+                                title: "회원가입 실패",
+                                desc: "잠시 후 다시 시도해주세요.",
                               );
                             }
                           });

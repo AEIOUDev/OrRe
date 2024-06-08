@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
-import '../debug.services.dart';
+import '../debug_services.dart';
 
 Future<List<String?>> getAddressFromLatLngNaver(
     double latitude, double longitude, int detail, bool includeArea1) async {

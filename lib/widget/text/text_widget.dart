@@ -32,7 +32,7 @@ class TextWidget extends ConsumerWidget {
     this.letterSpacing = 0,
     this.padding = const EdgeInsets.all(0),
     this.overflow = TextOverflow.clip,
-    this.maxLines = 1,
+    this.maxLines = 2,
   }) : super(key: key);
 
   @override

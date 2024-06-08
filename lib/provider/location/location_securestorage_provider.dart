@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../model/location_model.dart';
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
 import 'now_location_provider.dart';
 
 // 위치 정보 리스트를 관리하는 Provider
@@ -49,6 +49,28 @@ class LocationListNotifier extends StateNotifier<LocationState> {
       return;
     }
 
+    // 이미 같은 이름의 위치가 있는지 확인하고, 있으면 좌표만 업데이트
+    if (state.customLocations.any(
+        (location) => location.locationName == locationInfo.locationName)) {
+      print("Location already exists. Updating coordinates.");
+      final updatedLocations = state.customLocations
+          .map((location) => location.locationName == locationInfo.locationName
+              ? locationInfo
+              : location)
+          .toList();
+      // 그리고 해당 위치가 선택된 위치였다면, 선택된 위치도 업데이트
+      if (state.selectedLocation?.locationName == locationInfo.locationName) {
+        state = state.copyWith(
+            customLocations: updatedLocations, selectedLocation: locationInfo);
+      } else {
+        state = state.copyWith(customLocations: updatedLocations);
+      }
+      await saveLocations();
+      return;
+    } else {
+      print("Location does not exist. Adding new location.");
+    }
+
     final updatedLocations = List<LocationInfo>.from(state.customLocations)
       ..add(locationInfo);
     state = state.copyWith(customLocations: updatedLocations);
@@ -58,9 +80,13 @@ class LocationListNotifier extends StateNotifier<LocationState> {
   // 지정된 이름의 위치 정보 제거
   Future<void> removeLocation(String locationName) async {
     print("removeLocation");
+
+    // 선택된 위치가 삭제되는 위치와 다른 위치만 남기기
     List<LocationInfo> updatedLocations = state.customLocations
         .where((location) => location.locationName != locationName)
         .toList();
+
+    printd("updatedLocations : ${updatedLocations.toString()}");
 
     // 선택된 위치가 삭제되는 위치와 같은지 확인
     LocationInfo? updatedSelectedLocation =
@@ -68,14 +94,19 @@ class LocationListNotifier extends StateNotifier<LocationState> {
             ? null
             : state.selectedLocation;
 
+    printd("updatedSelectedLocation : ${updatedSelectedLocation.toString()}");
+
+    // 만약 삭제한 위치가 selectedLocation이라면, 현재 위치를 선택된 위치로 설정
+    if (updatedSelectedLocation == null) {
+      await selectLocationToNowLocation();
+    }
+
     state = state.copyWith(
         customLocations: updatedLocations,
         selectedLocation: updatedSelectedLocation);
 
-    // 만약 삭제한 위치가 selectedLocation이라면, 현재 위치를 선택된 위치로 설정
-    if (updatedSelectedLocation == null) {
-      selectLocationToNowLocation();
-    }
+    printd("state : ${state.customLocations.toString()}");
+    printd("state : ${state.selectedLocation.toString()}");
 
     await saveLocations(); // 변경 사항 저장
   }

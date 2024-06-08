@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:orre/services/debug.services.dart';
+import 'package:orre/services/debug_services.dart';
 
 class StoreWaitingRequest extends Equatable {
   final String status;

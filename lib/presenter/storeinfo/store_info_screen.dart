@@ -9,9 +9,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_category_list_widget.dart';
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
-import 'package:orre/services/debug.services.dart';
+import 'package:orre/services/debug_services.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
-import 'package:orre/widget/popup/alert_popup_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -80,40 +79,39 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
   void _handleCancelState() {
     final cancelState = ref.watch(cancelDialogStatus);
     if (cancelState != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (navigatorKey.currentContext == null) return;
-        if (cancelState == 1103 || cancelState == 200) {
-          ref.read(storeWaitingUserCallNotifierProvider.notifier).unSubscribe();
-          ref
-              .read(storeWaitingRequestNotifierProvider.notifier)
-              .unSubscribe(widget.storeCode);
-          ref.read(cancelDialogStatus.notifier).state = null;
-          // showDialog(
-          //   context: navigatorKey.currentContext!,
-          //   builder: (context) {
-          //     return AlertPopupWidget(
-          //       title: '웨이팅 취소',
-          //       subtitle: cancelState == 1103
-          //           ? '웨이팅이 가게에 의해 취소되었습니다.'
-          //           : '웨이팅을 취소했습니다.',
-          //       buttonText: '확인',
-          //     );
-          //   },
-          // );
-        } else if (cancelState == 1102) {
-          ref.read(cancelDialogStatus.notifier).state = null;
-          showDialog(
-            context: navigatorKey.currentContext!,
-            builder: (context) {
-              return AlertPopupWidget(
-                title: '웨이팅 취소 실패',
-                subtitle: '가게에 문의해주세요.',
-                buttonText: '확인',
-              );
-            },
-          );
-        }
-      });
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) {
+          if (navigatorKey.currentContext == null) return;
+          if (cancelState == 1103 || cancelState == 200) {
+            ref
+                .read(storeWaitingUserCallNotifierProvider.notifier)
+                .unSubscribe();
+            ref
+                .read(storeWaitingRequestNotifierProvider.notifier)
+                .unSubscribe(widget.storeCode);
+            ref.read(cancelDialogStatus.notifier).state = null;
+            // showDialog(
+            //   context: navigatorKey.currentContext!,
+            //   builder: (context) {
+            //     return AlertPopupWidget(
+            //       title: '웨이팅 취소',
+            //       subtitle: cancelState == 1103
+            //           ? '웨이팅이 가게에 의해 취소되었습니다.'
+            //           : '웨이팅을 취소했습니다.',
+            //       buttonText: '확인',
+            //     );
+            //   },
+            // );
+          } else if (cancelState == 1102) {
+            ref.read(cancelDialogStatus.notifier).state = null;
+            AwesomeDialogWidget.showErrorDialog(
+              context: navigatorKey.currentContext!,
+              title: '웨이팅 취소 실패',
+              desc: '가게에 문의해주세요.',
+            );
+          }
+        },
+      );
     }
   }
 
@@ -161,7 +159,8 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                 ),
                 leading: IconButton(
                   // 왼쪽 상단 뒤로가기 아이콘
-                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                  icon: Icon(Icons.arrow_back_ios_new_rounded,
+                      color: Colors.white),
                   onPressed: () {
                     context.pop();
                   },

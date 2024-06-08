@@ -8,7 +8,7 @@ import 'package:orre/provider/waiting_usercall_time_list_state_notifier.dart';
 import 'package:orre/services/network/https_services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:orre/services/debug.services.dart';
+import 'package:orre/services/debug_services.dart';
 import 'package:orre/services/notifications_services.dart';
 import 'package:stomp_dart_client/stomp.dart';
 

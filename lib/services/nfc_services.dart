@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import '../presenter/main/main_screen.dart';
-import 'debug.services.dart';
+import 'debug_services.dart';
 
 final nfcAvailableProvider = StateProvider<bool>((ref) => false);
 

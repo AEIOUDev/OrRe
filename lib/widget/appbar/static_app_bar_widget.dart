@@ -28,7 +28,7 @@ class StaticAppBarWidget extends ConsumerWidget {
           TextWidget(
             title,
             fontSize: 20.sp,
-            color: Colors.white,
+            color: Colors.black,
           ),
           Spacer(),
           if (actions != null) ...actions!,

@@ -39,7 +39,6 @@ class AlertPopupWidget extends StatelessWidget {
           ? TextWidget(
               subtitle!,
               textAlign: TextAlign.center,
-              softWrap: true,
               fontSize: 20.sp,
               color: Color.fromARGB(255, 66, 49, 21),
             )
