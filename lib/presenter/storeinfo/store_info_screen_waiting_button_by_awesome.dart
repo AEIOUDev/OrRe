@@ -12,7 +12,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import '../../provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
 import '../../services/network/https_services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

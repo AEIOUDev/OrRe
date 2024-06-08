@@ -1,5 +1,5 @@
 import 'package:http/http.dart' as http;
-import 'package:orre/services/debug.services.dart';
+import 'package:orre/services/debug_services.dart';
 
 enum APIResponseStatus {
   success,

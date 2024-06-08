@@ -10,13 +10,13 @@ import 'package:orre/services/network/https_services.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/text_button_widget.dart';
-import 'package:orre/widget/popup/alert_popup_widget.dart';
+import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 
 import 'package:orre/widget/text_field/text_input_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/provider/timer_state_notifier.dart';
 
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
 
 final isObscureProvider = StateProvider<bool>((ref) => true);
 
@@ -50,7 +50,8 @@ class SignUpResetPasswordScreen extends ConsumerWidget {
             child: StaticAppBarWidget(
               title: '비밀번호 재설정',
               leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                icon:
+                    Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
                 onPressed: () {
                   context.pop();
                 },
@@ -103,34 +104,28 @@ class SignUpResetPasswordScreen extends ConsumerWidget {
                                       String phoneNumber = phoneNumberController
                                           .text
                                           .replaceAll(RegExp(r'[^0-9]'), '');
-                                      requestAuthCodeForReset(phoneNumber)
-                                          .then((value) {
-                                        print("authCodeGen: $value");
-                                        if (value ==
-                                            APIResponseStatus.success) {
-                                          print("authCodeGenSuccess");
-                                          ref
-                                              .read(timerProvider.notifier)
-                                              .setAndStartTimer(300);
-                                          FocusScope.of(context)
-                                              .requestFocus(authCodeFocusNode);
-                                        } else if (value ==
-                                            APIResponseStatus
-                                                .resetPasswordPhoneNumberFailure) {
-                                          showDialog(
+                                      requestAuthCodeForReset(phoneNumber).then(
+                                        (value) {
+                                          print("authCodeGen: $value");
+                                          if (value ==
+                                              APIResponseStatus.success) {
+                                            print("authCodeGenSuccess");
+                                            ref
+                                                .read(timerProvider.notifier)
+                                                .setAndStartTimer(300);
+                                            FocusScope.of(context).requestFocus(
+                                                authCodeFocusNode);
+                                          } else if (value ==
+                                              APIResponseStatus
+                                                  .resetPasswordPhoneNumberFailure) {
+                                            AwesomeDialogWidget.showErrorDialog(
                                               context: context,
-                                              builder: (context) => Builder(
-                                                    builder: (BuildContext
-                                                            context) =>
-                                                        AlertPopupWidget(
-                                                      title: '인증번호 요청 실패',
-                                                      subtitle:
-                                                          '일치하는 전화번호가 없습니다.',
-                                                      buttonText: '확인',
-                                                    ),
-                                                  ));
-                                        }
-                                      });
+                                              title: '인증번호 요청 실패',
+                                              desc: '일치하는 전화번호가 없습니다.',
+                                            );
+                                          }
+                                        },
+                                      );
                                     }
                                   },
                                   text: timer == 0
@@ -205,37 +200,36 @@ class SignUpResetPasswordScreen extends ConsumerWidget {
                           String newPassword = passwordController.text;
                           requestResetPassword(
                                   phoneNumber, authCode, newPassword)
-                              .then((value) {
-                            if (value == true) {
-                              Future.delayed(Duration.zero, () {
-                                ref.read(timerProvider.notifier).cancelTimer();
-                              });
+                              .then(
+                            (value) {
+                              if (value == true) {
+                                Future.delayed(Duration.zero, () {
+                                  ref
+                                      .read(timerProvider.notifier)
+                                      .cancelTimer();
+                                });
 
-                              context.go("/user/onboarding");
+                                context.go("/user/onboarding");
 
-                              // showDialog(
-                              //     context: context,
-                              //     builder: (context) => Builder(
-                              //           builder: (BuildContext context) =>
-                              //               AlertPopupWidget(
-                              //             title: '비밀번호 재설정 성공',
-                              //             subtitle: '새로운 비밀번호로 로그인해주세요.',
-                              //             buttonText: '확인',
-                              //           ),
-                              //         ));
-                            } else {
-                              showDialog(
+                                // showDialog(
+                                //     context: context,
+                                //     builder: (context) => Builder(
+                                //           builder: (BuildContext context) =>
+                                //               AlertPopupWidget(
+                                //             title: '비밀번호 재설정 성공',
+                                //             subtitle: '새로운 비밀번호로 로그인해주세요.',
+                                //             buttonText: '확인',
+                                //           ),
+                                //         ));
+                              } else {
+                                AwesomeDialogWidget.showErrorDialog(
                                   context: context,
-                                  builder: (context) => Builder(
-                                        builder: (BuildContext context) =>
-                                            AlertPopupWidget(
-                                          title: '비밀번호 재설정 실패',
-                                          subtitle: '인증번호 또는 전화번호를 확인해주세요.',
-                                          buttonText: '확인',
-                                        ),
-                                      ));
-                            }
-                          });
+                                  title: '비밀번호 재설정 실패',
+                                  desc: '인증번호 또는 전화번호를 확인해주세요.',
+                                );
+                              }
+                            },
+                          );
                         },
                       ),
                     ],

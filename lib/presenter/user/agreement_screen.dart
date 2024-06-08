@@ -8,7 +8,7 @@ import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
 
 class AgreementScreen extends ConsumerWidget {
   @override
@@ -69,7 +69,8 @@ class AgreementScreen extends ConsumerWidget {
           child: StaticAppBarWidget(
               title: '오리 서비스 이용약관',
               leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                icon:
+                    Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
                 onPressed: () {
                   context.pop();
                 },

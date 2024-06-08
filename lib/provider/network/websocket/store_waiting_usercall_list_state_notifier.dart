@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:orre/provider/network/https/get_service_log_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_request_state_notifier.dart';
-import 'package:orre/services/debug.services.dart';
+import 'package:orre/services/debug_services.dart';
 import 'package:stomp_dart_client/stomp.dart';
 
 import '../../waiting_usercall_time_list_state_notifier.dart';

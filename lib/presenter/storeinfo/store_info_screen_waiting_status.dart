@@ -12,7 +12,7 @@ import 'package:orre/widget/text/text_widget.dart';
 import '../../provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import '../../provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import '../../provider/waiting_usercall_time_list_state_notifier.dart';
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
 
 class WaitingStatusWidget extends ConsumerStatefulWidget {
   final int storeCode;

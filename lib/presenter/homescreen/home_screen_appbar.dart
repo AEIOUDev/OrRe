@@ -9,7 +9,7 @@ import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
 
 class HomeScreenAppBar extends ConsumerWidget {
   final LocationInfo location;

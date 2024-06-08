@@ -11,7 +11,7 @@ import 'package:orre/services/geocording/naver_map_services.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
 
 // import '../../services/geocording/naver_map_services.dart';
 
@@ -41,7 +41,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
           fontSize: 32.sp,
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios), // 뒤로 가기 아이콘
+          icon: Icon(Icons.arrow_back_ios_new_rounded), // 뒤로 가기 아이콘
           color: Color(0xFFFFB74D),
           onPressed: () {
             context.pop(); // 현재 화면을 종료하고 이전 화면으로 돌아갑니다.

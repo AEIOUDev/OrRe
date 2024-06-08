@@ -5,7 +5,7 @@ import 'package:orre/widget/button/small_button_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
 
 class PermissionRequestLocationScreen extends ConsumerStatefulWidget {
   @override

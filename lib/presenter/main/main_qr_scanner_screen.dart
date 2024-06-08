@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-import '../../services/debug.services.dart';
+import '../../services/debug_services.dart';
 import '../../services/store_service.dart';
 
 final scanDataProvider = StateProvider<Barcode?>((ref) => null);
@@ -50,7 +50,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
         child: StaticAppBarWidget(
           title: 'QR 스캔',
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+            icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
             onPressed: () {
               Navigator.pop(context);
             },
