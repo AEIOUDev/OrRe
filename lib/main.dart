@@ -3,6 +3,7 @@ import 'package:app_links/app_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,8 +57,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 final notifications = FlutterLocalNotificationsPlugin();
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+final _appLinks = AppLinks(); // AppLinks is singleton
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutter 엔진과 위젯 바인딩을 초기화
+  await dotenv.load(fileName: ".env");
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -69,17 +73,10 @@ Future<void> main() async {
   // SystemChrome.setPreferredOrientations(
   //     [DeviceOrientation.portraitUp]); // 화면 방향을 세로로 고정
 
-  final _appLinks = AppLinks(); // AppLinks is singleton
-  _appLinks.uriLinkStream.listen((uri) {
-    printd("uri: $uri");
-  }, onError: (Object err) {
-    printd("err: $err");
-  });
-
   // 네이버 지도 초기화
   if (!GetPlatform.isWeb) {
-    await NaverMapSdk.instance
-        .initialize(clientId: "mlravb678f", onAuthFailed: (ex) => print(ex));
+    await NaverMapSdk.instance.initialize(
+        clientId: dotenv.env['NAVER_API_ID']!, onAuthFailed: (ex) => print(ex));
   }
 
   setPathUrlStrategy(); // 해시(#) 없이 URL 사용

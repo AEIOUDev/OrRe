@@ -1,15 +1,16 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 import '../debug.services.dart';
 
-// TODO : API 키 HIDING
-
 Future<List<String?>> getAddressFromLatLngNaver(
     double latitude, double longitude, int detail, bool includeArea1) async {
-  final String clientId = 'mlravb678f'; // Naver API 클라이언트 ID
+  printd("Naver Map API");
+  final String clientId = dotenv.env['NAVER_API_ID']!; // Naver API 클라이언트 ID
   final String clientSecret =
-      'cC5vTZLpxIVxnnhzJrweKAsFp4ZUJErHezBo6aDY'; // Naver API 클라이언트 Secret
+      dotenv.env['NAVER_API_SECRET']!; // Naver API 클라이언트 Secret
+
   final String url =
       'https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc'
       '?request=coordsToaddr&coords=$longitude,$latitude&sourcecrs=epsg:4326&output=json&orders=addr';

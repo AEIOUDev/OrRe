@@ -209,7 +209,7 @@ class SettingScreen extends ConsumerWidget {
                   final appVersion = ref.watch(appVersionProvider);
                   return TextWidget(
                     "앱 버전 : $appVersion",
-                    fontSize: 8.sp,
+                    fontSize: 12.sp,
                     color: Colors.grey,
                   );
                 }),

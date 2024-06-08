@@ -1,3 +1,4 @@
+import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -268,11 +269,21 @@ class WaitingStoreItem extends ConsumerWidget {
                                                     fontSize: 16.sp,
                                                     textAlign: TextAlign.start,
                                                   ),
-                                                  TextWidget(
-                                                    '${userCallState.inSeconds}',
-                                                    fontSize: 20.sp,
-                                                    color: Color(0xFFDD0000),
+                                                  AnimatedFlipCounter(
+                                                    value:
+                                                        userCallState.inSeconds,
+                                                    textStyle: TextStyle(
+                                                      fontFamily:
+                                                          'Dovemayo_gothic',
+                                                      fontSize: 20.sp,
+                                                      color: Color(0xFFDD0000),
+                                                    ),
                                                   ),
+                                                  // TextWidget(
+                                                  //   '${userCallState.inSeconds}',
+                                                  //   fontSize: 20.sp,
+                                                  //   color: Color(0xFFDD0000),
+                                                  // ),
                                                   TextWidget('초 남았어요.',
                                                       fontSize: 16.sp),
                                                 ],

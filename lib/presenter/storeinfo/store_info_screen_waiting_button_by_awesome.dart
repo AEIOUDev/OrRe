@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orre/presenter/main/main_screen.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
+// import 'package:orre/services/notifications_services.dart';
 import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import '../../provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
@@ -41,7 +43,7 @@ class WaitingButtonAwesome extends ConsumerWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(50),
             ),
-            onPressed: () {
+            onPressed: () async {
               print("waitingState" + {waitingState}.toString());
               if (waitingState) {
                 // 현재 웨이팅 중이므로 웨이팅 취소 dialog를 띄우고, 웨이팅 취소를 위한 로직을 실행한다.
@@ -64,88 +66,108 @@ class WaitingButtonAwesome extends ConsumerWidget {
                   cancelText: '아니요',
                 );
               } else {
-                // 현재 웨이팅 중이 아니므로 웨이팅 시작 dialog를 띄우고, 웨이팅 시작을 위한 로직을 실행한다.
-                AwesomeDialogWidget.showCustomDialogWithCancel(
-                  context: context,
-                  title: '웨이팅 시작',
-                  desc: '웨이팅을 시작하시겠습니까?',
-                  dialogType: DialogType.info,
-                  onPressed: () async {
-                    printd("waitingState: $waitingState");
-                    // 웨이팅 시작 로직
-                    await subscribeAndShowDialog(context, storeCode, userInfo!,
-                            numberOfPersonControlloer.toString(), ref)
-                        .then((value) {
-                      if (value == APIResponseStatus.success ||
-                          value == APIResponseStatus.waitingAlreadyJoin) {
-                        printd("웨이팅 성공");
-                        context.pop();
-                        ref.read(selectedIndexProvider.notifier).state = 2;
-                      } else {
-                        printd("웨이팅 실패");
-                        AwesomeDialogWidget.showCustomDialog(
-                          context: context,
-                          title: '웨이팅 실패',
-                          desc: '다시 시도해주세요.',
-                          dialogType: DialogType.error,
-                          onPressed: () {},
-                          btnText: '확인',
-                        );
-                      }
-                    });
-                  },
-                  btnText: '시작',
-                  onCancel: () {},
-                  cancelText: '취소',
-                  body: Consumer(builder: (context, ref, child) {
-                    final numberOfPersonControlloer =
-                        ref.watch(peopleNumberProvider);
-                    return Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(
-                            Icons.remove,
-                            color: Color(0xFFFFB74D),
+                final status = await Permission.notification.status;
+                if (status.isDenied || status.isPermanentlyDenied) {
+                  AwesomeDialogWidget.showCustomDialogWithCancel(
+                    context: context,
+                    title: "위치 권한 없음!",
+                    desc: "웨이팅 알림을 받으려면 알림 권한이 필요합니다.",
+                    dialogType: DialogType.warning,
+                    onPressed: () async {
+                      openAppSettings();
+                    },
+                    btnText: "설정으로 이동",
+                    onCancel: () {},
+                    cancelText: "나중에",
+                  );
+                } else {
+                  // 현재 웨이팅 중이 아니므로 웨이팅 시작 dialog를 띄우고, 웨이팅 시작을 위한 로직을 실행한다.
+                  AwesomeDialogWidget.showCustomDialogWithCancel(
+                    context: context,
+                    title: '웨이팅 시작',
+                    desc: '웨이팅을 시작하시겠습니까?',
+                    dialogType: DialogType.info,
+                    onPressed: () async {
+                      printd("waitingState: $waitingState");
+                      // 웨이팅 시작 로직
+                      await subscribeAndShowDialog(
+                              context,
+                              storeCode,
+                              userInfo!,
+                              numberOfPersonControlloer.toString(),
+                              ref)
+                          .then((value) {
+                        if (value == APIResponseStatus.success ||
+                            value == APIResponseStatus.waitingAlreadyJoin) {
+                          printd("웨이팅 성공");
+                          context.pop();
+                          ref.read(selectedIndexProvider.notifier).state = 2;
+                        } else {
+                          printd("웨이팅 실패");
+                          AwesomeDialogWidget.showCustomDialog(
+                            context: context,
+                            title: '웨이팅 실패',
+                            desc: '다시 시도해주세요.',
+                            dialogType: DialogType.error,
+                            onPressed: () {},
+                            btnText: '확인',
+                          );
+                        }
+                      });
+                    },
+                    btnText: '웨이팅 요청',
+                    onCancel: () {},
+                    cancelText: '취소',
+                    body: Consumer(builder: (context, ref, child) {
+                      final numberOfPersonControlloer =
+                          ref.watch(peopleNumberProvider);
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          IconButton(
+                            icon: Icon(
+                              Icons.remove,
+                              color: Color(0xFFFFB74D),
+                            ),
+                            onPressed: () {
+                              if (numberOfPersonControlloer > 1) {
+                                ref.read(peopleNumberProvider.notifier).state--;
+                              }
+                            },
                           ),
-                          onPressed: () {
-                            if (numberOfPersonControlloer > 1) {
-                              ref.read(peopleNumberProvider.notifier).state--;
-                            }
-                          },
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 12),
-                          width: 75.w,
-                          height: 75.h,
-                          decoration: BoxDecoration(
-                            border:
-                                Border.all(color: Color(0xFFFFB74D), width: 2),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: AnimatedFlipCounter(
-                            value: numberOfPersonControlloer,
-                            suffix: "명",
-                            textStyle: TextStyle(
-                              fontFamily: 'Dovemayo_gothic',
-                              fontSize: 32.sp,
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 12),
+                            width: 75.w,
+                            height: 75.h,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: Color(0xFFFFB74D), width: 2),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: AnimatedFlipCounter(
+                              value: numberOfPersonControlloer,
+                              suffix: "명",
+                              textStyle: TextStyle(
+                                fontFamily: 'Dovemayo_gothic',
+                                fontSize: 32.sp,
+                              ),
                             ),
                           ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.add,
-                            color: Color(0xFFFFB74D),
+                          IconButton(
+                            icon: Icon(
+                              Icons.add,
+                              color: Color(0xFFFFB74D),
+                            ),
+                            onPressed: () {
+                              ref.read(peopleNumberProvider.notifier).state++;
+                            },
                           ),
-                          onPressed: () {
-                            ref.read(peopleNumberProvider.notifier).state++;
-                          },
-                        ),
-                      ],
-                    );
-                  }),
-                );
+                        ],
+                      );
+                    }),
+                  );
+                }
               }
             },
             label: waitingState
