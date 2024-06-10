@@ -30,6 +30,7 @@ class CategoryItem extends ConsumerWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor:
                 selectedTitle == category ? Color(0xFFFFFFBF52) : Colors.white,
+            foregroundColor: Color(0xFFFFFFBF52),
           ),
         ),
       ],

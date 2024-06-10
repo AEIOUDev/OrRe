@@ -8,13 +8,12 @@ import 'package:go_router/go_router.dart';
 import 'package:orre/model/store_waiting_request_model.dart';
 import 'package:orre/provider/network/https/get_service_log_state_notifier.dart';
 import 'package:orre/provider/network/https/post_store_info_future_provider.dart';
-// import 'package:orre/provider/network/websocket/store_detail_info_state_notifier.dart';
 import 'package:orre/provider/network/https/store_detail_info_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
-// import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/provider/waiting_usercall_time_list_state_notifier.dart';
+import 'package:orre/widget/background/extend_body_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/popup/awesome_dialog_widget.dart';
@@ -41,7 +40,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
     } else {
       final serviceLog = await ref
           .watch(serviceLogProvider.notifier)
-          .fetchStoreServiceLog(ref.read(userInfoProvider)!.phoneNumber);
+          .fetchStoreServiceLog(userInfo.phoneNumber);
       if (serviceLog.userLogs.isNotEmpty) {
         printd("serviceLog: ${serviceLog.userLogs.length}");
         ref
@@ -132,48 +131,50 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
           ),
         ],
       ),
-      body: Align(
-        alignment: Alignment.bottomCenter,
-        child: Container(
-          width: 1.sw,
-          height: 0.7.sh,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(70.0),
-              topRight: Radius.circular(70.0),
+      body: ExtendBodyWidget(
+        child: Align(
+          child: Container(
+            width: 1.sw,
+            height: 0.8.sh,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(70.0),
+                topRight: Radius.circular(70.0),
+              ),
             ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 8.h),
-              TextWidget(
-                '웨이팅 조회',
-                fontSize: 32.sp,
-                color: Color(0xFFFFB74D),
-              ),
-              Divider(
-                color: Color(0xFFFFB74D),
-                thickness: 3,
-                endIndent: 0.25.sw,
-                indent: 0.25.sw,
-              ),
-              SizedBox(height: 8.h),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: 1,
-                  itemBuilder: (context, irndex) {
-                    final item = listOfWaitingStoreProvider;
-                    if (item == null)
-                      return LastStoreItem();
-                    else
-                      return WaitingStoreItem(item);
-                  },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 8.h),
+                TextWidget(
+                  '웨이팅 조회',
+                  fontSize: 32.sp,
+                  color: Color(0xFFFFB74D),
                 ),
-              ),
-            ],
+                Divider(
+                  color: Color(0xFFFFB74D),
+                  thickness: 3,
+                  endIndent: 0.25.sw,
+                  indent: 0.25.sw,
+                ),
+                SizedBox(height: 8.h),
+                Expanded(
+                  child: ListView.builder(
+                    physics: NeverScrollableScrollPhysics(), // 스크롤 불가능
+                    itemCount: 1,
+                    itemBuilder: (context, irndex) {
+                      final item = listOfWaitingStoreProvider;
+                      if (item == null)
+                        return LastStoreItem();
+                      else
+                        return WaitingStoreItem(item);
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -442,13 +443,16 @@ class LastStoreItem extends ConsumerWidget {
               return Container();
             } else if (snapshot.hasError || snapshot.data == null) {
               return TextWidget('Error: ${snapshot.error}');
-            } else if (snapshot.data!.userLogs.isEmpty) {
-              return TextWidget('서비스 이용내역이 없습니다.',
-                  fontSize: 16.sp, color: Colors.grey);
             } else {
-              final serviceLog = snapshot.data;
-              final storeCode = snapshot.data!.userLogs.last.storeCode;
-              printd("serviceLog: ${serviceLog!.userLogs.length}");
+              ServiceLogResponse serviceLogResponse =
+                  snapshot.data as ServiceLogResponse;
+              if (serviceLogResponse.userLogs.isEmpty) {
+                return TextWidget('서비스 이용내역이 없습니다.',
+                    fontSize: 16.sp, color: Colors.grey);
+              }
+              final serviceLog = snapshot.data as ServiceLogResponse;
+              final storeCode = serviceLog.userLogs.last.storeCode;
+              printd("serviceLog: ${serviceLog.userLogs.length}");
               if (serviceLog.userLogs.isNotEmpty) {
                 return FutureBuilder(
                     future: fetchStoreDetailInfo(StoreInfoParams(storeCode, 0)),

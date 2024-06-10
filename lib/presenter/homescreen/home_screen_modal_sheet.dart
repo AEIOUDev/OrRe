@@ -182,6 +182,7 @@ class HomeScreenModalBottomSheet extends ConsumerWidget {
             ),
           ),
           backgroundColor: Colors.white,
+          foregroundColor: Color(0xFFFFFFBF52),
         ),
         child: Row(
           children: [

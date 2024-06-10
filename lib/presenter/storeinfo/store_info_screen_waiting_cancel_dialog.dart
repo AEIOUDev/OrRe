@@ -57,7 +57,10 @@ class WaitingCancelDialog extends ConsumerWidget {
         TextButton(
           child: TextWidget("확인"),
           onPressed: () {
-            if (formKey.currentState!.validate()) {
+            if (formKey.currentState == null) return;
+
+            final FormState formState = formKey.currentState as FormState;
+            if (formState.validate()) {
               context.pop();
               // 여기에서 입력된 정보를 처리합니다.
               // 예를 들어, 웨이팅 취소 요청을 서버에 보내는 로직을 구현할 수 있습니다.

@@ -83,7 +83,7 @@ class NotificationService {
   void _showFlutterNotification(RemoteMessage message) {
     RemoteNotification? notification = message.notification;
     // Feel free to add UI according to your preference, I am just using a custom Toast.
-    print(notification!.web!);
+    print(notification?.web);
   }
 
   Future<String> getToken() async {

@@ -112,7 +112,11 @@ class SignInScreen extends ConsumerWidget {
                           text: '로그인 하기',
                           textColor: Colors.white,
                           onPressed: () async {
-                            if (!formKey.currentState!.validate()) {
+                            if (formKey.currentState == null) return;
+
+                            final FormState formState =
+                                formKey.currentState as FormState;
+                            if (!formState.validate()) {
                               return;
                             }
                             FocusScope.of(context).unfocus();

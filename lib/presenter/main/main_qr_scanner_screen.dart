@@ -28,10 +28,14 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
   @override
   void reassemble() {
     super.reassemble();
-    if (Platform.isAndroid) {
-      controller!.pauseCamera();
-    } else if (Platform.isIOS) {
-      controller!.resumeCamera();
+    if (controller == null)
+      return;
+    else {
+      if (Platform.isAndroid) {
+        controller?.pauseCamera();
+      } else if (Platform.isIOS) {
+        controller?.resumeCamera();
+      }
     }
   }
 
