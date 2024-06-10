@@ -34,6 +34,7 @@ class BigButtonWidget extends ConsumerWidget {
         backgroundColor: backgroundColor,
         minimumSize: minimumSize,
         shape: shape,
+        foregroundColor: Color(0xFFFFFFBF52),
       ),
     );
   }

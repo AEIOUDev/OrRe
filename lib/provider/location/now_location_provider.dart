@@ -43,21 +43,23 @@ class LocationStateNotifier extends StateNotifier<LocationInfo?> {
         "nowLocationProvider : 현재 경도 : ${position.longitude}, 현재 위도 : ${position.latitude}");
 
     // state와 현재 좌표가 크게 다를 때만 state를 업데이트
-    if (state != null &&
-        (state!.latitude - position.latitude).abs() < 0.0001 &&
-        (state!.longitude - position.longitude).abs() < 0.0001) {
-      printd("nowLocationProvider : 위치가 변경되지 않았습니다.");
+    if (state != null) {
+      LocationInfo locationInfo = state as LocationInfo;
+      if ((locationInfo.latitude - locationInfo.latitude).abs() < 0.00001 &&
+          (locationInfo.longitude - locationInfo.longitude).abs() < 0.00001) {
+        printd("nowLocationProvider : 위치가 변경되지 않았습니다.");
 
-      // 거리 차이 printd
-      printd(
-          "nowLocationProvider : 위도 차이 : ${(state!.latitude - position.latitude).abs()}");
+        // 거리 차이 printd
+        printd(
+            "nowLocationProvider : 위도 차이 : ${(locationInfo.latitude - position.latitude).abs()}");
 
-      printd(
-          "nowLocationProvider : 경도 차이 : ${(state!.longitude - position.longitude).abs()}");
+        printd(
+            "nowLocationProvider : 경도 차이 : ${(locationInfo.longitude - position.longitude).abs()}");
 
-      printd(
-          "총 거리 : ${(state!.latitude - position.latitude).abs() + (state!.longitude - position.longitude).abs()}");
-      return state;
+        printd(
+            "총 거리 : ${(locationInfo.latitude - position.latitude).abs() + (locationInfo.longitude - position.longitude).abs()}");
+        return state;
+      }
     }
 
     // 권한이 허용되었을 때 도로명 주소 변환 로직

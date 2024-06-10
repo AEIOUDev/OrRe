@@ -53,8 +53,6 @@ class StompClientStateNotifier extends StateNotifier<StompClient?> {
             streamController.add(StompStatus.CONNECTED);
             if (firstBoot == true) {
               printd("already firstboot, fetchStoreServiceLog start");
-              // ref.read(serviceLogProvider.notifier).fetchStoreServiceLog(
-              //     ref.read(userInfoProvider)!.phoneNumber);
               ref.read(stompErrorStack.notifier).state = 0;
             } else {
               onConnectCallback(frame);

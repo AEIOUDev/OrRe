@@ -191,7 +191,11 @@ class SignUpResetPasswordScreen extends ConsumerWidget {
                         text: '비밀번호 재설정하기',
                         textColor: Colors.white,
                         onPressed: () {
-                          if (!formKey.currentState!.validate()) {
+                          if (formKey.currentState == null) return;
+
+                          final FormState formState =
+                              formKey.currentState as FormState;
+                          if (!formState.validate()) {
                             return;
                           }
                           String phoneNumber = phoneNumberController.text

@@ -40,37 +40,63 @@ Future<List<String?>> getAddressFromLatLngNaver(
         return ["지원범위 밖", "지원범위 밖"];
       }
       if (detail >= 1 && includeArea1) {
-        address +=
-            (responseData['results'][0]['region']['area1']['name'] ?? '');
+        String area1 = responseData['results'][0]['region']['area1']['name'];
+        if (area1.length != 0) {
+          address += area1;
+        }
       }
       // 3단계 (일반구, 행정시)
       if (detail >= 2) {
-        address +=
-            ' ' + (responseData['results'][0]['region']['area2']['name'] ?? '');
+        String area2 = responseData['results'][0]['region']['area2']['name'];
+        if (area2.length != 0) {
+          address += ' ' + area2;
+        }
       }
       // 4단계(읍면동)
       if (detail >= 3) {
-        address +=
-            ' ' + (responseData['results'][0]['region']['area3']['name'] ?? '');
+        String area3 = responseData['results'][0]['region']['area3']['name'];
+        if (area3.length != 0) {
+          address += ' ' + area3;
+        }
       }
       // 5단계(리, 통)
       if (detail >= 4) {
-        address +=
-            ' ' + (responseData['results'][0]['region']['area4']['name'] ?? '');
+        String area4 = responseData['results'][0]['region']['area4']['name'];
+        if (area4.length != 0) {
+          address += ' ' + area4;
+        }
       }
-      // 6단계인 '반'은 넣지 않았음.
+
+      printd("naver_map_services : $address");
+      final String? roadNumber1 = responseData['results'][0]['land']['number1'];
+      final String? roadNumber2 = responseData['results'][0]['land']['number2'];
+      String roadNumber = '';
+
+      if (detail >= 5) {
+        if (roadNumber1 != null && roadNumber1.length != 0) {
+          roadNumber += roadNumber1;
+          if (roadNumber2 != null && roadNumber2.length != 0) {
+            roadNumber += '-' + roadNumber2;
+          }
+        } else {
+          if (roadNumber2 != null) {
+            roadNumber = roadNumber2;
+          }
+        }
+      }
+
+      if (roadNumber.length != 0) {
+        address += ' ' + roadNumber;
+      }
+
+      printd("naver_map_services_after numbering : $roadNumber");
 
       // 4~5단계만 포함된 String과 전체 주소를 List로 반환
       List<String?> addressList = [];
       String placeName = '';
 
-      if (responseData['results'][0]['land']['name'] == null) {
-        placeName += (responseData['results'][0]['region']['area3']['name']);
-        placeName += ' ';
-        placeName += (responseData['results'][0]['region']['area4']['name']);
-      } else {
-        placeName = responseData['results'][0]['land']['name'];
-      }
+      placeName += (responseData['results'][0]['region']['area3']['name']);
+      placeName += (roadNumber.isEmpty ? '' : ' ' + roadNumber);
 
       addressList = [placeName.trim(), address.trim()];
 

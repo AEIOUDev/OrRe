@@ -29,6 +29,9 @@ class TextButtonWidget extends ConsumerWidget {
         color: textColor,
         fontSize: fontSize,
       ),
+      style: TextButton.styleFrom(
+        foregroundColor: Color(0xFFFFFFBF52),
+      ),
     );
   }
 }

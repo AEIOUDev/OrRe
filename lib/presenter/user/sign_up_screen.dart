@@ -152,7 +152,11 @@ class SignUpScreen extends ConsumerWidget {
                               nextFocusNode: authCodeFocusNode,
                               suffixIcon: TextButtonWidget(
                                 onPressed: () {
-                                  if (!phoneFormKey.currentState!.validate()) {
+                                  if (phoneFormKey.currentState == null) return;
+
+                                  final FormState formState =
+                                      phoneFormKey.currentState as FormState;
+                                  if (!formState.validate()) {
                                     return;
                                   }
                                   print("authRequestTimer: $timer");

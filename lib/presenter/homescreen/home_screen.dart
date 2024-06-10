@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/presenter/homescreen/home_screen_store_list.dart';
+import 'package:orre/widget/background/extend_body_widget.dart';
 import '../../provider/home_screen/store_category_provider.dart';
 import '../../provider/home_screen/store_list_sort_type_provider.dart';
 import '../../provider/location/location_securestorage_provider.dart';
@@ -93,33 +94,60 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Consumer(
                 builder: (context, ref, child) {
                   return FutureBuilder(
-                      future: ref
-                          .read(storeListProvider.notifier)
-                          .fetchStoreDetailInfo(params),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          // 카테고리에 맞는 아이템만 골라서 리스트에 넣어주기
-                          final nowCategory = ref.watch(selectCategoryProvider);
-                          final filteredList = snapshot.data
-                              ?.where((element) =>
-                                  element.storeCategory ==
-                                      nowCategory.toKoKr() ||
-                                  nowCategory.toKoKr() == "전체")
-                              .toList();
-                          if (filteredList == null || filteredList.isEmpty) {
-                            return TextWidget(
-                              "주변에 해당하는 가게가 없습니다.",
-                              textAlign: TextAlign.center,
-                              fontSize: 20.sp,
-                              color: Colors.black,
-                            );
-                          } else {
-                            return StoreListWidget(storeList: filteredList);
-                          }
+                    future: ref
+                        .read(storeListProvider.notifier)
+                        .fetchStoreDetailInfo(params),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        // 카테고리에 맞는 아이템만 골라서 리스트에 넣어주기
+                        final nowCategory = ref.watch(selectCategoryProvider);
+                        final filteredList = snapshot.data
+                            ?.where((element) =>
+                                element.storeCategory == nowCategory.toKoKr() ||
+                                nowCategory.toKoKr() == "전체")
+                            .toList();
+                        if (filteredList == null || filteredList.isEmpty) {
+                          return ExtendBodyWidget(
+                            child: Container(
+                              width: 0.95.sw,
+                              padding: EdgeInsets.only(top: 16.h, bottom: 16.h),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(30),
+                                ),
+                                color: Colors.white,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "assets/images/error_orre.gif",
+                                    width: 200.w,
+                                    height: 200.h,
+                                  ),
+                                  SizedBox(
+                                    height: 16.h,
+                                  ),
+                                  TextWidget(
+                                    "아직 주변에 등록된 가게가 없어요",
+                                    textAlign: TextAlign.center,
+                                    fontSize: 20.sp,
+                                    color: Colors.black,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
                         } else {
-                          return CustomLoadingIndicator();
+                          return StoreListWidget(storeList: filteredList);
                         }
-                      });
+                      } else {
+                        return CustomLoadingIndicator();
+                      }
+                    },
+                  );
                 },
               ),
             ),

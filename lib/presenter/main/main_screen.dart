@@ -17,7 +17,9 @@ import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/services/debug_services.dart';
+import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
 
 import '../../model/location_model.dart';
 import '../../provider/home_screen/store_list_sort_type_provider.dart';
@@ -289,31 +291,56 @@ class _MainScreenState extends ConsumerState<MainScreen>
         body: Center(
           child: pages[selectedIndex], // 선택된 인덱스에 따른 페이지 표시
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag),
-              label: '주문',
+        bottomNavigationBar: StylishBottomBar(
+          backgroundColor: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          option: AnimatedBarOptions(
+            iconStyle: IconStyle.animated,
+            iconSize: 20.sp,
+          ),
+          items: [
+            BottomBarItem(
+              icon: Icon(Icons.shopping_bag_rounded),
+              title: TextWidget(
+                "주문",
+                fontSize: 12.sp,
+                color: Color(0xFFFFFFBF52),
+              ),
+              // backgroundColor: Colors.red,
+              selectedColor: Color(0xFFFFFFBF52),
+              unSelectedColor: Color(0xFFDFDFDF),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: '홈',
-            ),
-            BottomNavigationBarItem(
+            BottomBarItem(
               icon: Icon(Icons.people),
-              label: '줄서기',
+              title: TextWidget(
+                "홈",
+                fontSize: 12.sp,
+                color: Color(0xFFFFFFBF52),
+              ),
+              // backgroundColor: Colors.orange,
+              selectedColor: Color(0xFFFFFFBF52),
+              unSelectedColor: Color(0xFFDFDFDF),
+            ),
+            BottomBarItem(
+              icon: const Icon(Icons.people_alt_rounded),
+              title: TextWidget(
+                "줄서기",
+                fontSize: 12.sp,
+                color: Color(0xFFFFFFBF52),
+              ),
+              // backgroundColor: Color(0xFFFFFFBF52),
+              selectedColor: Color(0xFFFFFFBF52),
+              unSelectedColor: Color(0xFFDFDFDF),
             ),
           ],
-          selectedItemColor: Color(0xFFFFFFBF52),
-          unselectedItemColor: Color(0xFFDFDFDF),
           currentIndex: selectedIndex, // 현재 선택된 인덱스
           onTap: (index) {
             // 사용자가 탭을 선택할 때 상태 업데이트
             ref.read(selectedIndexProvider.notifier).state = index;
           },
         ),
+        extendBody: true,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-
         //Init Floating Action Bubble
         floatingActionButton: FloatingActionBubble(
           // Menu items

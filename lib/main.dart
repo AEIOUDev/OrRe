@@ -117,8 +117,9 @@ final GoRouter _router = GoRouter(
         printd(
             "Navigating to ReservationPage for Specific User, fullPath: ${state.fullPath}");
         // final storeCode = int.parse(state.pathParameters['storeCode']!);
-        // final userPhoneNumber =
-        state.pathParameters['userPhoneNumber']!.replaceAll('-', '');
+        // final userPhoneNumber = state.pathParameters['userPhoneNumber']!;
+
+        // userPhoneNumber.replaceAll('-', '');
         return WaitingScreen();
       },
     ),
@@ -231,10 +232,23 @@ final GoRouter _router = GoRouter(
           return AddLocationScreen();
         }),
     GoRoute(
-        path: '/location/locationManagement',
-        builder: (context, state) {
-          return LocationManagementScreen();
-        }),
+      path: '/location/locationManagement',
+      pageBuilder: (context, state) {
+        return CustomTransitionPage(
+          child: LocationManagementScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: animation.drive(
+                Tween(begin: Offset(0.0, -1.0), end: Offset.zero).chain(
+                  CurveTween(curve: Curves.fastOutSlowIn),
+                ),
+              ),
+              child: child,
+            );
+          },
+        );
+      },
+    ),
     GoRoute(
         path: '/home',
         builder: (context, state) {
@@ -543,18 +557,31 @@ class LoadServiceLogWidget extends ConsumerWidget {
             );
           } else if (snapshot.hasData) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
+              ServiceLogResponse serviceLogResponse;
+              if (snapshot.data == null)
+                return;
+              else
+                serviceLogResponse = snapshot.data as ServiceLogResponse;
               if (APIResponseStatus.serviceLogPhoneNumberFailure
-                  .isEqualTo(snapshot.data!.status)) {
+                  .isEqualTo(serviceLogResponse.status)) {
                 // 서비스 로그 불러오기 실패
                 print("서비스 로그 불러오기 실패, 재로그인 필요 : OnboardingScreen() 호출");
                 context.go('/onboarding');
               } else {
-                // 서비스 로그 불러오기 성공. 나열 시작
-                print("서비스 로그 불러오기 성공 : ${snapshot.data!.userLogs.length}");
-                ref
-                    .read(serviceLogProvider.notifier)
-                    .reconnectWebsocketProvider(snapshot.data!.userLogs.last);
-                context.go('/main');
+                if (serviceLogResponse.userLogs.isEmpty) {
+                  // 서비스 로그 없음
+                  print("서비스 로그 없음, MainScreen() 호출");
+                  context.go('/main');
+                } else {
+                  // 서비스 로그 불러오기 성공. 나열 시작
+                  print(
+                      "서비스 로그 불러오기 성공 : ${serviceLogResponse.userLogs.length}");
+                  ref
+                      .read(serviceLogProvider.notifier)
+                      .reconnectWebsocketProvider(
+                          serviceLogResponse.userLogs.last);
+                  context.go('/main');
+                }
               }
             });
           } else if (snapshot.hasError) {

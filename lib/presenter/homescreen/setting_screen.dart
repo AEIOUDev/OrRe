@@ -217,13 +217,11 @@ class SettingScreen extends ConsumerWidget {
                         color: Colors.grey,
                       ),
                       SizedBox(width: 10.w),
-                      TextButton(
+                      TextButtonWidget(
                         onPressed: () => context.push("/setting/licenses"),
-                        child: TextWidget(
-                          "오픈소스 라이선스 확인",
-                          fontSize: 12.sp,
-                          color: Colors.grey,
-                        ),
+                        text: "오픈소스 라이선스 확인",
+                        textColor: Colors.grey,
+                        fontSize: 12.sp,
                       )
                     ],
                   );

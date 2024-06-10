@@ -203,7 +203,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
                                       // await getAddressFromLatLngLibrary(
                                       //     latitude, longitude, 4, false);
                                       await getAddressFromLatLngNaver(
-                                          latitude, longitude, 4, true);
+                                          latitude, longitude, 5, true);
 
                                   // List<String?> nameAndAddress =
                                   //     await getAddressFromLatLngNaver(
