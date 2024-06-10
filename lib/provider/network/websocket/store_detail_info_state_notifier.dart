@@ -37,7 +37,7 @@ class StoreDetailInfoStateNotifier extends StateNotifier<StoreDetailInfo?> {
       return Stream.value(null);
     }
     if (_subscribeStoreInfo[storeCode.toString()] == null) {
-      _subscribeStoreInfo[storeCode.toString()] = _client!.subscribe(
+      _subscribeStoreInfo[storeCode.toString()] = _client?.subscribe(
           destination: '/topic/user/storeInfo/$storeCode',
           callback: (frame) {
             if (frame.body != null) {
@@ -61,7 +61,7 @@ class StoreDetailInfoStateNotifier extends StateNotifier<StoreDetailInfo?> {
     print(
         "StoreDetailInfoStateNotifier sendStoreDetailInfoRequest : $storeCode");
     storeCodeForRequest = storeCode;
-    _client!.send(
+    _client?.send(
         destination: '/app/user/storeInfo/$storeCode',
         body: json.encode({'storeCode': storeCode}));
   }

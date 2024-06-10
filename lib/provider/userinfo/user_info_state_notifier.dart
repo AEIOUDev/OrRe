@@ -78,10 +78,16 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
       // 저장된 정보가 있다면
       if (loaded) {
         // 해당 정보로 로그인 시도
-        info = SignInInfo(
-          phoneNumber: state!.phoneNumber,
-          password: state!.password,
-        );
+        if (state == null) {
+          return null;
+        } else {
+          printd("state : $state");
+          UserInfo user = state as UserInfo;
+          info = SignInInfo(
+            phoneNumber: user.phoneNumber,
+            password: user.password,
+          );
+        }
       } else {
         // 매개변수도 없고 저장된 정보도 없다면
         return null; // null 반환하여 로그인 화면으로 이동

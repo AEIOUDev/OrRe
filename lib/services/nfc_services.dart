@@ -107,7 +107,8 @@ void readNfcTag() {
 
     if (ndef != null && ndef.cachedMessage != null) {
       String tempRecord = "";
-      for (var record in ndef.cachedMessage!.records) {
+      NdefMessage message = ndef.cachedMessage as NdefMessage;
+      for (var record in message.records) {
         tempRecord =
             "$tempRecord ${String.fromCharCodes(record.payload.sublist(record.payload[0] + 1))}";
       }

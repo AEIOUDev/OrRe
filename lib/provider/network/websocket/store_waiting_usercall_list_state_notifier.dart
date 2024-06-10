@@ -141,7 +141,8 @@ class StoreWaitingUserCallNotifier extends StateNotifier<UserCall?> {
         await _storage.delete(key: 'userCallStatus');
       }
     } else {
-      final json_data_status = jsonEncode(state!.toJson());
+      UserCall userCall = state as UserCall;
+      final json_data_status = jsonEncode(userCall.toJson());
       printd("saveUserCallStatus : $json_data_status");
       await _storage.write(key: 'userCallStatus', value: json_data_status);
     }

@@ -18,12 +18,14 @@ class OssLicensesPage extends ConsumerWidget {
     }
     final licenses = allDependencies.toList();
     for (var key in lm.keys) {
+      if (lm[key] == null) continue;
+      List<String> license = lm[key] as List<String>;
       licenses.add(Package(
         name: key,
         description: '',
         authors: [],
         version: '',
-        license: lm[key]!.join('\n\n'),
+        license: license.join('\n\n'),
         isMarkdown: false,
         isSdk: false,
         dependencies: [],
@@ -81,7 +83,11 @@ class MiscOssLicenseSingle extends ConsumerWidget {
   const MiscOssLicenseSingle({super.key, required this.package});
 
   String _bodyText() {
-    return package.license!.split('\n').map((line) {
+    if (package.license == null) return '';
+
+    String license = package.license as String;
+
+    return license.split('\n').map((line) {
       if (line.startsWith('//')) line = line.substring(2);
       line = line.trim();
       return line;

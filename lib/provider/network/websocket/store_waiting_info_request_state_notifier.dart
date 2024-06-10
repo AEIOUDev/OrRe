@@ -384,11 +384,14 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
           state?.token.storeCode != -1) {
         if (state != null) {
           printd("state is not null");
-          if (state!.token != StoreWaitingRequest.nullValue().token) {
+          if (state?.token != StoreWaitingRequest.nullValue().token) {
             printd("state.token is not null");
 
+            StoreWaitingRequestDetail token =
+                state?.token as StoreWaitingRequestDetail;
+
             subscribeToStoreWaitingCancelRequest(
-                state!.token.storeCode, state!.token.phoneNumber);
+                token.storeCode, token.phoneNumber);
           } else {
             printd("state.token is null");
           }
@@ -408,7 +411,10 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
     printd("clearWaitingRequestList");
     if (state != null) {
       ref.read(isWaitingNow.notifier).state = false;
-      unSubscribe(state!.token.storeCode);
+
+      StoreWaitingRequestDetail token =
+          state?.token as StoreWaitingRequestDetail;
+      unSubscribe(token.storeCode);
     }
   }
 
@@ -417,9 +423,10 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
     printd("storeWaitingInfo reconnect");
     loadWaitingRequestList();
     if (state != null) {
-      printd("reconnect : ${state!.token.storeCode}");
+      StoreWaitingRequest newState = state as StoreWaitingRequest;
+      printd("reconnect : ${newState.token.storeCode}");
       subscribeToStoreWaitingCancelRequest(
-          state!.token.storeCode, state!.token.phoneNumber);
+          newState.token.storeCode, newState.token.phoneNumber);
     }
   }
 

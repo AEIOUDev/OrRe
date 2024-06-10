@@ -150,9 +150,11 @@ class LocationListNotifier extends StateNotifier<LocationState> {
       String? stringListJson = await _storage.read(key: 'savedCustomLocations');
       String? selectedLocationJson =
           await _storage.read(key: 'savedSelectedLocation');
+
       if (stringListJson != null) {
         List<dynamic> stringList = json.decode(stringListJson);
         List<LocationInfo> loadedLocations = stringList
+            .where((string) => string != null) // null 값 필터링
             .map((string) => LocationInfo.fromJson(json.decode(string)))
             .toList();
         // 초기 선택된 위치 설정 로직 추가 가능
@@ -164,10 +166,14 @@ class LocationListNotifier extends StateNotifier<LocationState> {
       }
 
       if (selectedLocationJson != null) {
-        LocationInfo selectedLocation =
-            LocationInfo.fromJson(json.decode(selectedLocationJson));
-        state = state.copyWith(selectedLocation: selectedLocation);
-        printd("selectedLocation : ${state.selectedLocation?.locationName}");
+        final decodedJson = json.decode(selectedLocationJson);
+        if (decodedJson is Map<String, dynamic>) {
+          LocationInfo selectedLocation = LocationInfo.fromJson(decodedJson);
+          state = state.copyWith(selectedLocation: selectedLocation);
+          printd("selectedLocation : ${state.selectedLocation?.locationName}");
+        } else {
+          print("Invalid JSON format for selectedLocationJson");
+        }
       } else {
         // 초기 상태 설정 또는 기본값 사용
         print("No data found for savedSelectedLocation");

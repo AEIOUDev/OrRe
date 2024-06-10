@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orre/presenter/error/server_error_screen.dart';
 import 'package:orre/provider/network/connectivity_state_notifier.dart';
@@ -35,6 +36,14 @@ class WebsocketErrorScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              'assets/images/error_orre.gif',
+              width: 200.sw,
+              height: 200.sw,
+            ),
+            SizedBox(
+              height: 16.h,
+            ),
             TextWidget('웹소켓을 불러오는데 실패했습니다.'),
             ElevatedButton(
               onPressed: () {

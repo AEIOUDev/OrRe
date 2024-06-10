@@ -28,8 +28,11 @@ class ServiceLogScreen extends ConsumerWidget {
             .watch(serviceLogProvider.notifier)
             .fetchStoreServiceLog(userInfo.phoneNumber),
         builder: (context, snapshot) {
+          ServiceLogResponse serviceLogResponse;
           if (snapshot.data == null) {
             return CustomLoadingIndicator();
+          } else {
+            serviceLogResponse = snapshot.data as ServiceLogResponse;
           }
           return WaveformBackgroundWidget(
             child: Scaffold(
@@ -46,7 +49,7 @@ class ServiceLogScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              body: (snapshot.data!.userLogs.isEmpty)
+              body: (serviceLogResponse.userLogs.isEmpty)
                   ? Center(
                       child: TextWidget(
                         "이용내역이 없습니다.",
@@ -56,7 +59,7 @@ class ServiceLogScreen extends ConsumerWidget {
                     )
                   : ListView.builder(
                       scrollDirection: Axis.vertical,
-                      itemCount: snapshot.data!.userLogs.length,
+                      itemCount: serviceLogResponse.userLogs.length,
                       itemBuilder: (context, index) {
                         return Column(
                           children: [
@@ -66,63 +69,66 @@ class ServiceLogScreen extends ConsumerWidget {
                                 fontWeight: FontWeight.bold),
                             TextWidget(
                                 "historyId : " +
-                                    snapshot.data!.userLogs[index].historyNum
+                                    serviceLogResponse
+                                        .userLogs[index].historyNum
                                         .toString(),
                                 textAlign: TextAlign.left,
                                 fontSize: 16.sp),
                             TextWidget(
                                 "Status : " +
-                                    snapshot.data!.userLogs[index].status
+                                    serviceLogResponse.userLogs[index].status
                                         .toKr(),
                                 textAlign: TextAlign.left,
                                 fontSize: 16.sp),
                             TextWidget(
                                 "Make Waiting Time : " +
-                                    snapshot
-                                        .data!.userLogs[index].makeWaitingTime
+                                    serviceLogResponse
+                                        .userLogs[index].makeWaitingTime
                                         .toString(),
                                 textAlign: TextAlign.left,
                                 fontSize: 16.sp),
                             TextWidget(
                                 "Store Code : " +
-                                    snapshot.data!.userLogs[index].storeCode
+                                    serviceLogResponse.userLogs[index].storeCode
                                         .toString(),
                                 textAlign: TextAlign.left,
                                 fontSize: 16.sp),
                             TextWidget(
                                 "Status Change Time : " +
-                                    snapshot
-                                        .data!.userLogs[index].statusChangeTime
+                                    serviceLogResponse
+                                        .userLogs[index].statusChangeTime
                                         .toString(),
                                 textAlign: TextAlign.left,
                                 fontSize: 16.sp),
                             TextWidget(
                                 "Paid Money : " +
-                                    snapshot.data!.userLogs[index].paidMoney
+                                    serviceLogResponse.userLogs[index].paidMoney
                                         .toString(),
                                 textAlign: TextAlign.left,
                                 fontSize: 16.sp),
                             TextWidget(
                                 "Ordered Menu : " +
-                                    snapshot.data!.userLogs[index].orderedMenu
+                                    serviceLogResponse
+                                        .userLogs[index].orderedMenu
                                         .toString(),
                                 textAlign: TextAlign.left,
                                 fontSize: 16.sp),
                             TextWidget(
                                 "User Phone Number : " +
-                                    snapshot
-                                        .data!.userLogs[index].userPhoneNumber,
+                                    serviceLogResponse
+                                        .userLogs[index].userPhoneNumber,
                                 textAlign: TextAlign.left,
                                 fontSize: 16.sp),
                             TextWidget(
                                 "User Waiting Number : " +
-                                    snapshot.data!.userLogs[index].waiting
+                                    serviceLogResponse.userLogs[index].waiting
                                         .toString(),
                                 textAlign: TextAlign.left,
                                 fontSize: 16.sp),
                             TextWidget(
                                 "Waiting Person Number : " +
-                                    snapshot.data!.userLogs[index].personNumber
+                                    serviceLogResponse
+                                        .userLogs[index].personNumber
                                         .toString(),
                                 textAlign: TextAlign.left,
                                 fontSize: 16.sp),
