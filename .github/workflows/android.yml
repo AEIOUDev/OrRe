@@ -1,0 +1,65 @@
+name: Android CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+   
+    - name: Clone repository
+      uses: actions/checkout@v4
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: 3.19.0
+
+    - name : Install Ruby
+      run: sudo apt-get install ruby-full
+    
+  
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1.2'
+
+    - name: Install Fastlane
+      run: cd android && bundle install && cd ..
+
+    - name: Decrypt google-services.json
+      run: |
+        openssl aes-256-cbc -d -in android/app/google-services.json.enc -out android/app/google-services.json -k ${{ secrets.GOOGLE_SERVICES_PASSWORD }}
+
+    - name: Decrypt orre_key.jks
+      run: |
+        openssl aes-256-cbc -d -in android/app/orre_key.jks.enc -out android/app/orre_key.jks -k ${{ secrets.ORRE_KEY_PASSWORD }}
+
+    - name: Decrypt orre_key.properties
+      run: |
+        openssl aes-256-cbc -d -in android/key.properties.enc -out android/key.properties -k ${{ secrets.ORRE_PROPERTIES_PASSWORD }}
+
+    - name: Decrypt fastlane.json
+      run: |
+        openssl aes-256-cbc -d -in android/fastlane/fastlane.json.enc -out android/fastlane/fastlane.json -k ${{ secrets.FASTLANE_PASSWORD }}
+
+    - name: Get packages
+      run: flutter pub get
+    
+    - name: Run tests
+      run: flutter test
+    
+    - name: Build APK
+      run: flutter build apk
+  
+    - name: Build App Bundle
+      run: flutter build appbundle
+
+    - name: Execute Fastlane
+      run: cd android && fastlane deploy

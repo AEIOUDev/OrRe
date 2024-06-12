@@ -1,0 +1,21 @@
+default_platform(:android)
+
+platform :android do
+  desc "Deploy to Google Play"
+  lane :deploy do
+    gradle(
+      task: "assembleRelease"
+    )
+    supply(
+      # track: 'production',
+      # track: 'internal',
+      track: 'beta',
+      json_key: 'fastlane/fastlane.json',
+      package_name: 'com.aeioudev.orre',
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end
