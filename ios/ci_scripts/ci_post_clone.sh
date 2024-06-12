@@ -20,6 +20,9 @@ flutter pub get
 HOMEBREW_NO_AUTO_UPDATE=1 # disable homebrew's automatic updates.
 brew install cocoapods
 
+openssl aes-256-cbc -d -pbkdf2 -in ios/Runner/GoogleService-Info.plist.enc -out ios/Runner/GoogleService-Info.plist -k $GOOGLE_SERVICES_PASSWORD
+openssl aes-256-cbc -d -pbkdf2 -in .env.enc -out .env -k $ENV_PASSWORD
+
 # Install CocoaPods dependencies.
 cd ios && pod install # run `pod install` in the `ios` directory.
 
