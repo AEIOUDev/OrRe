@@ -9,14 +9,15 @@ platform :android do
     supply(
       # track: 'production',
       # track: 'internal',
-      track: 'beta',
+      track: 'alpha',
       json_key: 'fastlane/fastlane.json',
       package_name: 'com.aeioudev.orre',
-      aab: 'build/app/outputs/bundle/release/app-release.aab',
+      aab: '../build/app/outputs/bundle/release/app-release.aab',
       skip_upload_metadata: true,
       skip_upload_changelogs: true,
       skip_upload_images: true,
       skip_upload_screenshots: true
+      skip_upload_apk: true
     )
   end
 end
