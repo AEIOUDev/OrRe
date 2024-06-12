@@ -90,12 +90,13 @@ class SignInScreen extends ConsumerWidget {
                         prefixIcon: Icon(Icons.lock),
                         suffixIcon: IconButton(
                           onPressed: () {
+                            final currentState = ref.watch(isObscureProvider);
                             ref.read(isObscureProvider.notifier).state =
-                                !ref.watch(isObscureProvider.notifier).state;
+                                !currentState;
                           },
-                          icon: Icon((isObscure == false)
-                              ? (Icons.visibility)
-                              : (Icons.visibility_off)),
+                          icon: Icon((isObscure)
+                              ? Icons.visibility
+                              : Icons.visibility_off),
                         ),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
@@ -132,11 +133,7 @@ class SignInScreen extends ConsumerWidget {
                                 .requestSignIn(signInUserInfo);
 
                             if (success != null) {
-                              WidgetsBinding.instance.addPostFrameCallback(
-                                (_) {
-                                  context.go("/locationCheck");
-                                },
-                              );
+                              context.go("/locationCheck");
                             } else {
                               AwesomeDialogWidget.showErrorDialog(
                                 context: context,

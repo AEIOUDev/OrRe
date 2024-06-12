@@ -4,7 +4,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -24,68 +24,47 @@ class _PermissionCheckerScreenState
   @override
   void initState() {
     super.initState();
-    _checkPermissions();
+    _requestPermissions();
   }
 
-  Future<void> _checkPermissions() async {
-    bool locationPermissionGranted = await _checkLocationPermission();
-    bool notificationPermissionGranted = await _checkNotificationPermission();
+  Future<void> _requestPermissions() async {
+    // Combining location and notification permission requests
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.location,
+      Permission.notification,
+    ].request();
 
-    // if (!locationPermissionGranted || !notificationPermissionGranted) {
-    if (!locationPermissionGranted) {
+    // 권한 별 언어 변환 List (한국어)
+    List<String> permissionNames = [
+      "위치",
+      "알림",
+    ];
+
+    // Check the result and handle accordingly
+    bool allPermissionsGranted =
+        statuses.values.every((status) => status.isGranted);
+
+    if (!allPermissionsGranted) {
       List<String> deniedPermissions = [];
-      if (!locationPermissionGranted) deniedPermissions.add("위치");
-      // if (!notificationPermissionGranted) deniedPermissions.add("알림");
+
+      if (statuses[Permission.location]!.isDenied ||
+          statuses[Permission.location]!.isPermanentlyDenied) {
+        deniedPermissions.add(permissionNames[0]);
+      }
+
+      if (statuses[Permission.notification]!.isDenied ||
+          statuses[Permission.notification]!.isPermanentlyDenied) {
+        deniedPermissions.add(permissionNames[1]);
+      }
+
+      printd("Denied permissions: $deniedPermissions");
 
       _showPermissionDeniedDialog(context, deniedPermissions);
       return;
     }
 
-    // 모든 권한이 허용되면 다음 페이지로 이동
-    printd("이동!");
-    context.go('/initial');
-  }
-
-  Future<bool> _checkLocationPermission() async {
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  Future<bool> _checkNotificationPermission() async {
-    PermissionStatus status = await Permission.notification.status;
-    if (status.isDenied || status.isPermanentlyDenied) {
-      status = await Permission.notification.request();
-      if (status.isDenied || status.isPermanentlyDenied) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  Future<void> _requestPermissions(BuildContext context) async {
-    bool locationPermissionGranted = await _checkLocationPermission();
-    bool notificationPermissionGranted = await _checkNotificationPermission();
-
-    // if (!locationPermissionGranted || !notificationPermissionGranted) {
-    if (!locationPermissionGranted) {
-      List<String> deniedPermissions = [];
-      if (!locationPermissionGranted) deniedPermissions.add("위치");
-      // if (!notificationPermissionGranted) deniedPermissions.add("알림");
-
-      _showPermissionDeniedDialog(context, deniedPermissions);
-      return;
-    }
-
-    // 모든 권한이 허용되면 다음 페이지로 이동
-    printd("이동!");
+    // If all permissions granted, proceed to the next page
+    printd("All permissions granted, navigating to initial page.");
     context.go('/initial');
   }
 
@@ -145,7 +124,7 @@ class _PermissionCheckerScreenState
               PermissionItem(
                 icon: Icons.phone,
                 title: "전화 (선택)",
-                description: "안드로이드 기기에서 가게로 전화를 걸기 위해선, 전화 및 전화 기록 권한이 필요합니다.",
+                description: "안드로이드 기기에서 가게로 전화를 걸기 위해선, 전화 권한이 필요합니다.",
               ),
             PermissionItem(
               icon: Icons.camera_alt_rounded,
@@ -158,7 +137,7 @@ class _PermissionCheckerScreenState
               child: BigButtonWidget(
                 text: "권한 설정하고 시작하기",
                 onPressed: () async {
-                  await _requestPermissions(context);
+                  await _requestPermissions();
                 },
                 textColor: Colors.white,
               ),
