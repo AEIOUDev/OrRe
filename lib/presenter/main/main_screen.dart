@@ -293,7 +293,10 @@ class _MainScreenState extends ConsumerState<MainScreen>
         ),
         bottomNavigationBar: StylishBottomBar(
           backgroundColor: Colors.white,
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
           option: AnimatedBarOptions(
             iconStyle: IconStyle.animated,
             iconSize: 20.sp,
