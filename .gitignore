@@ -151,7 +151,6 @@ app.*.symbols
 /web
 
 # fastlane
-android/fastlane/metadata/*
 android/fastlane/report.xml
 android/fastlane/README.md
 android/fastlane/fastlane.json
