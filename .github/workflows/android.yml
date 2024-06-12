@@ -11,8 +11,8 @@ on:
 
 jobs:
   build:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main')
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
 
     steps:
     - name: Clone repository
@@ -78,6 +78,9 @@ jobs:
     - name: Get packages
       run: flutter pub get
 
+    - name: Create gradle.properties with JAVA_HOME
+      run: echo "org.gradle.java.home=/opt/hostedtoolcache/Java_Adopt_jdk/11.0.23-9/x64" >> android/gradle.properties
+
     - name: Cache Gradle dependencies
       uses: actions/cache@v2
       with:
@@ -89,16 +92,10 @@ jobs:
           ${{ runner.os }}-gradle-
 
     - name: Build APK
-      env:
-        JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/11.0.23-9/x64
       run: flutter build apk
   
     - name: Build App Bundle
-      env:
-        JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/11.0.23-9/x64
       run: flutter build appbundle
 
     - name: Execute Fastlane
-      env:
-        JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/11.0.23-9/x64
       run: cd android && fastlane deploy
