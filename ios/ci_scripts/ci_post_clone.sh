@@ -9,10 +9,10 @@ cd $CI_PRIMARY_REPOSITORY_PATH
 # Restore Flutter and CocoaPods caches
 echo "Restoring caches..."
 if [ -d "$HOME/flutter_cache" ]; then
-  cp -r $HOME/flutter_cache $HOME/.pub-cache
+  cp -r $HOME/flutter_cache/* $HOME/.pub-cache/
 fi
 if [ -d "$HOME/cocoapods_cache" ]; then
-  cp -r $HOME/cocoapods_cache ~/.cocoapods
+  cp -r $HOME/cocoapods_cache/* ~/.cocoapods/
 fi
 
 # Install Flutter using git.
@@ -30,7 +30,7 @@ flutter pub get
 # Cache Flutter dependencies
 echo "Caching Flutter dependencies..."
 mkdir -p $HOME/flutter_cache
-cp -r $HOME/.pub-cache $HOME/flutter_cache
+cp -r $HOME/.pub-cache/* $HOME/flutter_cache/
 
 # Install CocoaPods using Homebrew.
 HOMEBREW_NO_AUTO_UPDATE=1
@@ -47,6 +47,6 @@ pod install
 # Cache CocoaPods dependencies
 echo "Caching CocoaPods dependencies..."
 mkdir -p $HOME/cocoapods_cache
-cp -r ~/.cocoapods $HOME/cocoapods_cache
+cp -r ~/.cocoapods/* $HOME/cocoapods_cache/
 
 exit 0

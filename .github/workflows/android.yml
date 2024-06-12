@@ -105,6 +105,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
 
+    - name: Set permissions for Android SDK
+      run: |
+        sudo chown -R $USER:$USER /usr/local/lib/android/sdk
+        sudo chmod -R u+rwx /usr/local/lib/android/sdk
+
     - name: Cache Android SDK
       id: android-sdk-cache
       uses: actions/cache@v3
@@ -114,10 +119,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-android-sdk-
 
-    - name: Set permissions for Android SDK
-      run: |
-        sudo chown -R $USER:$USER /usr/local/lib/android/sdk
-        sudo chmod -R u+rwx /usr/local/lib/android/sdk
 
     - name: Build App Bundle
       env:
