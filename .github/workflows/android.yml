@@ -77,16 +77,28 @@ jobs:
 
     - name: Get packages
       run: flutter pub get
-    
+
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
     - name: Build APK
       env:
-        JAVA_HOME: /usr/lib/jvm/adoptopenjdk-11-hotspot-amd64
+        JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/11.0.23-9/x64
       run: flutter build apk
   
     - name: Build App Bundle
       env:
-        JAVA_HOME: /usr/lib/jvm/adoptopenjdk-11-hotspot-amd64
+        JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/11.0.23-9/x64
       run: flutter build appbundle
 
     - name: Execute Fastlane
+      env:
+        JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/11.0.23-9/x64
       run: cd android && fastlane deploy
