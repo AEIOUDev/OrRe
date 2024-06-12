@@ -49,7 +49,4 @@ echo "Caching CocoaPods dependencies..."
 mkdir -p $HOME/cocoapods_cache
 cp -r ~/.cocoapods $HOME/cocoapods_cache
 
-# Build iOS app
-flutter build ios --release
-
 exit 0
