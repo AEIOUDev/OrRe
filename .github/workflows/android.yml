@@ -45,6 +45,14 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-ruby-
 
+    - name: Cache Fastlane gems
+      uses: actions/cache@v3
+      with:
+        path: ~/.bundle
+        key: ${{ runner.os }}-fastlane-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-fastlane-
+
     - name: Install Ruby
       run: sudo apt-get install ruby-full
 
@@ -96,7 +104,15 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
-  
+
+    - name: Cache Android SDK
+      uses: actions/cache@v3
+      with:
+        path: /usr/local/lib/android/sdk
+        key: ${{ runner.os }}-android-sdk-${{ hashFiles('**/build.gradle') }}
+        restore-keys: |
+          ${{ runner.os }}-android-sdk-
+
     - name: Build App Bundle
       env:
         JAVA_HOME: ${{ steps.setup-java.outputs.path }}
