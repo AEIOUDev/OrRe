@@ -73,6 +73,10 @@ jobs:
       run: |
         openssl aes-256-cbc -d -pbkdf2 -in android/fastlane/fastlane.json.enc -out android/fastlane/fastlane.json -k ${{ secrets.FASTLANE_PASSWORD }}
 
+    - name: Decrypt .env
+      run: |
+        openssl aes-256-cbc -d -pbkdf2 -in .env.enc -out .env -k ${{ secrets.ENV_PASSWORD }}
+        
     - name: Create gradle.properties
       run: |
         echo "org.gradle.jvmargs=-Xmx4G" >> $GITHUB_WORKSPACE/android/gradle.properties
@@ -92,11 +96,6 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
-
-    # - name: Build APK
-    #   env:
-    #     JAVA_HOME: ${{ steps.setup-java.outputs.path }}
-    #   run: flutter build apk
   
     - name: Build App Bundle
       env:
