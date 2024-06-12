@@ -1,9 +1,6 @@
 name: Android CI
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -11,14 +8,15 @@ on:
 
 jobs:
   build:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main')
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
 
     steps:
     - name: Clone repository
       uses: actions/checkout@v4
 
     - name: Set up JDK 11
+      id: setup-java
       uses: actions/setup-java@v2
       with:
         distribution: 'adopt'
@@ -75,14 +73,18 @@ jobs:
       run: |
         openssl aes-256-cbc -d -pbkdf2 -in android/fastlane/fastlane.json.enc -out android/fastlane/fastlane.json -k ${{ secrets.FASTLANE_PASSWORD }}
 
+    - name: Create gradle.properties
+      run: |
+        echo "org.gradle.jvmargs=-Xmx4G" >> $GITHUB_WORKSPACE/android/gradle.properties
+        echo "android.useAndroidX=true" >> $GITHUB_WORKSPACE/android/gradle.properties
+        echo "android.enableJetifier=true" >> $GITHUB_WORKSPACE/android/gradle.properties
+        echo "org.gradle.java.home=${{ steps.setup-java.outputs.path }}" >> $GITHUB_WORKSPACE/android/gradle.properties
+
     - name: Get packages
       run: flutter pub get
 
-    - name: Create gradle.properties with JAVA_HOME
-      run: echo "org.gradle.java.home=/opt/hostedtoolcache/Java_Adopt_jdk/11.0.23-9/x64" >> android/gradle.properties
-
     - name: Cache Gradle dependencies
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.gradle/caches
@@ -92,10 +94,16 @@ jobs:
           ${{ runner.os }}-gradle-
 
     - name: Build APK
+      env:
+        JAVA_HOME: ${{ steps.setup-java.outputs.path }}
       run: flutter build apk
   
     - name: Build App Bundle
+      env:
+        JAVA_HOME: ${{ steps.setup-java.outputs.path }}
       run: flutter build appbundle
 
     - name: Execute Fastlane
+      env:
+        JAVA_HOME: ${{ steps.setup-java.outputs.path }}
       run: cd android && fastlane deploy
