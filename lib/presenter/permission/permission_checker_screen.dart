@@ -37,14 +37,12 @@ class _PermissionCheckerScreenState
     // 권한 별 언어 변환 List (한국어)
     List<String> permissionNames = [
       "위치",
-      "알림",
+      // "알림",
     ];
 
-    // Check the result and handle accordingly
-    bool allPermissionsGranted =
-        statuses.values.every((status) => status.isGranted);
-
-    if (!allPermissionsGranted) {
+    // if (!allPermissionsGranted) {
+    if (statuses[Permission.location]!.isDenied ||
+        statuses[Permission.location]!.isPermanentlyDenied) {
       List<String> deniedPermissions = [];
 
       if (statuses[Permission.location]!.isDenied ||
@@ -52,10 +50,10 @@ class _PermissionCheckerScreenState
         deniedPermissions.add(permissionNames[0]);
       }
 
-      if (statuses[Permission.notification]!.isDenied ||
-          statuses[Permission.notification]!.isPermanentlyDenied) {
-        deniedPermissions.add(permissionNames[1]);
-      }
+      // if (statuses[Permission.notification]!.isDenied ||
+      //     statuses[Permission.notification]!.isPermanentlyDenied) {
+      //   deniedPermissions.add(permissionNames[1]);
+      // }
 
       printd("Denied permissions: $deniedPermissions");
 
