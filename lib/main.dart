@@ -452,7 +452,9 @@ class StompCheckScreen extends ConsumerWidget {
       }
     });
     return Scaffold(
-      body: CustomLoadingIndicator(),
+      body: CustomLoadingIndicator(
+        message: "서버와 연결 확인 중..",
+      ),
     );
   }
 }
@@ -479,7 +481,7 @@ class UserInfoCheckWidget extends ConsumerWidget {
             }
           }
           return Scaffold(
-            body: CustomLoadingIndicator(),
+            body: CustomLoadingIndicator(message: "유저 정보를 불러오는 중.."),
           );
         });
   }
@@ -508,7 +510,9 @@ class LocationStateCheckWidget extends ConsumerWidget {
               });
             }
             return Scaffold(
-              body: CustomLoadingIndicator(),
+              body: CustomLoadingIndicator(
+                message: "위치 정보를 불러오는 중..",
+              ),
             );
           });
     } catch (e) {
@@ -517,7 +521,9 @@ class LocationStateCheckWidget extends ConsumerWidget {
         context.go('/permission/location');
       });
       return Scaffold(
-        body: CustomLoadingIndicator(),
+        body: CustomLoadingIndicator(
+          message: "위치 정보를 불러오는 중 에러 발생.. 재시도 중..",
+        ),
       );
     }
   }
@@ -537,7 +543,9 @@ class LoadServiceLogWidget extends ConsumerWidget {
         context.go('/userinfocheck');
       });
       return Scaffold(
-        body: CustomLoadingIndicator(),
+        body: CustomLoadingIndicator(
+          message: "유저 정보를 불러오는 중..",
+        ),
       );
     } else {
       // 유저 정보 있음
@@ -553,7 +561,9 @@ class LoadServiceLogWidget extends ConsumerWidget {
             // 데이터 로딩 중
             print("서비스 정보 로딩 중");
             return Scaffold(
-              body: CustomLoadingIndicator(),
+              body: CustomLoadingIndicator(
+                message: "서비스 정보를 불러오는 중..",
+              ),
             );
           } else if (snapshot.hasData) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -592,7 +602,9 @@ class LoadServiceLogWidget extends ConsumerWidget {
             print("서비스 정보 로딩 중");
           }
           return Scaffold(
-            body: CustomLoadingIndicator(),
+            body: CustomLoadingIndicator(
+              message: "서비스 정보 로딩 중..",
+            ),
           );
         },
       );

@@ -69,7 +69,9 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
 
     if (storeDetailInfo == null) {
       return Scaffold(
-        body: CustomLoadingIndicator(),
+        body: CustomLoadingIndicator(
+          message: "가게 정보 불러오는 중..",
+        ),
       );
     } else {
       return buildScaffold(context, storeDetailInfo);
@@ -140,7 +142,9 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
     final myWaitingInfo = ref.watch(storeWaitingRequestNotifierProvider);
     if (storeDetailInfo == null || storeDetailInfo.storeCode == 0) {
       return Scaffold(
-        body: CustomLoadingIndicator(),
+        body: CustomLoadingIndicator(
+          message: "가게 정보 불러오는 중..",
+        ),
       );
     } else {
       return Scaffold(

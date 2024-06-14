@@ -30,7 +30,9 @@ class ServiceLogScreen extends ConsumerWidget {
         builder: (context, snapshot) {
           ServiceLogResponse serviceLogResponse;
           if (snapshot.data == null) {
-            return CustomLoadingIndicator();
+            return CustomLoadingIndicator(
+              message: "서비스 정보를 불러오는 중",
+            );
           } else {
             serviceLogResponse = snapshot.data as ServiceLogResponse;
           }
