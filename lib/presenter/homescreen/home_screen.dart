@@ -144,7 +144,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           return StoreListWidget(storeList: filteredList);
                         }
                       } else {
-                        return CustomLoadingIndicator();
+                        return CustomLoadingIndicator(
+                          message: "가게 정보를 불러오는 중..",
+                        );
                       }
                     },
                   );

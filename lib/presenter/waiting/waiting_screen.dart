@@ -196,7 +196,9 @@ class WaitingStoreItem extends ConsumerWidget {
             StoreInfoParams(storeWaitingRequest.token.storeCode, 0)),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CustomLoadingIndicator();
+            return CustomLoadingIndicator(
+              message: "가게 정보를 불러오는 중..",
+            );
             // return Container();
           } else if (snapshot.hasError) {
             return TextWidget('Error: ${snapshot.error}');

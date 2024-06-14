@@ -75,7 +75,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
                   // 데이터 로딩 중에는 로딩 인디케이터를 보여줍니다.
                   print(
                       "snapshot.connectionState: ${snapshot.connectionState}");
-                  return CustomLoadingIndicator();
+                  return CustomLoadingIndicator(message: "위치 정보를 가져오는 중..");
                 } else if (snapshot.hasError) {
                   // 데이터 로딩 중 오류가 발생하면 오류 메시지를 보여줍니다.
                   print("snapshot.error: ${snapshot.error}");
