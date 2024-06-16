@@ -141,7 +141,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           );
                         } else {
-                          return StoreListWidget(storeList: filteredList);
+                          return Column(
+                            children: [
+                              StoreListWidget(storeList: filteredList),
+                              SizedBox(height: 80.h),
+                            ],
+                          );
                         }
                       } else {
                         return CustomLoadingIndicator(

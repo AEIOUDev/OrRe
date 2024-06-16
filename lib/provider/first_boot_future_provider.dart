@@ -11,12 +11,12 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../services/nfc_services.dart';
 import 'app_state_provider.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+// import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 Future<int> initializeApp(WidgetRef ref) async {
   printd("\n\ninitializeApp 진입");
 
-  await DefaultCacheManager().emptyCache();
+  // await DefaultCacheManager().emptyCache();
 
   await nfcCheck(ref);
 

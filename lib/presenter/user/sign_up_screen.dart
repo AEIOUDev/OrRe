@@ -85,11 +85,16 @@ class SignUpScreen extends ConsumerWidget {
                         ref: ref,
                         controller: nicknameController,
                         autofillHints: [
+                          // AutofillHints.newUsername,
+                          // AutofillHints.organizationName,
+                          // AutofillHints.countryName,
                           AutofillHints.name,
                         ],
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
-                              RegExp(r'[0-9a-zA-Zㄱ-ㅎ가-힣]'))
+                            RegExp(
+                                r'[a-z|A-Z|0-9|ㄱ-ㅎ|ㅏ-ㅣ|가-힣|ᆞ|ᆢ|ㆍ|ᆢ|ᄀᆞ|ᄂᆞ|ᄃᆞ|ᄅᆞ|ᄆᆞ|ᄇᆞ|ᄉᆞ|ᄋᆞ|ᄌᆞ|ᄎᆞ|ᄏᆞ|ᄐᆞ|ᄑᆞ|ᄒᆞ]'),
+                          ),
                         ],
                         minLength: 2,
                         maxLength: 10,
@@ -105,7 +110,7 @@ class SignUpScreen extends ConsumerWidget {
                         type: TextInputType.emailAddress,
                         ref: ref,
                         controller: passwordController,
-                        autofillHints: [AutofillHints.password],
+                        autofillHints: [AutofillHints.newPassword],
                         prefixIcon: Icon(Icons.lock),
                         suffixIcon: IconButton(
                           onPressed: () {
@@ -219,7 +224,8 @@ class SignUpScreen extends ConsumerWidget {
                         textColor: Colors.white,
                         onPressed: () {
                           final signUpUserInfo = SignUpInfo(
-                            nickname: nicknameController.text,
+                            nickname: nicknameController.text.replaceAll(
+                                RegExp(r'[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣]'), ''),
                             password: passwordController.text,
                             phoneNumber: phoneNumberController.text
                                 .replaceAll(RegExp(r'[^0-9]'), ''),
