@@ -54,7 +54,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
         child: StaticAppBarWidget(
           title: 'QR 스캔',
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+            icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
             onPressed: () {
               Navigator.pop(context);
             },

@@ -28,6 +28,7 @@ class _OrderPrepareScreenState extends ConsumerState<OrderPrepareScreen> {
     final _message = ref.watch(nfcScanMessageProvider);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
