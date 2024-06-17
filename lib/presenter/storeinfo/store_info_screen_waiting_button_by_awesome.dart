@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orre/presenter/main/main_screen.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
+import 'package:orre/services/hardware/haptic_services.dart';
 // import 'package:orre/services/notifications_services.dart';
 import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
@@ -44,6 +45,7 @@ class WaitingButtonAwesome extends ConsumerWidget {
               borderRadius: BorderRadius.circular(50),
             ),
             onPressed: () async {
+              await HapticServices.vibrate(ref, CustomHapticsType.selection);
               print("waitingState" + {waitingState}.toString());
               if (waitingState) {
                 // 현재 웨이팅 중이므로 웨이팅 취소 dialog를 띄우고, 웨이팅 취소를 위한 로직을 실행한다.
@@ -74,6 +76,8 @@ class WaitingButtonAwesome extends ConsumerWidget {
                     desc: "웨이팅 알림을 받으려면 알림 권한이 필요합니다.",
                     dialogType: DialogType.warning,
                     onPressed: () async {
+                      await HapticServices.vibrate(
+                          ref, CustomHapticsType.selection);
                       openAppSettings();
                     },
                     btnText: "설정으로 이동",
@@ -88,6 +92,8 @@ class WaitingButtonAwesome extends ConsumerWidget {
                     desc: '웨이팅을 시작하시겠습니까?',
                     dialogType: DialogType.info,
                     onPressed: () async {
+                      await HapticServices.vibrate(
+                          ref, CustomHapticsType.selection);
                       printd("waitingState: $waitingState");
                       // 웨이팅 시작 로직
                       await subscribeAndShowDialog(

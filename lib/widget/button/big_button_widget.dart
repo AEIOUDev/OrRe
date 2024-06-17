@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
+import '../../services/hardware/haptic_services.dart';
+
 class BigButtonWidget extends ConsumerWidget {
   final String text;
   final Function onPressed;
@@ -26,7 +28,8 @@ class BigButtonWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ElevatedButton(
-      onPressed: () {
+      onPressed: () async {
+        await HapticServices.vibrate(ref, CustomHapticsType.selection);
         onPressed();
       },
       child: TextWidget(text, color: textColor, fontSize: 20.sp),

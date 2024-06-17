@@ -9,7 +9,7 @@ import 'package:orre/services/debug_services.dart';
 import 'package:orre/services/network/https_services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import '../services/nfc_services.dart';
+import '../services/hardware/nfc_services.dart';
 import 'app_state_provider.dart';
 // import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 

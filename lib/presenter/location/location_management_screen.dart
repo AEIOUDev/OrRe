@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
+import 'package:orre/services/hardware/haptic_services.dart';
 import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import '../../provider/location/location_securestorage_provider.dart';
@@ -65,6 +66,8 @@ class _LocationManagementScreenState
                   height: 40,
                   child: ElevatedButton.icon(
                     onPressed: () async {
+                      await HapticServices.vibrate(
+                          ref, CustomHapticsType.selection);
                       context.push('/location/addLocation');
                     },
                     icon: Icon(
@@ -74,7 +77,7 @@ class _LocationManagementScreenState
                     label: TextWidget(
                       ' 지도로 위치를 추가해보세요!',
                       color: Color(0xFF999999),
-                      fontSize: 20.sp,
+                      fontSize: 18.sp,
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,

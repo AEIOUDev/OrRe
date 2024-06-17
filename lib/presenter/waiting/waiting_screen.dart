@@ -22,6 +22,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import '../../services/debug_services.dart';
+import '../../services/hardware/haptic_services.dart';
 import '../../services/notifications_services.dart';
 
 class WaitingScreen extends ConsumerStatefulWidget {
@@ -96,6 +97,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
               size: 20.sp,
             ),
             onPressed: () async {
+              await HapticServices.vibrate(ref, CustomHapticsType.selection);
               printd("즐겨찾기 페이지로 이동이지만 지금은 이스터에그");
               // 즐겨찾기 페이지로 이동
               final status = await Permission.notification.status;
@@ -124,7 +126,8 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
               color: Colors.black,
               size: 20.sp,
             ),
-            onPressed: () {
+            onPressed: () async {
+              await HapticServices.vibrate(ref, CustomHapticsType.selection);
               // 설정 페이지로 이동
               context.push("/setting");
             },
@@ -208,11 +211,15 @@ class WaitingStoreItem extends ConsumerWidget {
               return TextWidget('가게 정보를 불러오지 못했습니다.');
             }
             return GestureDetector(
-              onTap: () =>
-                  context.push("/storeinfo/${storeDetailInfo.storeCode}"),
+              onTap: () async {
+                await HapticServices.vibrate(ref, CustomHapticsType.selection);
+                context.push("/storeinfo/${storeDetailInfo.storeCode}");
+              },
               child: Form(
                 key: _formKey,
                 child: Container(
+                  width: 1.sw,
+                  color: Colors.white,
                   alignment: Alignment.topCenter,
                   transformAlignment: Alignment.topCenter,
                   margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -469,8 +476,14 @@ class LastStoreItem extends ConsumerWidget {
                           return TextWidget('가게 정보를 불러오지 못했습니다.');
                         }
                         return GestureDetector(
-                          onTap: () => context.push("/storeinfo/$storeCode"),
+                          onTap: () async {
+                            await HapticServices.vibrate(
+                                ref, CustomHapticsType.selection);
+                            context.push("/storeinfo/$storeCode");
+                          },
                           child: Container(
+                            width: 1.sw,
+                            color: Colors.white,
                             alignment: Alignment.topCenter,
                             transformAlignment: Alignment.topCenter,
                             margin: EdgeInsets.symmetric(

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:orre/model/store_list_model.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
+import 'package:orre/services/hardware/haptic_services.dart';
 import 'package:orre/widget/background/extend_body_widget.dart';
 // import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/text/text_widget.dart';
@@ -78,7 +79,8 @@ class StoreItem extends ConsumerWidget {
       ),
     );
     return InkWell(
-      onTap: () {
+      onTap: () async {
+        await HapticServices.vibrate(ref, CustomHapticsType.selection);
         // 다음 페이지로 네비게이션
         context.push("/storeinfo/${storeInfo.storeCode}");
       },

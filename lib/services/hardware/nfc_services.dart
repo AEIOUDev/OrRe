@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nfc_manager/nfc_manager.dart';
-import '../presenter/main/main_screen.dart';
-import 'debug_services.dart';
+import '../../presenter/main/main_screen.dart';
+import '../debug_services.dart';
 
 final nfcAvailableProvider = StateProvider<bool>((ref) => false);
 
@@ -80,8 +80,8 @@ String uriSwitcher(String uri, WidgetRef ref, BuildContext context) {
 
   if (uri.contains('order')) {
     // 'reservation'을 포함하는 경우, 'r'을 붙여 반환합니다.
-    ref.read(selectedIndexProvider.notifier).state =
-        pageIndex.orderScreen.index;
+    // ref.read(selectedIndexProvider.notifier).state =
+    //     pageIndex.orderScreen.index;
     return 'r$identifier';
   } else if (uri.contains('reservation') || uri.contains('storeinfo')) {
     ref.read(selectedIndexProvider.notifier).state = pageIndex.homeScreen.index;
