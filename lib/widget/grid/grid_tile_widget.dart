@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:orre/services/hardware/haptic_services.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 import '../../provider/home_screen/store_category_provider.dart';
@@ -17,7 +18,8 @@ class CategoryItem extends ConsumerWidget {
     return ButtonBar(
       children: [
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
+            await HapticServices.vibrate(ref, CustomHapticsType.selection);
             ref.read(selectCategoryProvider.notifier).state = category;
             print("category : " +
                 ref.read(selectCategoryProvider.notifier).state.toKoKr());

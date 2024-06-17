@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/services/hardware/haptic_services.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 class TextButtonWidget extends ConsumerWidget {
@@ -21,7 +22,8 @@ class TextButtonWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return TextButton(
-      onPressed: () {
+      onPressed: () async {
+        await HapticServices.vibrate(ref, CustomHapticsType.selection);
         onPressed();
       },
       child: TextWidget(

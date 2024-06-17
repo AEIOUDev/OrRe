@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
+import 'package:orre/services/hardware/haptic_services.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
@@ -13,6 +14,7 @@ import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 import '../../provider/app_state_provider.dart';
+import '../../provider/haptic_state_provider.dart';
 
 class SettingScreen extends ConsumerWidget {
   @override
@@ -97,6 +99,33 @@ class SettingScreen extends ConsumerWidget {
                       // SizedBox(
                       //   height: 10,
                       // ),
+
+                      Consumer(
+                        builder: (context, ref, child) {
+                          final vibrationState =
+                              ref.watch(vibrationStateProvider);
+                          return BigButtonWidget(
+                            onPressed: () async {
+                              // 진동 켜기/끄기 버튼 클릭 시 진동 켜기/끄기
+                              ref
+                                  .read(vibrationStateProvider.notifier)
+                                  .toggleHapticState();
+                              await HapticServices.vibrate(
+                                  ref, CustomHapticsType.success);
+                            },
+                            backgroundColor: Color(0xFFDFDFDF),
+                            minimumSize: Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            text: vibrationState ? '진동 끄기' : '진동 켜기',
+                            textColor: Colors.black,
+                          );
+                        },
+                      ),
+                      SizedBox(
+                        height: 16.h,
+                      ),
                       BigButtonWidget(
                         onPressed: () {
                           // 비밀번호 변경 버튼 클릭 시 비밀번호 변경 화면으로 이동

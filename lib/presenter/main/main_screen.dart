@@ -17,15 +17,17 @@ import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/services/debug_services.dart';
+import 'package:orre/services/hardware/haptic_services.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
 
 import '../../model/location_model.dart';
 import '../../provider/home_screen/store_list_sort_type_provider.dart';
-import '../../services/nfc_services.dart';
+import '../../services/hardware/nfc_services.dart';
 import '../../widget/popup/awesome_dialog_widget.dart';
-import '../order/order_prepare_screen.dart';
+import '../convenience/convenience_screen.dart';
+// import '../order/order_prepare_screen.dart';
 import '../waiting/waiting_screen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -40,7 +42,8 @@ final appLifeCycleStateProvider = StateProvider<AppLifecycleState>((ref) {
 final AppLinks _appLinks = AppLinks();
 
 enum pageIndex {
-  orderScreen,
+  // orderScreen,
+  convenienceScreen,
   homeScreen,
   waitingScreen;
 }
@@ -282,7 +285,8 @@ class _MainScreenState extends ConsumerState<MainScreen>
 
     // 탭에 따라 표시될 페이지 리스트
     final pages = [
-      OrderPrepareScreen(),
+      // OrderPrepareScreen(),
+      ConvenienceScreen(),
       HomeScreen(),
       WaitingScreen(), // 예시로 Text 위젯 사용, 실제로는 페이지 위젯을 사용합니다.
     ];
@@ -299,13 +303,24 @@ class _MainScreenState extends ConsumerState<MainScreen>
           ),
           option: AnimatedBarOptions(
             iconStyle: IconStyle.animated,
-            iconSize: 20.sp,
+            iconSize: 22.sp,
           ),
           items: [
+            // BottomBarItem(
+            //   icon: Icon(Icons.shopping_bag_rounded),
+            //   title: TextWidget(
+            //     "주문",
+            //     fontSize: 12.sp,
+            //     color: Color(0xFFFFFFBF52),
+            //   ),
+            //   // backgroundColor: Colors.red,
+            //   selectedColor: Color(0xFFFFFFBF52),
+            //   unSelectedColor: Color(0xFFDFDFDF),
+            // ),
             BottomBarItem(
-              icon: Icon(Icons.shopping_bag_rounded),
+              icon: Icon(Icons.school_rounded),
               title: TextWidget(
-                "주문",
+                "편의기능",
                 fontSize: 12.sp,
                 color: Color(0xFFFFFFBF52),
               ),
@@ -314,7 +329,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
               unSelectedColor: Color(0xFFDFDFDF),
             ),
             BottomBarItem(
-              icon: Icon(Icons.people),
+              icon: Icon(Icons.home_rounded),
               title: TextWidget(
                 "홈",
                 fontSize: 12.sp,
@@ -337,9 +352,10 @@ class _MainScreenState extends ConsumerState<MainScreen>
             ),
           ],
           currentIndex: selectedIndex, // 현재 선택된 인덱스
-          onTap: (index) {
+          onTap: (index) async {
             // 사용자가 탭을 선택할 때 상태 업데이트
             ref.read(selectedIndexProvider.notifier).state = index;
+            await HapticServices.vibrate(ref, CustomHapticsType.selection);
           },
         ),
         extendBody: true,
@@ -356,7 +372,9 @@ class _MainScreenState extends ConsumerState<MainScreen>
                 bubbleColor: Color(0xFFFFBF52),
                 icon: Icons.phonelink_ring_rounded,
                 titleStyle: TextStyle(fontSize: 16.sp, color: Colors.white),
-                onPress: () {
+                onPress: () async {
+                  await HapticServices.vibrate(
+                      ref, CustomHapticsType.selection);
                   startNFCScan(ref, context);
                   _animationController.reverse();
                 },
@@ -368,7 +386,8 @@ class _MainScreenState extends ConsumerState<MainScreen>
               bubbleColor: Color(0xFFFFBF52),
               icon: Icons.qr_code_scanner_rounded,
               titleStyle: TextStyle(fontSize: 16.sp, color: Colors.white),
-              onPress: () {
+              onPress: () async {
+                await HapticServices.vibrate(ref, CustomHapticsType.selection);
                 Permission.camera.request().then((value) {
                   if (value.isGranted) {
                     context.push('/main/qrscanner');
@@ -399,9 +418,12 @@ class _MainScreenState extends ConsumerState<MainScreen>
           animation: _animation,
 
           // On pressed change animation state
-          onPress: () => _animationController.isCompleted
-              ? _animationController.reverse()
-              : _animationController.forward(),
+          onPress: () async {
+            await HapticServices.vibrate(ref, CustomHapticsType.selection);
+            _animationController.isCompleted
+                ? _animationController.reverse()
+                : _animationController.forward();
+          },
 
           // Floating Action button Icon color
           iconColor: Colors.white,

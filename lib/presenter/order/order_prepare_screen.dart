@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../services/debug_services.dart';
-import '../../services/nfc_services.dart';
+import '../../services/hardware/nfc_services.dart';
 import '../../services/notifications_services.dart';
 import '../../widget/popup/awesome_dialog_widget.dart';
 

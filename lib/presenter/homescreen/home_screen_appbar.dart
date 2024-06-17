@@ -10,6 +10,7 @@ import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../services/debug_services.dart';
+import '../../services/hardware/haptic_services.dart';
 
 class HomeScreenAppBar extends ConsumerWidget {
   final LocationInfo location;
@@ -31,7 +32,8 @@ class HomeScreenAppBar extends ConsumerWidget {
                 Icon(Icons.arrow_drop_down, size: 20.sp),
               ],
             ),
-            onTap: () {
+            onTap: () async {
+              await HapticServices.vibrate(ref, CustomHapticsType.selection);
               context.push('/location/locationManagement');
             },
           ),
@@ -54,6 +56,7 @@ class HomeScreenAppBar extends ConsumerWidget {
                 size: 20.sp,
               ),
               onPressed: () async {
+                await HapticServices.vibrate(ref, CustomHapticsType.selection);
                 printd("즐겨찾기 페이지로 이동이지만 지금은 이스터에그");
                 // 즐겨찾기 페이지로 이동
                 final status = await Permission.notification.status;
@@ -82,7 +85,8 @@ class HomeScreenAppBar extends ConsumerWidget {
                 color: Colors.black,
                 size: 20.sp,
               ),
-              onPressed: () {
+              onPressed: () async {
+                await HapticServices.vibrate(ref, CustomHapticsType.selection);
                 // 설정 페이지로 이동
                 context.push("/setting");
               },

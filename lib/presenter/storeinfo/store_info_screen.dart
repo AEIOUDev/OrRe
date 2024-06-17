@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_category_list_widget.dart';
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import 'package:orre/services/debug_services.dart';
+import 'package:orre/services/hardware/haptic_services.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -165,7 +166,9 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                   // 왼쪽 상단 뒤로가기 아이콘
                   icon: Icon(Icons.arrow_back_ios_new_rounded,
                       color: Colors.white),
-                  onPressed: () {
+                  onPressed: () async {
+                    await HapticServices.vibrate(
+                        ref, CustomHapticsType.selection);
                     context.pop();
                   },
                 ),
@@ -174,6 +177,8 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                     // 오른쪽 상단 전화 아이콘
                     icon: Icon(Icons.phone, color: Colors.white),
                     onPressed: () async {
+                      await HapticServices.vibrate(
+                          ref, CustomHapticsType.selection);
                       // Call the store
                       final status = await Permission.phone.request();
                       print("status: $status");
@@ -190,7 +195,9 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                           title: "전화 권한",
                           desc: "전화 권한이 없습니다. 설정으로 이동하여 권한을 허용해주세요.",
                           dialogType: DialogType.warning,
-                          onPressed: () {
+                          onPressed: () async {
+                            await HapticServices.vibrate(
+                                ref, CustomHapticsType.selection);
                             openAppSettings();
                           },
                           btnText: "설정으로 이동",

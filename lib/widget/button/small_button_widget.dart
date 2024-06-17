@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:orre/services/hardware/haptic_services.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -20,7 +21,8 @@ class SmallButtonWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ElevatedButton(
-      onPressed: () {
+      onPressed: () async {
+        await HapticServices.vibrate(ref, CustomHapticsType.selection);
         onPressed();
       },
       child: TextWidget(

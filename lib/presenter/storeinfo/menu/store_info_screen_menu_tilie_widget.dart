@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:orre/model/menu_info_model.dart';
 import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_popup_widget.dart';
+import 'package:orre/services/hardware/haptic_services.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
 class StoreMenuTileWidget extends ConsumerWidget {
@@ -85,7 +86,8 @@ class StoreMenuTileWidget extends ConsumerWidget {
                 }),
           ],
         ),
-        onTap: () {
+        onTap: () async {
+          await HapticServices.vibrate(ref, CustomHapticsType.selection);
           PopupDialog.show(
               context,
               menu.menu,
