@@ -11,6 +11,7 @@ import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_category_li
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import 'package:orre/services/debug_services.dart';
 import 'package:orre/services/hardware/haptic_services.dart';
+import 'package:orre/widget/custom_scroll_view/csv_sizedbox_widget.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -21,6 +22,7 @@ import '../../provider/network/websocket/store_detail_info_state_notifier.dart';
 import '../../provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import '../../widget/popup/awesome_dialog_widget.dart';
 import './store_info_screen_button_selector.dart';
+import 'store_info_location_widget.dart';
 import 'store_info_screen_waiting_status.dart';
 
 class StoreDetailInfoWidget extends ConsumerStatefulWidget {
@@ -260,7 +262,11 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                 myWaitingInfo: myWaitingInfo,
                 locationInfo: storeDetailInfo.locationInfo,
               ),
+              CSVSizedBoxWidget(height: 32.h),
+              StoreLocationWidget(storeDetailInfo: storeDetailInfo),
+              CSVSizedBoxWidget(height: 32.h),
               StoreMenuCategoryListWidget(storeDetailInfo: storeDetailInfo),
+              CSVSizedBoxWidget(height: 32.h),
               PopScope(
                 child: SliverToBoxAdapter(
                   child: SizedBox(

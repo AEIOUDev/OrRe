@@ -232,14 +232,15 @@ class StoreWaitingRequestNotifier extends StateNotifier<StoreWaitingRequest?> {
                     .read(waitingStatus.notifier)
                     .setWaitingStatus(StoreWaitingStatus.ENTERD);
                 completer.complete(true);
-              } else if (APIResponseStatus.waitingCancelByStoreCancel
+              } else if (APIResponseStatus.waitingCancelByStoreClosed
                   .isEqualTo(decodedBody['status'])) {
                 printd("가게 영업 마감!!");
                 waitingCancelProcess(true, storeCode, userPhoneNumber);
                 ref.read(cancelDialogStatus.notifier).state = 1106;
                 ref
                     .read(waitingStatus.notifier)
-                    .setWaitingStatus(StoreWaitingStatus.STORE_CANCELED);
+                    .setWaitingStatus(StoreWaitingStatus.STORE_CLOSED);
+                completer.complete(true);
               } else {
                 printd("웨이팅 취소 실패!!");
                 waitingCancelProcess(false, storeCode, userPhoneNumber);

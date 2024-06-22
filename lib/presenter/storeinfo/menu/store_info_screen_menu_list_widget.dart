@@ -33,20 +33,23 @@ class StoreMenuListWidget extends ConsumerWidget {
     if (category == '추천 메뉴') {
       final recommendMenuList = storeDetailInfo.getRecommendedMenus();
       printd("추천 메뉴");
-      return ListView.separated(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: recommendMenuList.length,
-        itemBuilder: (context, index) {
-          final menu = recommendMenuList[index];
-          printd("menu: $menu");
-          return StoreMenuTileWidget(menu: menu);
-        },
-        separatorBuilder: (context, index) => Divider(
-          color: const Color(0xFFDFDFDF),
-          thickness: 2.r,
-          endIndent: 10.r,
-          indent: 10.r,
+      return SingleChildScrollView(
+        child: Column(
+          children: List.generate(recommendMenuList.length, (index) {
+            return Column(
+              children: <Widget>[
+                StoreMenuTileWidget(menu: recommendMenuList[index]), // 메뉴 타일 위젯
+                if (index !=
+                    recommendMenuList.length - 1) // 마지막 항목에는 구분선을 넣지 않습니다
+                  Divider(
+                    color: const Color(0xFFDFDFDF),
+                    thickness: 2.r,
+                    endIndent: 10.r,
+                    indent: 10.r,
+                  ),
+              ],
+            );
+          }),
         ),
       );
     } else if (menuList.isEmpty) {
@@ -66,19 +69,22 @@ class StoreMenuListWidget extends ConsumerWidget {
         ),
       );
     } else {
-      return ListView.separated(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: menuList.length,
-        itemBuilder: (context, index) {
-          final menu = menuList[index];
-          return StoreMenuTileWidget(menu: menu);
-        },
-        separatorBuilder: (context, index) => Divider(
-          color: const Color(0xFFDFDFDF),
-          thickness: 2.r,
-          endIndent: 10.r,
-          indent: 10.r,
+      return SingleChildScrollView(
+        child: Column(
+          children: List.generate(menuList.length, (index) {
+            return Column(
+              children: <Widget>[
+                StoreMenuTileWidget(menu: menuList[index]), // 메뉴 타일 위젯
+                if (index != menuList.length - 1) // 마지막 항목에는 구분선을 넣지 않습니다
+                  Divider(
+                    color: const Color(0xFFDFDFDF),
+                    thickness: 2.r,
+                    endIndent: 10.r,
+                    indent: 10.r,
+                  ),
+              ],
+            );
+          }),
         ),
       );
     }

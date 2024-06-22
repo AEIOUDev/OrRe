@@ -15,11 +15,11 @@ class SchoolMeal {
 
   factory SchoolMeal.fromJson(Map<String, dynamic> json) {
     return SchoolMeal(
-      restaurantLocation: json['restaurantLocation'],
-      date: json['date'],
-      breakfast: addNewLine(json['breakfast']),
-      lunch: addNewLine(json['lunch']),
-      dinner: addNewLine(json['dinner']),
+      restaurantLocation: json['restaurantLocation'] ?? "식당 정보 없음",
+      date: json['date'] ?? "날짜 정보 없음",
+      breakfast: addNewLine(json['breakfast'] ?? "[조식] :\n제공 정보 없음\n"),
+      lunch: addNewLine(json['lunch'] ?? "[중식] :\n제공 정보 없음\n"),
+      dinner: addNewLine(json['dinner'] ?? "[석식] :\n제공 정보 없음\n"),
     );
   }
 

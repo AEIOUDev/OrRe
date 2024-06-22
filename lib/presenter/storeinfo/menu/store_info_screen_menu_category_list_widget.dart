@@ -21,7 +21,7 @@ class StoreMenuCategoryListWidget extends ConsumerWidget {
       return SliverToBoxAdapter(
         child: Container(
           alignment: Alignment.center,
-          margin: const EdgeInsets.only(top: 100.0),
+          margin: const EdgeInsets.only(top: 16.0),
           color: Colors.white,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

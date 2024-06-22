@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/model/store_waiting_info_model.dart';
 import 'package:orre/model/store_waiting_request_model.dart';
-import 'package:orre/provider/location/now_location_provider.dart';
+import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_request_state_notifier.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import '../../model/store_service_log_model.dart';
@@ -255,7 +255,7 @@ class _WaitingStatusWidgetState extends ConsumerState<WaitingStatusWidget> {
   Widget buildGeneralWaitingStatus(
       StoreWaitingInfo storeWaitingInfo, WidgetRef ref) {
     printd("\n\nbuildGeneralWaitingStatus 진입");
-    final nowLocation = ref.watch(nowLocationProvider);
+    final nowLocation = ref.watch(locationListProvider).selectedLocation;
     // String distance;
     int distanceInt = 0;
     if (nowLocation == null) {
@@ -357,12 +357,6 @@ class _WaitingStatusWidgetState extends ConsumerState<WaitingStatusWidget> {
               // ),
             )
           ],
-        ),
-        Divider(
-          color: Color(0xFFDFDFDF),
-          thickness: 2,
-          endIndent: 10,
-          indent: 10,
         ),
       ],
     );

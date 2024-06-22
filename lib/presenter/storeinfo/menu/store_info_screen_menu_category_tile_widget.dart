@@ -21,69 +21,70 @@ class StoreMenuCategoryTileWidget extends ConsumerWidget {
     printd("StoreMenuCategoryTileWidget build");
     final menuCategories = storeDetailInfo.menuCategories;
 
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: categoryKR.length,
-      itemBuilder: (context, index) {
-        final category = categoryKR[index];
-        // printd("categoryCode: $categoryCode");
-        return Material(
-          color: Colors.white,
-          child: Column(
-            children: [
-              SizedBox(
-                height: 8.r,
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 10.r),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Icon(Icons.auto_awesome, color: Color(0xFFFFB74D)),
-                    SizedBox(
-                      width: 5.r,
+    return SingleChildScrollView(
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Column(
+          children: List.generate(categoryKR.length, (index) {
+            final category = categoryKR[index];
+            return Material(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  if (index > 0)
+                    Divider(
+                      color: const Color(0xFFDFDFDF),
+                      thickness: 2.r,
+                      endIndent: 10.r,
+                      indent: 10.r,
                     ),
-                    TextWidget(category,
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFFFFB74D)),
-                    SizedBox(
-                      width: 5.r,
+                  Padding(
+                    padding: EdgeInsets.only(left: 10.r),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.auto_awesome,
+                            color: Color(0xFFFFB74D)),
+                        SizedBox(
+                          width: 5.r,
+                        ),
+                        TextWidget(category,
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFFFFB74D)),
+                        SizedBox(
+                          width: 5.r,
+                        ),
+                        const Icon(Icons.auto_awesome,
+                            color: Color(0xFFFFB74D)),
+                      ],
                     ),
-                    const Icon(Icons.auto_awesome, color: Color(0xFFFFB74D)),
-                  ],
-                ),
+                  ),
+                  SizedBox(
+                    height: 8.r,
+                  ),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      // printd("category: $category");
+                      final categoryCode =
+                          menuCategories.categories.keys.firstWhere(
+                        (key) => menuCategories.categories[key] == category,
+                        orElse: () => '추천 메뉴',
+                      );
+                      return StoreMenuListWidget(
+                        storeDetailInfo: storeDetailInfo,
+                        category: categoryCode,
+                      );
+                    },
+                  ),
+                  SizedBox(
+                    height: 8.r,
+                  ),
+                ],
               ),
-              SizedBox(
-                height: 8.r,
-              ),
-              Consumer(
-                builder: (context, ref, child) {
-                  // printd("category: $category");
-                  final categoryCode =
-                      menuCategories.categories.keys.firstWhere(
-                    (key) => menuCategories.categories[key] == category,
-                    orElse: () => '추천 메뉴',
-                  );
-                  return StoreMenuListWidget(
-                    storeDetailInfo: storeDetailInfo,
-                    category: categoryCode,
-                  );
-                },
-              ),
-              SizedBox(
-                height: 8.r,
-              ),
-            ],
-          ),
-        );
-      },
-      separatorBuilder: (context, index) => Divider(
-        color: const Color(0xFFDFDFDF),
-        thickness: 2.r,
-        endIndent: 10.r,
-        indent: 10.r,
+            );
+          }),
+        ),
       ),
     );
   }

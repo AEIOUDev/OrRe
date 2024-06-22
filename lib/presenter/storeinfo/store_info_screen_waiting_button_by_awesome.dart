@@ -2,6 +2,7 @@ import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:orre/presenter/main/main_screen.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/services/hardware/haptic_services.dart';
@@ -29,7 +30,6 @@ class WaitingButtonAwesome extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     printd("\n\nWaitingButtonAwesome build 진입");
-    final numberOfPersonControlloer = ref.watch(peopleNumberProvider);
     final userInfo = ref.watch(userInfoProvider)?.phoneNumber;
 
     return Container(
@@ -92,23 +92,23 @@ class WaitingButtonAwesome extends ConsumerWidget {
                     desc: '웨이팅을 시작하시겠습니까?',
                     dialogType: DialogType.info,
                     onPressed: () async {
+                      context.loaderOverlay.show();
                       await HapticServices.vibrate(
                           ref, CustomHapticsType.selection);
                       printd("waitingState: $waitingState");
+                      final waitingNumber = ref.watch(peopleNumberProvider);
                       // 웨이팅 시작 로직
                       await subscribeAndShowDialog(
-                              context,
-                              storeCode,
-                              userInfo!,
-                              numberOfPersonControlloer.toString(),
-                              ref)
+                              context, storeCode, userInfo!, waitingNumber, ref)
                           .then((value) {
                         if (value == APIResponseStatus.success ||
                             value == APIResponseStatus.waitingAlreadyJoin) {
                           printd("웨이팅 성공");
+                          context.loaderOverlay.hide();
                           context.pop();
                           ref.read(selectedIndexProvider.notifier).state = 2;
                         } else {
+                          context.loaderOverlay.hide();
                           printd("웨이팅 실패");
                           AwesomeDialogWidget.showCustomDialog(
                             context: context,
@@ -135,8 +135,10 @@ class WaitingButtonAwesome extends ConsumerWidget {
                               Icons.remove,
                               color: Color(0xFFFFB74D),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               if (numberOfPersonControlloer > 1) {
+                                await HapticServices.vibrate(
+                                    ref, CustomHapticsType.selection);
                                 ref.read(peopleNumberProvider.notifier).state--;
                               }
                             },
@@ -165,7 +167,9 @@ class WaitingButtonAwesome extends ConsumerWidget {
                               Icons.add,
                               color: Color(0xFFFFB74D),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
+                              await HapticServices.vibrate(
+                                  ref, CustomHapticsType.selection);
                               ref.read(peopleNumberProvider.notifier).state++;
                             },
                           ),
@@ -205,14 +209,14 @@ class WaitingButtonAwesome extends ConsumerWidget {
       BuildContext context,
       int storeCode,
       String phoneNumber,
-      String numberOfPersons,
+      int numberOfPersons,
       WidgetRef ref) async {
     // 스트림 구독
     printd("subscribeAndShowDialog");
 
     final waitingResult = await ref
         .read(storeWaitingRequestNotifierProvider.notifier)
-        .startSubscribe(storeCode, phoneNumber, int.parse(numberOfPersons));
+        .startSubscribe(storeCode, phoneNumber, numberOfPersons);
 
     printd("웨이팅 성공 여부: $waitingResult");
     // 웨이팅 성공 여부에 따라

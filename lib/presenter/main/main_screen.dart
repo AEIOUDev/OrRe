@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:orre/presenter/homescreen/home_screen.dart';
+import 'package:orre/provider/first_boot_future_provider.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/network/https/get_service_log_state_notifier.dart';
@@ -182,6 +183,16 @@ class _MainScreenState extends ConsumerState<MainScreen>
 
     await ref.read(stompClientStateNotifierProvider.notifier).reactive();
 
+    // 버전 정보를 체크하여 업데이트가 필요한 경우, 업데이트 페이지로 이동합니다.
+    final versionCheck = await updateCheck(ref);
+
+    if (versionCheck == 3) {
+      printd("앱 업데이트 필요. 업데이트 페이지로 이동");
+      context.loaderOverlay.hide();
+      context.go('/initial/3');
+      return;
+    }
+
     final userSelectedLocation =
         ref.read(locationListProvider).selectedLocation;
     final userNowLocation = ref.read(locationListProvider).nowLocation;
@@ -270,6 +281,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
     } else {
       // 사용자 정보가 없을 경우 로그인 페이지로 이동합니다.
       printd("사용자 정보 없음. 로그인 페이지로 이동");
+      context.loaderOverlay.hide();
       context.go('/user/onboarding');
     }
 
