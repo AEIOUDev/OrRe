@@ -9,6 +9,7 @@ import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
+import '../../model/store_service_log_model.dart';
 import '../../services/debug_services.dart';
 import '../../widget/background/waveform_background_widget.dart';
 

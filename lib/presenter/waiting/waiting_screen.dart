@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:orre/model/store_service_log_model.dart';
 import 'package:orre/model/store_waiting_request_model.dart';
 import 'package:orre/provider/network/https/get_service_log_state_notifier.dart';
-import 'package:orre/provider/network/https/post_store_info_future_provider.dart';
 import 'package:orre/provider/network/https/store_detail_info_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
@@ -71,7 +71,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
     final storeWaitingProvider = ref.watch(storeWaitingInfoNotifierProvider);
     printd("storeWaitingProvider: ${storeWaitingProvider.length}");
 
-    printd("listOfWaitingStoreProvider: ${listOfWaitingStoreProvider}");
+    print("listOfWaitingStoreProvider: ${listOfWaitingStoreProvider}");
 
     return Scaffold(
       backgroundColor: Color(0xFFDFDFDF),
@@ -195,8 +195,10 @@ class WaitingStoreItem extends ConsumerWidget {
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
     return FutureBuilder(
-        future: fetchStoreDetailInfo(
-            StoreInfoParams(storeWaitingRequest.token.storeCode, 0)),
+        future: ref
+            .read(storeDetailInfoHttpsProvider.notifier)
+            .fetchStoreDetailInfo(
+                StoreInfoParams(storeWaitingRequest.token.storeCode, 0)),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CustomLoadingIndicator(
@@ -464,7 +466,9 @@ class LastStoreItem extends ConsumerWidget {
               printd("serviceLog: ${serviceLog.userLogs.length}");
               if (serviceLog.userLogs.isNotEmpty) {
                 return FutureBuilder(
-                    future: fetchStoreDetailInfo(StoreInfoParams(storeCode, 0)),
+                    future: ref
+                        .read(storeDetailInfoHttpsProvider.notifier)
+                        .fetchStoreDetailInfo(StoreInfoParams(storeCode, 0)),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Container();

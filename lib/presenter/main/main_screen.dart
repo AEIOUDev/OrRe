@@ -23,6 +23,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
 
 import '../../model/location_model.dart';
+import '../../model/store_service_log_model.dart';
 import '../../provider/home_screen/store_list_sort_type_provider.dart';
 import '../../services/hardware/nfc_services.dart';
 import '../../widget/popup/awesome_dialog_widget.dart';
