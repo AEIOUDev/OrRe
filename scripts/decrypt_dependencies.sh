@@ -15,6 +15,9 @@ read -s ORRE_PROPERTIES_PASSWORD
 echo -e "\nEnter password for decryption FASTLANE_PASSWORD:"
 read -s FASTLANE_PASSWORD
 
+echo -e "\nEnter password for decryption FIREBASE_PASSWORD:"
+read -s FIREBASE_PASSWORD
+
 echo -e "\nEnter password for decryption ENV_PASSWORD:"
 read -s ENV_PASSWORD
 
@@ -25,6 +28,7 @@ openssl aes-256-cbc -d -pbkdf2 -in android/app/orre_key.jks.enc -out android/app
 openssl aes-256-cbc -d -pbkdf2 -in android/key.properties.enc -out android/key.properties -k $ORRE_PROPERTIES_PASSWORD
 openssl aes-256-cbc -d -pbkdf2 -in android/fastlane/fastlane.json.enc -out android/fastlane/fastlane.json -k $FASTLANE_PASSWORD
 openssl aes-256-cbc -d -pbkdf2 -in ios/Runner/GoogleService-Info.plist.enc -out ios/Runner/GoogleService-Info.plist -k $GOOGLE_SERVICES_PASSWORD
+openssl aes-256-cbc -d -pbkdf2 -in ios/firebase_app_id_file.json.enc -out ios/firebase_app_id_file.json -k $FIREBASE_PASSWORD
 openssl aes-256-cbc -d -pbkdf2 -in .env.enc -out .env -k $ENV_PASSWORD
 
 # Check if openssl command was successful

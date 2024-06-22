@@ -38,6 +38,7 @@ brew install cocoapods
 
 # Decrypt configuration files
 openssl aes-256-cbc -d -pbkdf2 -in ios/Runner/GoogleService-Info.plist.enc -out ios/Runner/GoogleService-Info.plist -k $GOOGLE_SERVICES_PASSWORD
+openssl aes-256-cbc -d -pbkdf2 -in ios/firebase_app_id_file.json.enc -out ios/firebase_app_id_file.json -k $FIREBASE_PASSWORD
 openssl aes-256-cbc -d -pbkdf2 -in .env.enc -out .env -k $ENV_PASSWORD
 
 # Install CocoaPods dependencies.
