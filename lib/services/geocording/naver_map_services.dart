@@ -103,11 +103,11 @@ Future<List<String?>> getAddressFromLatLngNaver(
       return addressList;
     } else {
       // 요청이 실패했을 경우
-      print('Failed to fetch address: ${response.statusCode}');
+      printd('Failed to fetch address: ${response.statusCode}');
       return [];
     }
   } catch (e) {
-    print('Error fetching address: $e');
+    printd('Error fetching address: $e');
     return [];
   }
 }

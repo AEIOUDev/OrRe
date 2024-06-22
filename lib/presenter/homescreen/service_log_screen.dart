@@ -9,6 +9,7 @@ import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
+import '../../services/debug_services.dart';
 import '../../widget/background/waveform_background_widget.dart';
 
 class ServiceLogScreen extends ConsumerWidget {
@@ -17,12 +18,12 @@ class ServiceLogScreen extends ConsumerWidget {
     final userInfo = ref.watch(userInfoProvider);
     if (userInfo == null) {
       // 유저 정보 없음
-      print("유저 정보 없음, UserInfoCheckWidget() 호출");
+      printd("유저 정보 없음, UserInfoCheckWidget() 호출");
       return UserInfoCheckWidget();
     } else {
       // 유저 정보 있음
-      print("유저 정보 존재 : ${userInfo.phoneNumber}");
-      print("ServiceLogWidget() 호출");
+      printd("유저 정보 존재 : ${userInfo.phoneNumber}");
+      printd("ServiceLogWidget() 호출");
       return FutureBuilder(
         future: ref
             .watch(serviceLogProvider.notifier)

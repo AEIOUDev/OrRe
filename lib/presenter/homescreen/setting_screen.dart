@@ -15,6 +15,7 @@ import 'package:orre/widget/text/text_widget.dart';
 
 import '../../provider/app_state_provider.dart';
 import '../../provider/haptic_state_provider.dart';
+import '../../services/debug_services.dart';
 
 class SettingScreen extends ConsumerWidget {
   @override
@@ -156,14 +157,14 @@ class SettingScreen extends ConsumerWidget {
                                 desc: "로그아웃 하시겠습니까?",
                                 dialogType: DialogType.warning,
                                 onPressed: () {
-                                  print("로그아웃");
+                                  printd("로그아웃");
 
                                   WidgetsBinding.instance
                                       .addPostFrameCallback((_) {
                                     ref
                                         .read(userInfoProvider.notifier)
                                         .clearUserInfo();
-                                    print(
+                                    printd(
                                         "로그아웃 후: ${ref.read(userInfoProvider)}");
 
                                     // 모든 화면을 pop한 후, OnboardingScreen으로 교체
@@ -199,7 +200,7 @@ class SettingScreen extends ConsumerWidget {
                                         .read(userInfoProvider.notifier)
                                         .withdraw()
                                         .then((value) async {
-                                      print("회원탈퇴 결과: $value");
+                                      printd("회원탈퇴 결과: $value");
                                       if (value) {
                                         // 모든 화면을 pop한 후, OnboardingScreen으로 교체
                                         await ref

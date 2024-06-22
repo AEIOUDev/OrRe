@@ -58,7 +58,7 @@ class _WaitingStatusWidgetState extends ConsumerState<WaitingStatusWidget> {
         .read(storeWaitingInfoNotifierProvider.notifier)
         .getStoreWaitingInfo(widget.storeCode);
     storeWaitingInfo.waitingTeamList.forEach((element) {
-      print("waitingTeamList: $element");
+      printd("waitingTeamList: $element");
     });
 
     final myUserCall = ref.watch(storeWaitingUserCallNotifierProvider);

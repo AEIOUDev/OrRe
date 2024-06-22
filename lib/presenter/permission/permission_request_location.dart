@@ -33,14 +33,14 @@ class _PermissionRequestLocationScreenState
     final status = await Permission.location.request();
     if (status.isGranted) {
       // Location permission granted, do something
-      print("Location permission granted");
+      printd("Location permission granted");
       context.go('/locationCheck');
     } else if (status.isDenied) {
       // Location permission denied, show error message or handle accordingly
-      print("Location permission denied");
+      printd("Location permission denied");
     } else if (status.isPermanentlyDenied) {
       // Location permission permanently denied, show error message or handle accordingly
-      print("Location permission permanently denied");
+      printd("Location permission permanently denied");
     }
   }
 

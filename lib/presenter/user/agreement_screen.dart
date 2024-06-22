@@ -220,7 +220,7 @@ class AgreementScreen extends ConsumerWidget {
                   Center(
                     child: BigButtonWidget(
                       onPressed: () {
-                        print("이용약관에 동의하셨습니다.");
+                        printd("이용약관에 동의하셨습니다.");
                         context.push('/user/signup');
                       },
                       text: '동의합니다',

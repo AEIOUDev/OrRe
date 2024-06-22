@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../services/debug_services.dart';
+
 enum Error {
   none,
   network,
@@ -18,12 +20,12 @@ class ErrorStateNotifier extends StateNotifier<List<Error>> {
   ErrorStateNotifier() : super([]);
 
   void addError(Error error) {
-    print("addError : $error");
+    printd("addError : $error");
     state = [...state, error];
   }
 
   void deleteError(Error error) {
-    print("deleteError : $error");
+    printd("deleteError : $error");
 
     if (state.isEmpty) {
       return;

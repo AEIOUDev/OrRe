@@ -64,16 +64,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
     printd("selectedLocation : ${finalLocation}");
 
-    print("nowLocationAsyncValue : " + (finalLocation.locationName));
+    printd("nowLocationAsyncValue : " + (finalLocation.locationName));
 
     final params = StoreListParameters(
         sortType: ref.watch(selectSortTypeProvider),
         latitude: finalLocation.latitude,
         longitude: finalLocation.longitude);
     if (ref.read(storeListProvider.notifier).isExistRequest(params)) {
-      print("storeListProvider isExistRequest");
+      printd("storeListProvider isExistRequest");
     } else {
-      print("storeListProvider fetchStoreDetailInfo");
+      printd("storeListProvider fetchStoreDetailInfo");
     }
 
     return Scaffold(

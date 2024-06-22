@@ -126,8 +126,8 @@ class SignInScreen extends ConsumerWidget {
                               phoneNumber: phoneNumberController.text
                                   .replaceAll(RegExp(r'[^0-9]'), ''),
                             );
-                            print(signInUserInfo.password);
-                            print(signInUserInfo.phoneNumber);
+                            printd(signInUserInfo.password);
+                            printd(signInUserInfo.phoneNumber);
                             final success = await ref
                                 .read(userInfoProvider.notifier)
                                 .requestSignIn(signInUserInfo);

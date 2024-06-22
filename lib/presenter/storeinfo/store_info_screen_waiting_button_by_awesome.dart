@@ -46,7 +46,7 @@ class WaitingButtonAwesome extends ConsumerWidget {
             ),
             onPressed: () async {
               await HapticServices.vibrate(ref, CustomHapticsType.selection);
-              print("waitingState" + {waitingState}.toString());
+              printd("waitingState" + {waitingState}.toString());
               if (waitingState) {
                 // 현재 웨이팅 중이므로 웨이팅 취소 dialog를 띄우고, 웨이팅 취소를 위한 로직을 실행한다.
                 AwesomeDialogWidget.showCustomDialogWithCancel(
@@ -208,7 +208,7 @@ class WaitingButtonAwesome extends ConsumerWidget {
       String numberOfPersons,
       WidgetRef ref) async {
     // 스트림 구독
-    print("subscribeAndShowDialog");
+    printd("subscribeAndShowDialog");
 
     final waitingResult = await ref
         .read(storeWaitingRequestNotifierProvider.notifier)

@@ -181,15 +181,15 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                           ref, CustomHapticsType.selection);
                       // Call the store
                       final status = await Permission.phone.request();
-                      print("status: $status");
+                      printd("status: $status");
                       if (status.isGranted || Platform.isIOS) {
-                        print('Permission granted');
-                        print(
+                        printd('Permission granted');
+                        printd(
                             'Call the store: ${storeDetailInfo.storePhoneNumber}');
                         await FlutterPhoneDirectCaller.callNumber(
                             storeDetailInfo.storePhoneNumber);
                       } else {
-                        print('Permission denied');
+                        printd('Permission denied');
                         AwesomeDialogWidget.showCustomDialogWithCancel(
                           context: context,
                           title: "전화 권한",

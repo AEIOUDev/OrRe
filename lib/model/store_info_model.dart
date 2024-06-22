@@ -54,35 +54,35 @@ class StoreDetailInfo extends Equatable {
 
   factory StoreDetailInfo.fromJson(Map<String, dynamic> json) {
     final openingTime = timeFromJson(json['openingTime'] ?? '');
-    // print('openingTime: $openingTime');
+    // printd('openingTime: $openingTime');
     DateTime closingTime = timeFromJson(json['closingTime'] ?? '');
     closingTime = timeAdjust(openingTime, closingTime);
-    // print('closingTime: $closingTime');
+    // printd('closingTime: $closingTime');
 
     final lastOrderTime = timeFromJson(json['lastOrderTime'] ?? '');
-    // print('lastOrderTime: $lastOrderTime');
+    // printd('lastOrderTime: $lastOrderTime');
 
     final breakStartTime =
         timeFromJson(json['startBreakTime'] ?? (json['closingTime'] ?? ''));
-    // print('breakStartTime: $breakStartTime');
+    // printd('breakStartTime: $breakStartTime');
     DateTime breakEndTime =
         timeFromJson(json['endBreakTime'] ?? (json['openingTime'] ?? ''));
     breakEndTime = timeAdjust(breakStartTime, breakEndTime);
-    // print('breakEndTime: $breakEndTime');
+    // printd('breakEndTime: $breakEndTime');
 
     final locationLatitude = json['locationInfo'][0]['latitude'] ?? '';
-    // print("locationLatitude: $locationLatitude");
+    // printd("locationLatitude: $locationLatitude");
     final locationLongitude = json['locationInfo'][0]['longitude'] ?? '';
-    // print("locationLongitude: $locationLongitude");
+    // printd("locationLongitude: $locationLongitude");
     final locationName = json['locationInfo'][0]['storeName'] ?? '';
-    // print("locationName: $locationName");
+    // printd("locationName: $locationName");
     final locationAddress = json['locationInfo'][0]['address'] ?? '';
-    // print("locationAddress: $locationAddress");
+    // printd("locationAddress: $locationAddress");
 
-    // print("categories : ${json['menuCategories']}");
+    // printd("categories : ${json['menuCategories']}");
     final menuCategories =
         MenuCategories.fromJson(json['menuCategories'] ?? {});
-    // print("menuCategories: $menuCategories");
+    // printd("menuCategories: $menuCategories");
 
     return StoreDetailInfo(
       storeImageMain: json['storeImageMain'] ?? '',
@@ -163,7 +163,7 @@ class StoreDetailInfo extends Equatable {
   }
 
   static DateTime timeFromJson(String time) {
-    // print("time: $time");
+    // printd("time: $time");
     if (time == '') {
       return DateTime.now();
     }

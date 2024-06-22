@@ -76,7 +76,7 @@ String uriSwitcher(String uri, WidgetRef ref, BuildContext context) {
   // URI에서 마지막 '/' 이후의 문자열(예: 001)을 추출합니다.
   final uriParts = uri.split('/');
   final identifier = uriParts.last;
-  print("last uriParts: $identifier");
+  printd("last uriParts: $identifier");
 
   if (uri.contains('order')) {
     // 'reservation'을 포함하는 경우, 'r'을 붙여 반환합니다.

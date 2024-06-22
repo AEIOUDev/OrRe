@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
+import '../../services/debug_services.dart';
+
 class TextInputWidget extends ConsumerWidget {
   final String hintText;
   final bool isObscure;
@@ -129,7 +131,7 @@ class TextInputWidget extends ConsumerWidget {
               }
             },
             onChanged: (text) {
-              print(errorTextWidget(text, minLength, maxLength, isRequired,
+              printd(errorTextWidget(text, minLength, maxLength, isRequired,
                   isPassword:
                       autofillHints?.contains(AutofillHints.password) == true));
             }),

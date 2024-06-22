@@ -8,6 +8,8 @@ import 'package:orre/provider/network/websocket/store_waiting_info_request_state
 import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
+import '../../services/debug_services.dart';
+
 class BottomButtonSelector extends ConsumerWidget {
   final int storeCode;
   final bool waitingState;
@@ -23,7 +25,7 @@ class BottomButtonSelector extends ConsumerWidget {
     final myWaitingInfo = ref.watch(storeWaitingRequestNotifierProvider);
 
     if (myWaitingInfo == null) {
-      print("myWaitingInfo is null");
+      printd("myWaitingInfo is null");
       // 현재 웨이팅 중이 아님
       if (nowWaitable) {
         return WaitingButtonAwesome(
@@ -52,10 +54,10 @@ class BottomButtonSelector extends ConsumerWidget {
       }
     } else {
       // 현재 웨이팅 중임
-      print("myWaitingInfo is not null : ${myWaitingInfo.token.storeCode}");
+      printd("myWaitingInfo is not null : ${myWaitingInfo.token.storeCode}");
       if (myWaitingInfo.token.storeCode == storeCode) {
         // 현재 웨이팅 중인 가게임
-        print("myWaitingInfo: $myWaitingInfo");
+        printd("myWaitingInfo: $myWaitingInfo");
         return WaitingButtonAwesome(
             storeCode: storeCode, waitingState: waitingState);
       } else {

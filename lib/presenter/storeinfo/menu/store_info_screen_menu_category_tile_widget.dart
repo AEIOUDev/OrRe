@@ -27,7 +27,7 @@ class StoreMenuCategoryTileWidget extends ConsumerWidget {
       itemCount: categoryKR.length,
       itemBuilder: (context, index) {
         final category = categoryKR[index];
-        // print("categoryCode: $categoryCode");
+        // printd("categoryCode: $categoryCode");
         return Material(
           color: Colors.white,
           child: Column(
@@ -60,7 +60,7 @@ class StoreMenuCategoryTileWidget extends ConsumerWidget {
               ),
               Consumer(
                 builder: (context, ref, child) {
-                  // print("category: $category");
+                  // printd("category: $category");
                   final categoryCode =
                       menuCategories.categories.keys.firstWhere(
                     (key) => menuCategories.categories[key] == category,

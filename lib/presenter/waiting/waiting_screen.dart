@@ -71,7 +71,7 @@ class _WaitingScreenState extends ConsumerState<WaitingScreen> {
     final storeWaitingProvider = ref.watch(storeWaitingInfoNotifierProvider);
     printd("storeWaitingProvider: ${storeWaitingProvider.length}");
 
-    print("listOfWaitingStoreProvider: ${listOfWaitingStoreProvider}");
+    printd("listOfWaitingStoreProvider: ${listOfWaitingStoreProvider}");
 
     return Scaffold(
       backgroundColor: Color(0xFFDFDFDF),

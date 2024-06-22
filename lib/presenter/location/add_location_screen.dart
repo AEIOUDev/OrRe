@@ -73,12 +73,12 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   // 데이터 로딩 중에는 로딩 인디케이터를 보여줍니다.
-                  print(
+                  printd(
                       "snapshot.connectionState: ${snapshot.connectionState}");
                   return CustomLoadingIndicator(message: "위치 정보를 가져오는 중..");
                 } else if (snapshot.hasError) {
                   // 데이터 로딩 중 오류가 발생하면 오류 메시지를 보여줍니다.
-                  print("snapshot.error: ${snapshot.error}");
+                  printd("snapshot.error: ${snapshot.error}");
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     ref
                         .read(errorStateNotifierProvider.notifier)
@@ -86,7 +86,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
                   });
                   return Center(child: TextWidget('위치 정보를 가져오는 데 실패했습니다.'));
                 } else {
-                  print("snapshot.data: ${snapshot.data}");
+                  printd("snapshot.data: ${snapshot.data}");
                   // 데이터 로딩이 성공하면 지도를 표시합니다.
                   final userLocationInfo = snapshot.data; // 사용자 위치 정보
                   final latitude = userLocationInfo.latitude ?? 0; // 위도
@@ -139,7 +139,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
 
                       ref.read(markerProvider.notifier).state =
                           newMarker; // 마커 상태 업데이트
-                      print(newMarker.position);
+                      printd(newMarker.position);
                       _mapController.addOverlay(newMarker); // 새로운 마커를 지도에 추가
                     },
                     onSymbolTapped: (point) {
@@ -209,8 +209,9 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
                                   //     await getAddressFromLatLngNaver(
                                   //         latitude, longitude, 4, false);
 
-                                  print("Marker name: ${nameAndAddress.first}");
-                                  print(
+                                  printd(
+                                      "Marker name: ${nameAndAddress.first}");
+                                  printd(
                                       "Marker Address: ${nameAndAddress.last}");
 
                                   if (nameAndAddress.first != null) {
@@ -225,7 +226,7 @@ class _AddLocationScreenState extends ConsumerState<AddLocationScreen> {
                                         ));
                                     context.pop(marker.position);
                                   } else {
-                                    print("Failed to fetch address");
+                                    printd("Failed to fetch address");
                                   }
                                 }
                               : null,

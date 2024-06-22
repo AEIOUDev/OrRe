@@ -32,27 +32,27 @@ class LocationListNotifier extends StateNotifier<LocationState> {
       if (userLocationInfo != null) {
         updateNowLocation(userLocationInfo);
       } else {
-        print("Error fetching now location");
+        printd("Error fetching now location");
       }
     }).catchError((error) {
       // 오류 처리
-      print("Error fetching now location: $error");
+      printd("Error fetching now location: $error");
     });
   }
 
   // 새로운 위치를 리스트에 추가
   Future<void> addLocation(LocationInfo locationInfo) async {
-    print("addLocation");
+    printd("addLocation");
 
     if (locationInfo.locationName == "현재 위치") {
-      print("nowLocation cannot be added as a custom location");
+      printd("nowLocation cannot be added as a custom location");
       return;
     }
 
     // 이미 같은 이름의 위치가 있는지 확인하고, 있으면 좌표만 업데이트
     if (state.customLocations.any(
         (location) => location.locationName == locationInfo.locationName)) {
-      print("Location already exists. Updating coordinates.");
+      printd("Location already exists. Updating coordinates.");
       final updatedLocations = state.customLocations
           .map((location) => location.locationName == locationInfo.locationName
               ? locationInfo
@@ -68,7 +68,7 @@ class LocationListNotifier extends StateNotifier<LocationState> {
       await saveLocations();
       return;
     } else {
-      print("Location does not exist. Adding new location.");
+      printd("Location does not exist. Adding new location.");
     }
 
     final updatedLocations = List<LocationInfo>.from(state.customLocations)
@@ -79,7 +79,7 @@ class LocationListNotifier extends StateNotifier<LocationState> {
 
   // 지정된 이름의 위치 정보 제거
   Future<void> removeLocation(String locationName) async {
-    print("removeLocation");
+    printd("removeLocation");
 
     // 선택된 위치가 삭제되는 위치와 다른 위치만 남기기
     List<LocationInfo> updatedLocations = state.customLocations
@@ -121,8 +121,8 @@ class LocationListNotifier extends StateNotifier<LocationState> {
         .toList();
     String selectedLocationJson = json.encode(state.selectedLocation?.toJson());
 
-    print("saveSelectedLocation : $selectedLocationJson");
-    print("saveCustomLocations : $stringList");
+    printd("saveSelectedLocation : $selectedLocationJson");
+    printd("saveCustomLocations : $stringList");
 
     await _storage.write(
         key: 'savedCustomLocations', value: json.encode(stringList));
@@ -132,15 +132,15 @@ class LocationListNotifier extends StateNotifier<LocationState> {
 
   // 저장소에서 위치 정보 리스트 로드
   Future<void> loadLocations() async {
-    print("loadLocations");
+    printd("loadLocations");
     try {
       if (_storage.containsKey(key: 'savedCustomLocations') == false) {
-        print("savedCustomLocations not found");
+        printd("savedCustomLocations not found");
         state = LocationState(customLocations: [], selectedLocation: null);
         return;
       }
       if (_storage.containsKey(key: 'savedSelectedLocation') == false) {
-        print("savedSelectedLocation not found");
+        printd("savedSelectedLocation not found");
         state = LocationState(customLocations: [], selectedLocation: null);
         return;
       }
@@ -162,7 +162,7 @@ class LocationListNotifier extends StateNotifier<LocationState> {
         printd("customLocations : ${state.customLocations.length}");
       } else {
         // 초기 상태 설정 또는 기본값 사용
-        print("No data found for savedCustomLocations");
+        printd("No data found for savedCustomLocations");
       }
 
       if (selectedLocationJson != null) {
@@ -172,14 +172,14 @@ class LocationListNotifier extends StateNotifier<LocationState> {
           state = state.copyWith(selectedLocation: selectedLocation);
           printd("selectedLocation : ${state.selectedLocation?.locationName}");
         } else {
-          print("Invalid JSON format for selectedLocationJson");
+          printd("Invalid JSON format for selectedLocationJson");
         }
       } else {
         // 초기 상태 설정 또는 기본값 사용
-        print("No data found for savedSelectedLocation");
+        printd("No data found for savedSelectedLocation");
       }
     } catch (e) {
-      print("Error reading from Keychain: $e");
+      printd("Error reading from Keychain: $e");
       // 에러 처리 로직 추가 (예: 상태 초기화 또는 사용자에게 알림)
     }
   }
@@ -187,10 +187,10 @@ class LocationListNotifier extends StateNotifier<LocationState> {
   // "nowLocation"을 현재 위치 정보로 업데이트하는 메서드
   Future<void> updateNowLocation(LocationInfo newLocation) async {
     await loadLocations();
-    print("updateNowLocation " + newLocation.locationName);
+    printd("updateNowLocation " + newLocation.locationName);
     // 상태를 업데이트합니다.
     state = state.copyWith(nowLocation: newLocation);
-    print("locationListProvider : ${state.selectedLocation?.locationName}");
+    printd("locationListProvider : ${state.selectedLocation?.locationName}");
     // selectLocation(newLocation);
     // 변경된 위치 정보를 저장합니다.
     await saveLocations();
@@ -199,8 +199,8 @@ class LocationListNotifier extends StateNotifier<LocationState> {
   // 선택된 위치를 업데이트하는 메서드
   void selectLocation(LocationInfo location) async {
     await loadLocations();
-    print("selectLocation");
-    print(location.locationName);
+    printd("selectLocation");
+    printd(location.locationName);
     state = state.copyWith(selectedLocation: location);
     printd("state : ${state.selectedLocation?.locationName}");
     printd("state : ${state.customLocations.length}");

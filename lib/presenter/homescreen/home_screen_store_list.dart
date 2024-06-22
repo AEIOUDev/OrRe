@@ -65,7 +65,7 @@ class StoreItem extends ConsumerWidget {
         (state) {
           // state를 StoreWaitingInfo의 리스트로 가정합니다.
           // storeInfo.storeCode와 일치하는 첫 번째 객체를 찾습니다.
-          // print("storeInfo.storeCode : ${storeInfo.storeCode}");
+          // printd("storeInfo.storeCode : ${storeInfo.storeCode}");
           return state.firstWhere(
             (storeWaitingInfo) =>
                 storeWaitingInfo.storeCode == storeInfo.storeCode,

@@ -5,6 +5,8 @@ import 'package:orre/widget/button/small_button_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../services/debug_services.dart';
+
 class PermissionRequestPhoneScreen extends ConsumerStatefulWidget {
   @override
   _PermissionRequestPhoneScreenState createState() =>
@@ -18,15 +20,15 @@ class _PermissionRequestPhoneScreenState
     final status = await Permission.phone.request();
     if (status.isGranted) {
       // Phone permission granted, do something
-      print("Phone permission granted");
+      printd("Phone permission granted");
       context.pop();
     } else if (status.isDenied) {
       // Phone permission denied, show error message or handle accordingly
-      print("Phone permission denied");
+      printd("Phone permission denied");
       // openAppSettings;
     } else if (status.isPermanentlyDenied) {
       // Phone permission permanently denied, show error message or handle accordingly
-      print("Phone permission permanently denied");
+      printd("Phone permission permanently denied");
       // openAppSettings;
     }
   }

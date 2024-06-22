@@ -9,14 +9,16 @@ import 'package:orre/presenter/permission/permission_request_phone.dart';
 import 'package:orre/provider/error_state_notifier.dart';
 import 'package:orre/widget/text/text_widget.dart';
 
+import '../../services/debug_services.dart';
+
 class ErrorScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final error = ref.watch(errorStateNotifierProvider);
 
-    print("ErrorScreen");
+    printd("ErrorScreen");
     error.forEach((element) {
-      print(element);
+      printd(element);
     });
 
     if (error.isEmpty) {
