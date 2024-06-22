@@ -12,7 +12,7 @@ enum NotificationType {
   easteregg,
   waitingCancel,
   waitingSuccess,
-  notification3,
+  signupSuccess,
 }
 
 extension NotificationTypeExtension on NotificationType {
@@ -24,7 +24,7 @@ extension NotificationTypeExtension on NotificationType {
         return 1;
       case NotificationType.waitingSuccess:
         return 2;
-      case NotificationType.notification3:
+      case NotificationType.signupSuccess:
         return 3;
     }
   }
@@ -41,8 +41,8 @@ extension NotificationTypeExtension on NotificationType {
         return '웨이팅 취소';
       case NotificationType.waitingSuccess:
         return '웨이팅 성공';
-      case NotificationType.notification3:
-        return '알림 3';
+      case NotificationType.signupSuccess:
+        return '회원가입 성공';
     }
   }
 
@@ -54,8 +54,8 @@ extension NotificationTypeExtension on NotificationType {
         return '웨이팅 취소';
       case NotificationType.waitingSuccess:
         return '웨이팅 성공';
-      case NotificationType.notification3:
-        return '알림 3';
+      case NotificationType.signupSuccess:
+        return '회원가입 성공';
     }
   }
 
@@ -67,8 +67,8 @@ extension NotificationTypeExtension on NotificationType {
         return '웨이팅이 취소되었습니다.';
       case NotificationType.waitingSuccess:
         return '웨이팅을 시작했습니다.';
-      case NotificationType.notification3:
-        return '알림 3';
+      case NotificationType.signupSuccess:
+        return '지금 바로 로그인해보세요!';
     }
   }
 }

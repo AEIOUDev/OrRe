@@ -9,6 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/services/network/https_services.dart';
+import 'package:orre/services/notifications_services.dart';
 import 'package:orre/widget/appbar/static_app_bar_widget.dart';
 import 'package:orre/widget/background/waveform_background_widget.dart';
 import 'package:orre/widget/button/text_button_widget.dart';
@@ -251,7 +252,8 @@ class SignUpScreen extends ConsumerWidget {
                                       ),
                                     );
                               });
-
+                              NotificationService.showNotification(
+                                  NotificationType.signupSuccess);
                               context.go('/user/onboarding');
 
                               // showDialog(
