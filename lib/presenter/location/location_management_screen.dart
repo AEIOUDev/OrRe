@@ -45,7 +45,7 @@ class _LocationManagementScreenState
     final nowLocation = location.nowLocation;
 
     return Scaffold(
-      // backgroundColor: Color(0xFFDFDFDF),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Color(0xFFFFFFBF52),
         title: TextWidget('주소 설정'),

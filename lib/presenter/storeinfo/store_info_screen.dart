@@ -265,7 +265,12 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
               ),
               CSVSizedBoxWidget(height: 32.h),
               SliverToBoxAdapter(
-                child: AdmobBannerWidget(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AdmobBannerWidget(),
+                  ],
+                ),
               ),
               CSVSizedBoxWidget(height: 32.h),
               StoreLocationWidget(storeDetailInfo: storeDetailInfo),
