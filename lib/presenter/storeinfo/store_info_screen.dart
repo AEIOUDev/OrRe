@@ -11,6 +11,7 @@ import 'package:orre/presenter/storeinfo/menu/store_info_screen_menu_category_li
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import 'package:orre/services/debug_services.dart';
 import 'package:orre/services/hardware/haptic_services.dart';
+import 'package:orre/widget/advertisement/admob_banner_widget.dart';
 import 'package:orre/widget/custom_scroll_view/csv_sizedbox_widget.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
 import 'package:orre/widget/text/text_widget.dart';
@@ -261,6 +262,10 @@ class _StoreDetailInfoWidgetState extends ConsumerState<StoreDetailInfoWidget>
                 storeCode: widget.storeCode,
                 myWaitingInfo: myWaitingInfo,
                 locationInfo: storeDetailInfo.locationInfo,
+              ),
+              CSVSizedBoxWidget(height: 32.h),
+              SliverToBoxAdapter(
+                child: AdmobBannerWidget(),
               ),
               CSVSizedBoxWidget(height: 32.h),
               StoreLocationWidget(storeDetailInfo: storeDetailInfo),

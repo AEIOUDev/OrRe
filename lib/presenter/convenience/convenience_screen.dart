@@ -7,6 +7,7 @@ import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:orre/widget/advertisement/admob_banner_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../provider/network/https/post_school_meal_future_provider.dart';
@@ -83,6 +84,7 @@ class ConvenienceScreen extends ConsumerWidget {
         ],
       ),
       body: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Expanded(
             child: ListView(
@@ -94,6 +96,16 @@ class ConvenienceScreen extends ConsumerWidget {
                     location: "혜당관",
                   ),
                 ),
+
+                // 광고
+                SizedBox(height: 16.h),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AdmobBannerWidget(),
+                  ],
+                ),
+                SizedBox(height: 16.h),
 
                 // 메뉴 추천
                 BorderContainer(

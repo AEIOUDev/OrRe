@@ -32,6 +32,7 @@ class _StoreLocationWidgetState extends ConsumerState<StoreLocationWidget> {
     printd("\n\StoreLocationWidget 진입");
     return SliverToBoxAdapter(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -66,92 +67,98 @@ class _StoreLocationWidgetState extends ConsumerState<StoreLocationWidget> {
             margin: EdgeInsets.symmetric(
               horizontal: 16.w,
             ),
-            child: Expanded(
-              flex: 4,
-              child: FutureBuilder(
-                future: ref
-                    .read(nowLocationProvider.notifier)
-                    .updateNowLocation(), // 위치 정보를 비동기적으로 가져옵니다.
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    // 데이터 로딩 중에는 로딩 인디케이터를 보여줍니다.
-                    printd(
-                        "snapshot.connectionState: ${snapshot.connectionState}");
-                    return CustomLoadingIndicator(message: "위치 정보를 가져오는 중..");
-                  } else if (snapshot.hasError) {
-                    // 데이터 로딩 중 오류가 발생하면 오류 메시지를 보여줍니다.
-                    printd("snapshot.error: ${snapshot.error}");
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      ref
-                          .read(errorStateNotifierProvider.notifier)
-                          .addError(Error.locationPermission);
-                    });
-                    return Center(child: TextWidget('위치 정보를 가져오는 데 실패했습니다.'));
-                  } else {
-                    printd("snapshot.data: ${snapshot.data}");
-                    // 데이터 로딩이 성공하면 지도를 표시합니다.
-                    final latitude =
-                        widget.storeDetailInfo.locationInfo.latitude;
-                    final longitude =
-                        widget.storeDetailInfo.locationInfo.longitude;
-                    final target = NLatLng(latitude, longitude);
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: FutureBuilder(
+                    future: ref
+                        .read(nowLocationProvider.notifier)
+                        .updateNowLocation(), // 위치 정보를 비동기적으로 가져옵니다.
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        // 데이터 로딩 중에는 로딩 인디케이터를 보여줍니다.
+                        printd(
+                            "snapshot.connectionState: ${snapshot.connectionState}");
+                        return CustomLoadingIndicator(
+                            message: "위치 정보를 가져오는 중..");
+                      } else if (snapshot.hasError) {
+                        // 데이터 로딩 중 오류가 발생하면 오류 메시지를 보여줍니다.
+                        printd("snapshot.error: ${snapshot.error}");
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          ref
+                              .read(errorStateNotifierProvider.notifier)
+                              .addError(Error.locationPermission);
+                        });
+                        return Center(
+                            child: TextWidget('위치 정보를 가져오는 데 실패했습니다.'));
+                      } else {
+                        printd("snapshot.data: ${snapshot.data}");
+                        // 데이터 로딩이 성공하면 지도를 표시합니다.
+                        final latitude =
+                            widget.storeDetailInfo.locationInfo.latitude;
+                        final longitude =
+                            widget.storeDetailInfo.locationInfo.longitude;
+                        final target = NLatLng(latitude, longitude);
 
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                          30), // 이 값은 Container의 borderRadius와 일치해야 합니다.
-                      child: NaverMap(
-                        options: NaverMapViewOptions(
-                          locale: Locale('ko-kr'),
-                          initialCameraPosition: NCameraPosition(
-                            target: NLatLng(latitude, longitude),
-                            zoom: 16,
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                              30), // 이 값은 Container의 borderRadius와 일치해야 합니다.
+                          child: NaverMap(
+                            options: NaverMapViewOptions(
+                              locale: Locale('ko-kr'),
+                              initialCameraPosition: NCameraPosition(
+                                target: NLatLng(latitude, longitude),
+                                zoom: 16,
+                              ),
+                              minZoom: 6,
+                              maxZoom: 18,
+                              maxTilt: 45,
+                              extent: NLatLngBounds(
+                                southWest: NLatLng(31.43, 122.37),
+                                northEast: NLatLng(44.35, 132.0),
+                              ),
+                              locationButtonEnable: true,
+                              indoorEnable: true,
+                              logoClickEnable: false,
+                              zoomGesturesEnable: false,
+                            ),
+                            onMapReady: (controller) {
+                              _mapController = controller;
+                              final marker = NMarker(
+                                position: NLatLng(latitude, longitude),
+                                id: 'marker',
+                                // caption: NOverlayCaption(
+                                //   text: widget.storeDetailInfo.storeName,
+                                //   textSize: 12.sp,
+                                // ),
+                                // captionAligns: [NAlign.top],
+                              );
+                              _mapController.addOverlay(marker);
+                            },
+                            onMapTapped: (point, latLng) {
+                              // 초기 위치로 이동합니다.
+                              _mapController.updateCamera(
+                                // NCameraUpdate.scrollBy(0, 0),
+                                NCameraUpdate.scrollAndZoomTo(
+                                    target: target, zoom: 16),
+                              );
+                            },
+                            onSymbolTapped: (point) {
+                              // 초기 위치로 이동합니다.
+                              _mapController.updateCamera(
+                                // NCameraUpdate.scrollBy(0, 0),
+                                NCameraUpdate.scrollAndZoomTo(
+                                    target: target, zoom: 16),
+                              );
+                            },
                           ),
-                          minZoom: 6,
-                          maxZoom: 18,
-                          maxTilt: 45,
-                          extent: NLatLngBounds(
-                            southWest: NLatLng(31.43, 122.37),
-                            northEast: NLatLng(44.35, 132.0),
-                          ),
-                          locationButtonEnable: true,
-                          indoorEnable: true,
-                          logoClickEnable: false,
-                          zoomGesturesEnable: false,
-                        ),
-                        onMapReady: (controller) {
-                          _mapController = controller;
-                          final marker = NMarker(
-                            position: NLatLng(latitude, longitude),
-                            id: 'marker',
-                            // caption: NOverlayCaption(
-                            //   text: widget.storeDetailInfo.storeName,
-                            //   textSize: 12.sp,
-                            // ),
-                            // captionAligns: [NAlign.top],
-                          );
-                          _mapController.addOverlay(marker);
-                        },
-                        onMapTapped: (point, latLng) {
-                          // 초기 위치로 이동합니다.
-                          _mapController.updateCamera(
-                            // NCameraUpdate.scrollBy(0, 0),
-                            NCameraUpdate.scrollAndZoomTo(
-                                target: target, zoom: 16),
-                          );
-                        },
-                        onSymbolTapped: (point) {
-                          // 초기 위치로 이동합니다.
-                          _mapController.updateCamera(
-                            // NCameraUpdate.scrollBy(0, 0),
-                            NCameraUpdate.scrollAndZoomTo(
-                                target: target, zoom: 16),
-                          );
-                        },
-                      ),
-                    );
-                  }
-                },
-              ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
           SizedBox(height: 8.h),

@@ -1,5 +1,4 @@
 #!/bin/bash
-
 echo -e "Starting web update process...\n"
 
 # 현재 작업 중인 경로 확인

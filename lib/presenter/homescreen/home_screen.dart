@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/presenter/homescreen/home_screen_store_list.dart';
+import 'package:orre/widget/advertisement/admob_banner_widget.dart';
 import 'package:orre/widget/background/extend_body_widget.dart';
 import '../../provider/home_screen/store_category_provider.dart';
 import '../../provider/home_screen/store_list_sort_type_provider.dart';
@@ -87,6 +88,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             CategoryWidget(location: finalLocation),
             SizedBox(height: 20),
@@ -121,6 +123,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Image.asset(
                                     "assets/images/error_orre.gif",
@@ -142,7 +145,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           );
                         } else {
                           return Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
+                              AdmobBannerWidget(),
+                              SizedBox(height: 16.h),
                               StoreListWidget(storeList: filteredList),
                               SizedBox(height: 80.h),
                             ],

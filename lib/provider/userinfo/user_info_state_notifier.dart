@@ -69,7 +69,14 @@ class UserInfoProvider extends StateNotifier<UserInfo?> {
     printd("로그인 시도 : $signInInfo");
     SignInInfo? info;
 
-    final fcmToken = await FirebaseMessaging.instance.getToken() ?? '';
+    String fcmToken = '';
+    try {
+      await FirebaseMessaging.instance.requestPermission();
+      fcmToken = await FirebaseMessaging.instance.getToken() ?? '';
+    } catch (e) {
+      printd("fcmToken error : $e");
+      return null;
+    }
     printd("fcmToken : " + fcmToken);
 
     // 매개변수가 없다면 저장된 로그인 정보를 불러옴

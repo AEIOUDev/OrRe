@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:internet_connectivity_checker/internet_connectivity_checker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:orre/presenter/error/network_error_screen.dart';
@@ -64,13 +65,13 @@ final _appLinks = AppLinks(); // AppLinks is singleton
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Flutter 엔진과 위젯 바인딩을 초기화
   await dotenv.load(fileName: ".env");
+  await MobileAds.instance.initialize(); // Google AdMob 초기화
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   ); // Firebase를 현재 플랫폼에 맞게 초기화
 
   await initializeNotification(); // Firebase 메시징 초기화
-  // requestPermission(); // 권한 요청
 
   // SystemChrome.setPreferredOrientations(
   //     [DeviceOrientation.portraitUp]); // 화면 방향을 세로로 고정

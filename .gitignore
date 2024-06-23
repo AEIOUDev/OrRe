@@ -154,3 +154,7 @@ app.*.symbols
 android/fastlane/report.xml
 android/fastlane/README.md
 android/fastlane/fastlane.json
+
+# Script files
+/scripts/app_version_update_for_server.sh
+/scripts/app_version_check.sh

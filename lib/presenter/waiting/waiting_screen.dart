@@ -13,6 +13,7 @@ import 'package:orre/provider/network/websocket/store_waiting_info_list_state_no
 import 'package:orre/provider/network/websocket/store_waiting_usercall_list_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/provider/waiting_usercall_time_list_state_notifier.dart';
+import 'package:orre/widget/advertisement/admob_banner_widget.dart';
 import 'package:orre/widget/background/extend_body_widget.dart';
 import 'package:orre/widget/button/big_button_widget.dart';
 import 'package:orre/widget/loading_indicator/coustom_loading_indicator.dart';
@@ -403,29 +404,32 @@ class WaitingStoreItem extends ConsumerWidget {
                       ),
                       SizedBox(height: 16),
                       BigButtonWidget(
-                          text: '웨이팅 취소하기',
-                          textColor: Colors.white,
-                          backgroundColor: Color(0xFFFFBF52),
-                          minimumSize: Size(double.infinity, 40),
-                          onPressed: () {
-                            AwesomeDialogWidget.showCustomDialogWithCancel(
-                              context: context,
-                              title: "웨이팅 취소",
-                              desc: "정말로 웨이팅을 취소하시겠습니까?",
-                              dialogType: DialogType.question,
-                              onPressed: () {
-                                ref
-                                    .read(storeWaitingRequestNotifierProvider
-                                        .notifier)
-                                    .sendWaitingCancelRequest(
-                                        storeWaitingRequest.token.storeCode,
-                                        storeWaitingRequest.token.phoneNumber);
-                              },
-                              btnText: "네",
-                              onCancel: () {},
-                              cancelText: "아니요",
-                            );
-                          }),
+                        text: '웨이팅 취소하기',
+                        textColor: Colors.white,
+                        backgroundColor: Color(0xFFFFBF52),
+                        minimumSize: Size(double.infinity, 40),
+                        onPressed: () {
+                          AwesomeDialogWidget.showCustomDialogWithCancel(
+                            context: context,
+                            title: "웨이팅 취소",
+                            desc: "정말로 웨이팅을 취소하시겠습니까?",
+                            dialogType: DialogType.question,
+                            onPressed: () {
+                              ref
+                                  .read(storeWaitingRequestNotifierProvider
+                                      .notifier)
+                                  .sendWaitingCancelRequest(
+                                      storeWaitingRequest.token.storeCode,
+                                      storeWaitingRequest.token.phoneNumber);
+                            },
+                            btnText: "네",
+                            onCancel: () {},
+                            cancelText: "아니요",
+                          );
+                        },
+                      ),
+                      SizedBox(height: 16.h),
+                      AdmobBannerWidget(),
                     ],
                   ),
                 ),
@@ -552,6 +556,8 @@ class LastStoreItem extends ConsumerWidget {
                                     ),
                                   ],
                                 ),
+                                SizedBox(height: 16.h),
+                                AdmobBannerWidget(),
                               ],
                             ),
                           ),
@@ -559,9 +565,15 @@ class LastStoreItem extends ConsumerWidget {
                       }
                     });
               } else {
-                return TextWidget(
-                  '서비스 로그 없음.',
-                  fontSize: 24.sp,
+                return Column(
+                  children: [
+                    TextWidget(
+                      '서비스 로그 없음.',
+                      fontSize: 24.sp,
+                    ),
+                    SizedBox(height: 16.h),
+                    AdmobBannerWidget(),
+                  ],
                 );
               }
             }

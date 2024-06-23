@@ -68,7 +68,11 @@ jobs:
     - name: Decrypt google-services.json
       run: |
         openssl aes-256-cbc -d -pbkdf2 -in android/app/google-services.json.enc -out android/app/google-services.json -k ${{ secrets.GOOGLE_SERVICES_PASSWORD }}
-
+    
+    - name: Decrypt AndroidManifest.xml
+      run: |
+        openssl aes-256-cbc -d -pbkdf2 -in android/app/src/main/AndroidManifest.xml.enc -out android/app/src/main/AndroidManifest.xml -k ${{ secrets.ANDROID_MANIFEST_PASSWORD }}
+    
     - name: Decrypt orre_key.jks
       run: |
         openssl aes-256-cbc -d -pbkdf2 -in android/app/orre_key.jks.enc -out android/app/orre_key.jks -k ${{ secrets.ORRE_KEY_PASSWORD }}

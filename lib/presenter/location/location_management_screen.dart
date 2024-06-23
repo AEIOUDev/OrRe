@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:orre/model/location_model.dart';
 import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/services/hardware/haptic_services.dart';
+import 'package:orre/widget/advertisement/admob_banner_widget.dart';
 import 'package:orre/widget/popup/awesome_dialog_widget.dart';
 import 'package:orre/widget/text/text_widget.dart';
 import '../../provider/location/location_securestorage_provider.dart';
@@ -89,24 +90,13 @@ class _LocationManagementScreenState
                     ),
                   ),
                 ),
-                // IconButton(
-                //     icon: Icon(Icons.table_rows_rounded,
-                //         color:
-                //             isSame ? Color(0xFFFFFFBF52) : Color(0xFF999999)),
-                //     onPressed: () {
-                //       printd(
-                //           "선택된 위치 : ${ref.read(locationListProvider.notifier).getSelectedLocation()}");
-                //       printd(
-                //           "현재 위치 : ${ref.read(locationListProvider.notifier).getNowLocation()}");
-                //       printd(
-                //           "사용자 위치 : ${ref.read(locationListProvider.notifier).getCustomLocations()}");
-                //     }),
               ],
             ),
           ),
         ),
       ),
       body: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Expanded(
             child: Container(
@@ -131,7 +121,11 @@ class _LocationManagementScreenState
                 },
               ),
             ),
-          )
+          ),
+          Spacer(),
+          Spacer(),
+          Spacer(),
+          AdmobBannerWidget(),
         ],
       ),
     );

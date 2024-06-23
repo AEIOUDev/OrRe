@@ -86,9 +86,10 @@ Future<int> updateCheck(WidgetRef ref) async {
   if (APIResponseStatus.appVersionDifferent
       .isEqualTo(isNeedUpdateResponse['status'])) {
     printd("앱 버전 다름 : ${isNeedUpdateResponse['appVersion']}");
-    printd("업데이트 필요 유무 : ${isNeedUpdateResponse['appEssentialUpdate'] == 1}");
+
     // if (packageInfo.version != isNeedUpdateResponse['appVersion']) {
-    if (isNeedUpdateResponse['appEssentialUpdate'] == 1) {
+    if (isVersionLower(
+        packageInfo.version, isNeedUpdateResponse['appVersion'])) {
       printd("앱 업데이트 필요");
       return 3;
     } else {
@@ -148,4 +149,25 @@ Future<bool> loginCheck(WidgetRef ref) async {
     printd('Error occurred during login check: $e');
     return false;
   }
+}
+
+bool isVersionLower(String firstVersion, String secondVersion) {
+  try {
+    List<int> firstVersionNumbers =
+        firstVersion.split('.').map(int.parse).toList();
+    List<int> secondVersionNumbers =
+        secondVersion.split('.').map(int.parse).toList();
+
+    for (int i = 0; i < firstVersionNumbers.length; i++) {
+      if (firstVersionNumbers[i] < secondVersionNumbers[i]) {
+        return true;
+      } else if (firstVersionNumbers[i] > secondVersionNumbers[i]) {
+        return false;
+      }
+    }
+  } catch (e) {
+    return false;
+  }
+
+  return false;
 }
