@@ -36,7 +36,7 @@ openssl aes-256-cbc -d -pbkdf2 -in android/key.properties.enc -out android/key.p
 openssl aes-256-cbc -d -pbkdf2 -in android/fastlane/fastlane.json.enc -out android/fastlane/fastlane.json -k $FASTLANE_PASSWORD
 openssl aes-256-cbc -d -pbkdf2 -in ios/Runner/GoogleService-Info.plist.enc -out ios/Runner/GoogleService-Info.plist -k $GOOGLE_SERVICES_PASSWORD
 openssl aes-256-cbc -d -pbkdf2 -in ios/firebase_app_id_file.json.enc -out ios/firebase_app_id_file.json -k $FIREBASE_PASSWORD
-openssl aes-256-cbc -d -pbkdf2 -in ios/Runner/info.plist.enc -out ios/Runner/info.plist -k $INFOPLIST_PASSWORD
+openssl aes-256-cbc -d -pbkdf2 -in ios/Runner/Info.plist.enc -out ios/Runner/Info.plist -k $INFOPLIST_PASSWORD
 openssl aes-256-cbc -d -pbkdf2 -in .env.enc -out .env -k $ENV_PASSWORD
 
 # Check if openssl command was successful
