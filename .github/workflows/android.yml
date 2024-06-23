@@ -1,0 +1,135 @@
+name: Android CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      id: setup-java
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '17'
+
+    - name: Cache Flutter dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.pub-cache
+          ${{ runner.tool_cache }}/flutter
+        key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-flutter-
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: 3.19.0
+
+    - name: Cache Ruby gems
+      uses: actions/cache@v3
+      with:
+        path: vendor/bundle
+        key: ${{ runner.os }}-ruby-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-ruby-
+
+    - name: Cache Fastlane gems
+      uses: actions/cache@v3
+      with:
+        path: ~/.bundle
+        key: ${{ runner.os }}-fastlane-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-fastlane-
+
+    - name: Install Ruby
+      run: sudo apt-get install ruby-full
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1.2'
+        bundler-cache: true
+
+    - name: Install Fastlane
+      run: cd android && bundle install && cd ..
+
+    - name: Decrypt google-services.json
+      run: |
+        openssl aes-256-cbc -d -pbkdf2 -in android/app/google-services.json.enc -out android/app/google-services.json -k ${{ secrets.GOOGLE_SERVICES_PASSWORD }}
+    
+    - name: Decrypt AndroidManifest.xml
+      run: |
+        openssl aes-256-cbc -d -pbkdf2 -in android/app/src/main/AndroidManifest.xml.enc -out android/app/src/main/AndroidManifest.xml -k ${{ secrets.ANDROID_MANIFEST_PASSWORD }}
+    
+    - name: Decrypt orre_key.jks
+      run: |
+        openssl aes-256-cbc -d -pbkdf2 -in android/app/orre_key.jks.enc -out android/app/orre_key.jks -k ${{ secrets.ORRE_KEY_PASSWORD }}
+
+    - name: Decrypt orre_key.properties
+      run: |
+        openssl aes-256-cbc -d -pbkdf2 -in android/key.properties.enc -out android/key.properties -k ${{ secrets.ORRE_PROPERTIES_PASSWORD }}
+
+    - name: Decrypt fastlane.json
+      run: |
+        openssl aes-256-cbc -d -pbkdf2 -in android/fastlane/fastlane.json.enc -out android/fastlane/fastlane.json -k ${{ secrets.FASTLANE_PASSWORD }}
+
+    - name: Decrypt .env
+      run: |
+        openssl aes-256-cbc -d -pbkdf2 -in .env.enc -out .env -k ${{ secrets.ENV_PASSWORD }}
+        
+    - name: Create gradle.properties
+      run: |
+        echo "org.gradle.jvmargs=-Xmx4G" >> $GITHUB_WORKSPACE/android/gradle.properties
+        echo "android.useAndroidX=true" >> $GITHUB_WORKSPACE/android/gradle.properties
+        echo "android.enableJetifier=true" >> $GITHUB_WORKSPACE/android/gradle.properties
+        echo "org.gradle.java.home=${{ steps.setup-java.outputs.path }}" >> $GITHUB_WORKSPACE/android/gradle.properties
+
+    - name: Get packages
+      run: flutter pub get
+
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Set permissions for Android SDK
+      run: |
+        sudo chown -R $USER:$USER /usr/local/lib/android/sdk
+        sudo chmod -R u+rwx /usr/local/lib/android/sdk
+
+    - name: Cache Android SDK
+      id: android-sdk-cache
+      uses: actions/cache@v3
+      with:
+        path: /usr/local/lib/android/sdk
+        key: ${{ runner.os }}-android-sdk-${{ hashFiles('**/build.gradle') }}
+        restore-keys: |
+          ${{ runner.os }}-android-sdk-
+
+
+    - name: Build App Bundle
+      env:
+        JAVA_HOME: ${{ steps.setup-java.outputs.path }}
+      run: flutter build appbundle
+
+    - name: Execute Fastlane
+      env:
+        JAVA_HOME: ${{ steps.setup-java.outputs.path }}
+      run: cd android && fastlane deploy
