@@ -77,6 +77,7 @@ unlinked_spec.ds
 **/android/**/GeneratedPluginRegistrant.java
 **/android/key.properties
 **/android/app/google-services.json
+**/android/app/src/main/AndroidManifest.xml
 *.jks
 *.pem
 
@@ -111,6 +112,7 @@ unlinked_spec.ds
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
 **/ios/Runner/GoogleService-Info.plist
+**/ios/Runner/info.plist
 
 # macOS
 **/Flutter/ephemeral/
