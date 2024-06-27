@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+// import 'package:orre/model/store_info_model.dart';
 import 'package:orre/presenter/homescreen/home_screen.dart';
 import 'package:orre/provider/first_boot_future_provider.dart';
 import 'package:orre/provider/location/location_securestorage_provider.dart';
@@ -15,6 +16,7 @@ import 'package:orre/provider/location/now_location_provider.dart';
 import 'package:orre/provider/network/https/get_service_log_state_notifier.dart';
 import 'package:orre/provider/network/https/store_list_state_notifier.dart';
 import 'package:orre/provider/network/websocket/stomp_client_state_notifier.dart';
+import 'package:orre/provider/network/websocket/store_detail_info_state_notifier.dart';
 import 'package:orre/provider/network/websocket/store_waiting_info_list_state_notifier.dart';
 import 'package:orre/provider/userinfo/user_info_state_notifier.dart';
 import 'package:orre/services/debug_services.dart';
@@ -216,7 +218,7 @@ class _MainScreenState extends ConsumerState<MainScreen>
       }
     }
 
-    // selectedLocation으로 가게 정보를 다시 불러옵니다.
+    // selectedLocation으로 가게 리스트 정보를 다시 불러옵니다.
     final userLocation = ref.read(locationListProvider).selectedLocation;
     printd("선택된 위치 : " + (userLocation?.locationName ?? "null"));
 
@@ -283,6 +285,24 @@ class _MainScreenState extends ConsumerState<MainScreen>
       printd("사용자 정보 없음. 로그인 페이지로 이동");
       context.loaderOverlay.hide();
       context.go('/user/onboarding');
+    }
+
+    // 현재 가게 정보가 null이 아닐 경우, 해당 가게의 세부 정보를 다시 불러옵니다.
+    final storeDetailInfo = ref.watch(storeDetailInfoWebsocketProvider);
+
+    if (storeDetailInfo != null) {
+      printd("현재 가게 정보 있음. 가게 세부 정보 다시 불러오기 시작");
+      ref
+          .read(storeDetailInfoWebsocketProvider.notifier)
+          .clearStoreDetailInfo();
+      await ref
+          .read(storeDetailInfoWebsocketProvider.notifier)
+          .subscribeStoreDetailInfo(storeDetailInfo.storeCode);
+      ref
+          .read(storeDetailInfoWebsocketProvider.notifier)
+          .sendStoreDetailInfoRequest(storeDetailInfo.storeCode);
+    } else {
+      printd("현재 가게 정보 없음. 가게 세부 정보 다시 불러오기 안함");
     }
 
     printd("refresh 함수 종료");
